@@ -1,5 +1,6 @@
 package com.loopers.domain.user;
 
+import com.loopers.support.error.CoreException;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -63,7 +64,7 @@ public class UserServiceIntegrationTest {
         userService.signUp(userCommand);
 
         // when & then
-        assertThrows(RuntimeException.class, () -> {
+        assertThrows(CoreException.class, () -> {
             userService.signUp(userCommand);
         });
     }
