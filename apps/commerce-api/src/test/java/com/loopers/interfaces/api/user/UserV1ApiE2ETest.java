@@ -1,6 +1,6 @@
 package com.loopers.interfaces.api.user;
 
-import com.loopers.interfaces.api.ApiResponse;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,6 +13,7 @@ import org.springframework.http.*;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 // 임의의 포트를 사용하여 테스트 실행
@@ -23,11 +24,14 @@ public class UserV1ApiE2ETest {
     /**
      * - [x]회원 가입이 성공할 경우, 생성된 유저 정보를 응답으로 반환한다.
      * - [x]회원 가입 시에 성별이 없을 경우, `400 Bad Request` 응답을 반환한다.
+     *
+     * - [x]내 정보 조회에 성공할 경우, 해당하는 유저 정보를 응답으로 반환한다.
+     * - [x]존재하지 않는 ID 로 조회할 경우, `404 Not Found` 응답을 반환한다.
      */
 
     @DisplayName("POST /api/v1/users")
     @Nested
-    class signUp {
+    class SignUp {
 
         @Autowired
         private MockMvc mockMvc;
@@ -35,6 +39,7 @@ public class UserV1ApiE2ETest {
         private static final String ENDPOINT = "/api/v1/users";
 
         @DisplayName("회원 가입이 성공할 경우, 생성된 유저 정보를 응답으로 반환한다.")
+        @Transactional
         @Test
         void returnsUserInformation_whenSignUpSuccessful() throws Exception {
             // given
@@ -64,6 +69,7 @@ public class UserV1ApiE2ETest {
         }
 
         @DisplayName("회원 가입 시에 성별이 없을 경우, `400 Bad Request` 응답을 반환한다.")
+        @Transactional
         @ParameterizedTest
         @ValueSource(strings = {
                 """
@@ -107,6 +113,61 @@ public class UserV1ApiE2ETest {
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.meta.result").value("FAIL"))
                     .andExpect(jsonPath("$.data").doesNotExist());
+        }
+    }
+
+    @DisplayName("POST /api/v1/users/me")
+    @Nested
+    class GetMyInfo {
+
+        @Autowired
+        private MockMvc mockMvc;
+
+        private static final String ENDPOINT = "/api/v1/users/me";
+
+        @DisplayName("내 정보 조회에 성공할 경우, 해당하는 유저 정보를 응답으로 반환한다.")
+        @Transactional
+        @Test
+        void returnsUserInformation_whenGetMyInfoSuccessful() throws Exception {
+            // given
+            final String loginId = "test123456";
+            String json = String.format("""
+                {
+                    "loginId": "%s",
+                    "name": "박이름",
+                    "gender": "F",
+                    "email": "test@example.com",
+                    "dob": "2025-01-01"
+                }
+                """, loginId);
+
+            mockMvc.perform(post("/api/v1/users")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(json))
+                    .andExpect(status().isOk());
+
+            // when&then
+            mockMvc.perform(get(ENDPOINT)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .header("X-USER-ID", loginId))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.meta.result").value("SUCCESS"))
+                    .andExpect(jsonPath("$.data.loginId").value(loginId));
+        }
+
+        @DisplayName("존재하지 않는 ID 로 조회할 경우, `404 Not Found` 응답을 반환한다.")
+        @Transactional
+        @Test
+        void returnsNotFound_whenUserDoesNotExist() throws Exception {
+            // given
+            final String loginId = "test123456";
+
+            // when&then
+            mockMvc.perform(get(ENDPOINT)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .header("X-USER-ID", loginId))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.meta.result").value("FAIL"));
         }
     }
 }

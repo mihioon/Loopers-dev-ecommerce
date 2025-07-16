@@ -18,4 +18,12 @@ public class UserService {
         UserEntity userEntity = userRepository.save(signUpCommand.toEntity());
         return UserCommand.UserInfo.fromEntity(userEntity);
     }
+
+    public UserCommand.UserInfo getMyInfo(String loginId) {
+        UserEntity userEntity = userRepository.findByLoginId(loginId);
+        if (userEntity == null) {
+            return null;
+        }
+        return UserCommand.UserInfo.fromEntity(userEntity);
+    }
 }

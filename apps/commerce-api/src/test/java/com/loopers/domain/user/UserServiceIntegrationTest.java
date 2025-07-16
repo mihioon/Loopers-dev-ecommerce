@@ -2,6 +2,7 @@ package com.loopers.domain.user;
 
 import com.loopers.support.error.CoreException;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ public class UserServiceIntegrationTest {
     /**
      * - [x]회원 가입시 User 저장이 수행된다.
      * - [x]이미 가입된 ID 로 회원가입 시도 시, 실패한다.
+     *
+     * - [x]해당 ID 의 회원이 존재할 경우, 회원 정보가 반환된다.
+     * - [x]해당 ID 의 회원이 존재하지 않을 경우, null 이 반환된다.
      */
     @Autowired
     private UserService userService;
@@ -67,5 +71,45 @@ public class UserServiceIntegrationTest {
         assertThrows(CoreException.class, () -> {
             userService.signUp(userCommand);
         });
+    }
+
+    @DisplayName("해당 ID 의 회원이 존재할 경우, 회원 정보가 반환된다.")
+    @Test
+    void returnsUserInformation_whenUserExists() {
+        // given
+        final String loginId = "test123456";
+        UserCommand.SignUp userCommand = new UserCommand.SignUp(
+                loginId,
+                "test",
+                "F",
+                "test@example.com",
+                "2025-01-01"
+        );
+        userService.signUp(userCommand);
+
+        // when
+        UserCommand.UserInfo userInfo = userService.getMyInfo(loginId);
+
+        // then
+        assertAll(
+                () -> assertThat(userInfo).isNotNull(),
+                () -> {
+                    Assertions.assertNotNull(userInfo);
+                    assertThat(userInfo.loginId()).isEqualTo(loginId);
+                }
+        );
+    }
+
+    @DisplayName("해당 ID 의 회원이 존재하지 않을 경우, null 이 반환된다.")
+    @Test
+    void returnsNull_whenUserDoesNotExist() {
+        // given
+        final String loginId = "test123456";
+
+        // when
+        UserCommand.UserInfo userInfo = userService.getMyInfo(loginId);
+
+        // then
+        assertThat(userInfo).isNull();
     }
 }
