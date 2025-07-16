@@ -2,8 +2,6 @@ package com.loopers.infrastructure.user;
 
 import com.loopers.domain.user.UserEntity;
 import com.loopers.domain.user.UserRepository;
-import com.loopers.support.error.CoreException;
-import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
