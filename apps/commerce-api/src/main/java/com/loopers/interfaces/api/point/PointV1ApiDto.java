@@ -16,4 +16,18 @@ public class PointV1ApiDto {
         }
     }
 
+    public record ChargePointRequest (
+            Long point
+    ) {
+    }
+
+    public record ChargePointResponse (
+            Long point
+    ) {
+        public static ChargePointResponse from(Long point) {
+            return new ChargePointResponse(
+                    point
+            );
+        }
+    }
 }
