@@ -26,4 +26,13 @@ public class UserService {
         }
         return UserCommand.UserInfo.fromEntity(userEntity);
     }
+
+    public Long getPoint(String loginId) {
+        UserEntity userEntity = userRepository.findByLoginId(loginId);
+        if(userEntity == null) {
+            return null;
+        }
+
+        return userRepository.findPointByLoginId(loginId);
+    }
 }

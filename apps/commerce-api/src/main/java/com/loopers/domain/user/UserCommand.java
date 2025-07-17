@@ -6,7 +6,8 @@ public class UserCommand {
             String name,
             String gender,
             String email,
-            String dob
+            String dob,
+            long point
     ) {
         public UserEntity toEntity() {
             return UserEntity.create(
@@ -14,7 +15,8 @@ public class UserCommand {
                     name,
                     gender,
                     email,
-                    dob
+                    dob,
+                    point
             );
         }
     }
@@ -24,7 +26,8 @@ public class UserCommand {
             String name,
             String gender,
             String email,
-            String dob
+            String dob,
+            Long point
     ) {
         public static UserInfo fromEntity(UserEntity userEntity) {
             return new UserInfo(
@@ -32,7 +35,8 @@ public class UserCommand {
                     userEntity.getName(),
                     userEntity.getGender(),
                     userEntity.getEmail(),
-                    userEntity.getDob()
+                    userEntity.getDob(),
+                    userEntity.getPoint()
             );
         }
     }

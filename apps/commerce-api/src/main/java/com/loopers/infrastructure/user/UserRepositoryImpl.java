@@ -19,4 +19,14 @@ public class UserRepositoryImpl implements UserRepository {
     public UserEntity findByLoginId(String loginId) {
         return userJpaRepository.findByLoginId(loginId).orElse(null);
     }
+
+    @Override
+    public Long findPointByLoginId(String loginId) {
+        UserEntity userEntity = userJpaRepository.findByLoginId(loginId).orElse(null);
+
+        if(userEntity == null) {
+            return null;
+        }
+        return userEntity.getPoint();
+    }
 }

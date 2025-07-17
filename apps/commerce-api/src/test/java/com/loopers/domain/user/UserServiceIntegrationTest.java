@@ -40,7 +40,8 @@ public class UserServiceIntegrationTest {
                 "test",
                 "F",
                 "test@example.com",
-                "2025-01-01"
+                "2025-01-01",
+                0L
         );
 
         // when
@@ -63,7 +64,8 @@ public class UserServiceIntegrationTest {
                 "test",
                 "F",
                 "test@example.com",
-                "2025-01-01"
+                "2025-01-01",
+                0L
         );
         userService.signUp(userCommand);
 
@@ -83,7 +85,8 @@ public class UserServiceIntegrationTest {
                 "test",
                 "F",
                 "test@example.com",
-                "2025-01-01"
+                "2025-01-01",
+                0L
         );
         userService.signUp(userCommand);
 
