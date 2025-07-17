@@ -31,4 +31,19 @@ public class PointV1ApiController implements PointV1ApiSpec {
         PointV1ApiDto.GetPointResponse response = PointV1ApiDto.GetPointResponse.from(point);
         return ApiResponse.success(response);
     }
+
+    @PostMapping("/charge")
+    public ApiResponse<PointV1ApiDto.ChargePointResponse> chargePoint(
+            @RequestHeader("X-USER-ID") String loginId,
+            @RequestBody PointV1ApiDto.ChargePointRequest chargePointRequest
+    ) {
+        if (loginId == null) {
+            throw new CoreException(ErrorType.BAD_REQUEST, "로그인 ID가 누락되었습니다.");
+        }
+
+        Long point = pointService.addPoint(loginId, chargePointRequest.point());
+
+        PointV1ApiDto.ChargePointResponse response = PointV1ApiDto.ChargePointResponse.from(point);
+        return ApiResponse.success(response);
+    }
 }
