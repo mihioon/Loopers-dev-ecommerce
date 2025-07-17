@@ -27,9 +27,6 @@ public class PointServiceIntegrationTest {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private UserRepository pointRepository;
-
     @DisplayName("해당 ID 의 회원이 존재할 경우, 보유 포인트가 반환된다.")
     @Test
     void returnsPoint_whenUserExists() {
