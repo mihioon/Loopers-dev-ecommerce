@@ -1,26 +1,20 @@
 package com.loopers.interfaces.api.user;
 
-import jakarta.transaction.Transactional;
+import com.loopers.support.E2EIntegrationTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.*;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-// 임의의 포트를 사용하여 테스트 실행
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Testcontainers
-@AutoConfigureMockMvc
-public class UserV1ApiE2ETest {
+
+public class UserV1ApiE2ETest extends E2EIntegrationTest {
     /**
      * - [x]회원 가입이 성공할 경우, 생성된 유저 정보를 응답으로 반환한다.
      * - [x]회원 가입 시에 성별이 없을 경우, `400 Bad Request` 응답을 반환한다.
@@ -29,17 +23,15 @@ public class UserV1ApiE2ETest {
      * - [x]존재하지 않는 ID 로 조회할 경우, `404 Not Found` 응답을 반환한다.
      */
 
+    @Autowired
+    private MockMvc mockMvc;
+
     @DisplayName("POST /api/v1/users")
     @Nested
     class SignUp {
-
-        @Autowired
-        private MockMvc mockMvc;
-
         private static final String ENDPOINT = "/api/v1/users";
 
         @DisplayName("회원 가입이 성공할 경우, 생성된 유저 정보를 응답으로 반환한다.")
-        @Transactional
         @Test
         void returnsUserInformation_whenSignUpSuccessful() throws Exception {
             // given
@@ -69,7 +61,6 @@ public class UserV1ApiE2ETest {
         }
 
         @DisplayName("회원 가입 시에 성별이 없을 경우, `400 Bad Request` 응답을 반환한다.")
-        @Transactional
         @ParameterizedTest
         @ValueSource(strings = {
                 """
@@ -119,14 +110,9 @@ public class UserV1ApiE2ETest {
     @DisplayName("POST /api/v1/users/me")
     @Nested
     class GetMyInfo {
-
-        @Autowired
-        private MockMvc mockMvc;
-
         private static final String ENDPOINT = "/api/v1/users/me";
 
         @DisplayName("내 정보 조회에 성공할 경우, 해당하는 유저 정보를 응답으로 반환한다.")
-        @Transactional
         @Test
         void returnsUserInformation_whenGetMyInfoSuccessful() throws Exception {
             // given
@@ -156,7 +142,6 @@ public class UserV1ApiE2ETest {
         }
 
         @DisplayName("존재하지 않는 ID 로 조회할 경우, `404 Not Found` 응답을 반환한다.")
-        @Transactional
         @Test
         void returnsNotFound_whenUserDoesNotExist() throws Exception {
             // given

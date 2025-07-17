@@ -1,6 +1,7 @@
 package com.loopers.interfaces.api.user;
 
 import com.loopers.domain.user.UserCommand;
+import com.loopers.domain.user.UserInfo;
 import jakarta.validation.constraints.NotNull;
 
 public class UserV1ApiDto {
@@ -41,7 +42,7 @@ public class UserV1ApiDto {
             F
         }
 
-        public static SignUpResponse from(UserCommand.UserInfo userInfo) {
+        public static SignUpResponse from(UserInfo userInfo) {
             return new SignUpResponse(
                     userInfo.loginId(),
                     userInfo.name(),

@@ -36,9 +36,8 @@ public class UserTest {
         final String dob = "2025-01-01";
 
         // when
-        final CoreException exception = assertThrows(CoreException.class, () -> {
-            UserEntity userEntity = UserEntity.create(loginId, name, gender, email, dob, 0L);
-        });
+        final CoreException exception = assertThrows(CoreException.class, () ->
+                UserEntity.create(loginId, name, gender, email, dob, 0L));
 
         // then
         assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
@@ -50,23 +49,17 @@ public class UserTest {
             "test",
             "test.example.com",
             "test.example",
-
             "@example.com",
             "@com",
-
             "test@",
             "test@.",
             "test@..",
-
             "test@com",
             "test@com.",
             "test@.com",
-
             "test @example.com",
             "test@ example.com",
-
             "test@@example.com",
-
             ""
     })
     void fail_whenEmailFormatIsInvalid(String email) {
@@ -77,9 +70,8 @@ public class UserTest {
         final String dob = "2025-01-01";
 
         // when
-        final CoreException exception = assertThrows(CoreException.class, () -> {
-            UserEntity userEntity = UserEntity.create(loginId, name, gender, email, dob, 0L);
-        });
+        final CoreException exception = assertThrows(CoreException.class, () ->
+                UserEntity.create(loginId, name, gender, email, dob, 0L));
 
         // then
         assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
@@ -106,12 +98,10 @@ public class UserTest {
         final String email = "test@example.com";
 
         // when
-        final CoreException exception = assertThrows(CoreException.class, () -> {
-            UserEntity userEntity = UserEntity.create(loginId, name, gender, email, dob, 0L);
-        });
+        final CoreException exception = assertThrows(CoreException.class, () ->
+                UserEntity.create(loginId, name, gender, email, dob, 0L));
 
         // then
         assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
     }
-
 }
