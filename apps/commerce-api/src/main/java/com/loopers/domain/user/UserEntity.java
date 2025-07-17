@@ -23,14 +23,16 @@ public class UserEntity extends BaseEntity {
     private String gender;
     private String email;
     private String dob;
+    private Long point;
 
     // constructor
-    private UserEntity(String loginId, String name, String gender, String email, String dob) {
+    private UserEntity(String loginId, String name, String gender, String email, String dob, long point) {
         this.loginId = loginId;
         this.name = name;
         this.gender = gender;
         this.email = email;
         this.dob = dob;
+        this.point = point;
     }
 
     // static factory method
@@ -39,7 +41,8 @@ public class UserEntity extends BaseEntity {
             String name,
             String gender,
             String email,
-            String dob
+            String dob,
+            long point
     ) {
         if (loginId == null || !loginId.matches(PATTERN_USER_ID)) {
             throw new CoreException(ErrorType.BAD_REQUEST, "ID는 영문 및 숫자 10자 이내로 입력해주세요.");
@@ -58,6 +61,6 @@ public class UserEntity extends BaseEntity {
             throw new CoreException(ErrorType.BAD_REQUEST, "성별을 입력해주세요.");
         }
 
-        return new UserEntity(loginId, name, gender, email, dob);
+        return new UserEntity(loginId, name, gender, email, dob, point);
     }
 }

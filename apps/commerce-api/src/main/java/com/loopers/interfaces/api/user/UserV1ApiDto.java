@@ -23,7 +23,8 @@ public class UserV1ApiDto {
                     name,
                     gender.toString(),
                     email,
-                    dob
+                    dob,
+                    0L
             );
         }
     }

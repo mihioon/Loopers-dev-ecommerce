@@ -37,7 +37,7 @@ public class UserTest {
 
         // when
         final CoreException exception = assertThrows(CoreException.class, () -> {
-            UserEntity userEntity = UserEntity.create(loginId, name, gender, email, dob);
+            UserEntity userEntity = UserEntity.create(loginId, name, gender, email, dob, 0L);
         });
 
         // then
@@ -78,7 +78,7 @@ public class UserTest {
 
         // when
         final CoreException exception = assertThrows(CoreException.class, () -> {
-            UserEntity userEntity = UserEntity.create(loginId, name, gender, email, dob);
+            UserEntity userEntity = UserEntity.create(loginId, name, gender, email, dob, 0L);
         });
 
         // then
@@ -107,7 +107,7 @@ public class UserTest {
 
         // when
         final CoreException exception = assertThrows(CoreException.class, () -> {
-            UserEntity userEntity = UserEntity.create(loginId, name, gender, email, dob);
+            UserEntity userEntity = UserEntity.create(loginId, name, gender, email, dob, 0L);
         });
 
         // then
