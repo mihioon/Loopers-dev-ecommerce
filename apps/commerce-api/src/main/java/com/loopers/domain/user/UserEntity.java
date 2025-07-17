@@ -63,4 +63,12 @@ public class UserEntity extends BaseEntity {
 
         return new UserEntity(loginId, name, gender, email, dob, point);
     }
+
+    public void addPoint(long point) {
+        if(point <= 0) {
+            throw new CoreException(ErrorType.BAD_REQUEST, "포인트는 0 이상이어야 합니다.");
+        }
+
+        this.point += point;
+    }
 }

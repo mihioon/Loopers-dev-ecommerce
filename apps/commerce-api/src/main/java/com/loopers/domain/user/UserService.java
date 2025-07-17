@@ -35,4 +35,14 @@ public class UserService {
 
         return userRepository.findPointByLoginId(loginId);
     }
+
+    public void addPoint(String loginId, long point) {
+        UserEntity userEntity = userRepository.findByLoginId(loginId);
+        if(userEntity == null) {
+            throw new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 사용자입니다.");
+        }
+
+        userEntity.addPoint(point);
+        userRepository.save(userEntity);
+    }
 }
