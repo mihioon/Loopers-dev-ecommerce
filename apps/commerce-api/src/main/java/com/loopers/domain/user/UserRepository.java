@@ -1,9 +1,13 @@
 package com.loopers.domain.user;
 
+import java.util.Optional;
+
 public interface UserRepository {
-    UserEntity save(UserEntity userEntity);
+    User save(User user);
 
-    UserEntity findByLoginId(String loginId);
+    Boolean existsBy(LoginId loginId);
 
-    Long findPointByLoginId(String loginId);
+    Optional<User> findById(Long userId);
+
+    Optional<User> findByLoginId(LoginId loginId);
 }

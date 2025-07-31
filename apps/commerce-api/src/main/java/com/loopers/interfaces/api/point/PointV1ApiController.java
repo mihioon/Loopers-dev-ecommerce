@@ -1,6 +1,8 @@
 package com.loopers.interfaces.api.point;
 
-import com.loopers.domain.user.UserService;
+import com.loopers.domain.point.PointCommand;
+import com.loopers.domain.point.PointInfo;
+import com.loopers.domain.point.PointService;
 import com.loopers.interfaces.api.ApiResponse;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
@@ -12,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/points")
 public class PointV1ApiController implements PointV1ApiSpec {
 
-    private final UserService pointService;
+    private final PointService pointService;
 
     @GetMapping
     public ApiResponse<PointV1ApiDto.GetPointResponse> getPoint(
@@ -23,12 +25,12 @@ public class PointV1ApiController implements PointV1ApiSpec {
             throw new CoreException(ErrorType.BAD_REQUEST, "로그인 ID가 누락되었습니다.");
         }
 
-        Long point = pointService.getPoint(loginId);
-        if (point == null) {
+        PointInfo pointInfo = pointService.get(1L);
+        if (pointInfo == null) {
             return ApiResponse.success(new PointV1ApiDto.GetPointResponse(0L));
         }
 
-        PointV1ApiDto.GetPointResponse response = PointV1ApiDto.GetPointResponse.from(point);
+        PointV1ApiDto.GetPointResponse response = PointV1ApiDto.GetPointResponse.from(pointInfo);
         return ApiResponse.success(response);
     }
 
@@ -41,9 +43,10 @@ public class PointV1ApiController implements PointV1ApiSpec {
             throw new CoreException(ErrorType.BAD_REQUEST, "로그인 ID가 누락되었습니다.");
         }
 
-        Long point = pointService.addPoint(loginId, chargePointRequest.point());
+        PointCommand.Charge command = new PointCommand.Charge(1L, chargePointRequest.point());
+        PointInfo pointInfo = pointService.charge(command);
 
-        PointV1ApiDto.ChargePointResponse response = PointV1ApiDto.ChargePointResponse.from(point);
+        PointV1ApiDto.ChargePointResponse response = PointV1ApiDto.ChargePointResponse.from(pointInfo);
         return ApiResponse.success(response);
     }
 }

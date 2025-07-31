@@ -1,11 +1,12 @@
 package com.loopers.interfaces.api.user;
 
-import com.loopers.domain.user.UserCommand;
-import com.loopers.domain.user.UserService;
+import com.loopers.application.auth.AuthFacade;
+import com.loopers.application.user.UserCriteria;
+import com.loopers.application.user.UserFacade;
+import com.loopers.application.user.UserResult;
 import com.loopers.interfaces.api.ApiResponse;
-import com.loopers.support.error.CoreException;
-import com.loopers.support.error.ErrorType;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,36 +15,30 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/users")
 public class UserV1ApiController implements UserV1ApiSpec {
 
-    private final UserService userService;
+    private final UserFacade userFacade;
+    private final AuthFacade authFacade;
 
     @PostMapping
     @Override
-    public ApiResponse<UserV1ApiDto.SignUpResponse> signUp(
-            @RequestBody @Valid UserV1ApiDto.SignUpRequest signUpRequest
+    public ApiResponse<Register.V1.Response> register(
+            @RequestBody @Valid Register.V1.Request registerRequest
     ) {
-        UserCommand.SignUp userCommand = signUpRequest.toCommand();
-        UserCommand.UserInfo userInfo = userService.signUp(userCommand);
+        UserCriteria.Register criteria = registerRequest.toCriteria();
+        UserResult result = userFacade.register(criteria);
 
-        UserV1ApiDto.SignUpResponse response = UserV1ApiDto.SignUpResponse.from(userInfo);
+        Register.V1.Response response = Register.V1.Response.from(result);
         return ApiResponse.success(response);
     }
 
     @GetMapping("/me")
-    public ApiResponse<UserV1ApiDto.SignUpResponse> getMyInfo(
-            @RequestHeader("X-USER-ID") String loginId
+    public ApiResponse<GetUser.V1.Response> getUser(
+            @NotNull @RequestHeader("X-USER-ID") String loginId
     ) {
-        if (loginId == null) {
-            throw new CoreException(ErrorType.BAD_REQUEST, "로그인 ID가 누락되었습니다.");
-        }
+        Long userId = authFacade.getUserId(loginId);
 
-        UserCommand.UserInfo userInfo = userService.getMyInfo(loginId);
+        UserResult result = userFacade.getUser(userId);
 
-        if (userInfo == null || userInfo.loginId() == null) {
-            throw new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 사용자입니다.");
-        }
-
-        UserV1ApiDto.SignUpResponse response = UserV1ApiDto.SignUpResponse.from(userInfo);
+        GetUser.V1.Response response = GetUser.V1.Response.from(result);
         return ApiResponse.success(response);
-
     }
 }

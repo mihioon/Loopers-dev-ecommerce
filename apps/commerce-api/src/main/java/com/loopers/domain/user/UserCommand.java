@@ -1,24 +1,13 @@
 package com.loopers.domain.user;
 
 public class UserCommand {
-    public record SignUp(
+    public record Register(
             String loginId,
             String name,
             String gender,
             String email,
-            String dob,
-            long point
+            String dob
     ) {
-        public UserEntity toEntity() {
-            return UserEntity.create(
-                    loginId,
-                    name,
-                    gender,
-                    email,
-                    dob,
-                    point
-            );
-        }
     }
 
     public record UserInfo(
