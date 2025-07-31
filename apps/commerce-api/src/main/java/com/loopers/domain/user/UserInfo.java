@@ -1,21 +1,35 @@
 package com.loopers.domain.user;
 
+import java.time.LocalDate;
+
 public record UserInfo(
-        String loginId,
+        Long id,
+        LoginId loginId,
         String name,
-        String gender,
-        String email,
-        String dob,
-        Long point
+        Gender gender,
+        Email email,
+        BirthDate dob
 ) {
-    public static UserInfo fromEntity(UserEntity userEntity) {
+    public static UserInfo from(final User user) {
         return new UserInfo(
-                userEntity.getLoginId(),
-                userEntity.getName(),
-                userEntity.getGender(),
-                userEntity.getEmail(),
-                userEntity.getDob(),
-                userEntity.getPoint()
+                user.getId(),
+                user.getLoginId(),
+                user.getName(),
+                user.getGender(),
+                user.getEmail(),
+                user.getDob()
         );
+    }
+
+    public String fetchLoginId() {
+        return loginId.getLoginId();
+    }
+
+    public String fetchEmail() {
+        return email.getEmail();
+    }
+
+    public LocalDate fetchBirthDate() {
+        return dob.getDob();
     }
 }

@@ -1,5 +1,7 @@
 package com.loopers.interfaces.api.point;
 
+import com.loopers.domain.point.PointInfo;
+
 public class PointV1ApiDto {
     public record GetPointRequest (
             String userId
@@ -9,9 +11,9 @@ public class PointV1ApiDto {
     public record GetPointResponse (
             Long point
     ) {
-        public static GetPointResponse from(Long point) {
+        public static GetPointResponse from(PointInfo pointInfo) {
             return new GetPointResponse(
-                    point
+                    pointInfo.balance().getBalance()
             );
         }
     }
@@ -24,9 +26,9 @@ public class PointV1ApiDto {
     public record ChargePointResponse (
             Long point
     ) {
-        public static ChargePointResponse from(Long point) {
+        public static ChargePointResponse from(PointInfo pointInfo) {
             return new ChargePointResponse(
-                    point
+                    pointInfo.balance().getBalance()
             );
         }
     }

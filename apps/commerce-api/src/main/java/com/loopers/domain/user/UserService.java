@@ -12,41 +12,26 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional(rollbackFor = Exception.class)
-    public UserInfo signUp(UserCommand.SignUp signUpCommand) {
-        if(userRepository.findByLoginId(signUpCommand.loginId()) != null) {
+    public UserInfo register(final UserCommand.Register command) {
+        final User user = new User(
+                new LoginId(command.loginId()),
+                new Email(command.email()),
+                new BirthDate(command.dob()),
+                Gender.from(command.gender()),
+                command.name()
+        );
+
+        if(userRepository.existsBy(user.getLoginId())) {
             throw new CoreException(ErrorType.CONFLICT, "이미 가입된 ID 입니다.");
         }
 
-        UserEntity userEntity = userRepository.save(signUpCommand.toEntity());
-        return UserInfo.fromEntity(userEntity);
+        return UserInfo.from(userRepository.save(user));
     }
 
-    public UserInfo getMyInfo(String loginId) {
-        UserEntity userEntity = userRepository.findByLoginId(loginId);
-        if (userEntity == null) {
-            return null;
-        }
-        return UserInfo.fromEntity(userEntity);
-    }
-
-    public Long getPoint(String loginId) {
-        UserEntity userEntity = userRepository.findByLoginId(loginId);
-        if(userEntity == null) {
-            return null;
-        }
-
-        return userRepository.findPointByLoginId(loginId);
-    }
-
-    public Long addPoint(String loginId, long point) {
-        UserEntity userEntity = userRepository.findByLoginId(loginId);
-        if(userEntity == null) {
-            throw new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 사용자입니다.");
-        }
-
-        userEntity.addPoint(point);
-        userRepository.save(userEntity);
-
-        return userEntity.getPoint();
+    @Transactional(readOnly = true)
+    public UserInfo get(final Long userId) {
+        return userRepository.findById(userId)
+                .map(UserInfo::from)
+                .orElse(null);
     }
 }
