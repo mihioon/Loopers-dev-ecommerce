@@ -1,7 +1,7 @@
 package com.loopers.interfaces.api.brand;
 
-import com.loopers.application.brand.BrandResult;
-import com.loopers.domain.brand.BrandImageInfo;
+import com.loopers.application.catalog.brand.BrandResult;
+import com.loopers.domain.catalog.brand.BrandInfo;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ public record GetBrand() {
                 Long id,
                 String name,
                 String description,
-                List<BrandImageInfo> images
+                List<BrandInfo.BrandImageInfo> images
         ) {
             public static Response from(BrandResult brandResult) {
                 return new Response(

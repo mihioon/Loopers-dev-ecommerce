@@ -1,8 +1,10 @@
 package com.loopers.interfaces.api.product;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.loopers.domain.product.Product;
-import com.loopers.domain.product.ProductRepository;
+import com.loopers.domain.catalog.product.Product;
+import com.loopers.domain.catalog.product.ProductRepository;
+import com.loopers.domain.catalog.brand.Brand;
+import com.loopers.domain.catalog.brand.BrandRepository;
 import com.loopers.domain.like.ProductLike;
 import com.loopers.domain.like.ProductLikeRepository;
 import com.loopers.domain.user.*;
@@ -32,6 +34,8 @@ public class ProductV1ApiE2ETest extends E2EIntegrationTest {
     private ProductLikeRepository productLikeRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private BrandRepository brandRepository;
 
     @DisplayName("GET /api/v1/products")
     @Nested
@@ -148,6 +152,9 @@ public class ProductV1ApiE2ETest extends E2EIntegrationTest {
         @Transactional
         void returnsProductDetail_whenGetProductSuccessful() throws Exception {
             // given
+            // 브랜드 데이터 생성
+            Brand brand = brandRepository.save(new Brand("테스트 브랜드", "test@brand.com"));
+            
             final Product product = new Product(
                     "상세 조회 테스트 상품",
                     "상품 상세 설명",
@@ -161,7 +168,7 @@ public class ProductV1ApiE2ETest extends E2EIntegrationTest {
             ));
 
             product.setDetail(new Product.ProductDetail(
-                    null, "description"
+                    null, "테스트 상품 상세 설명"
             ));
             
             Product savedProduct = productRepository.save(product);
@@ -190,6 +197,9 @@ public class ProductV1ApiE2ETest extends E2EIntegrationTest {
         @Transactional
         void returnsProductDetailWithLikeStatus_whenUserIsLoggedIn() throws Exception {
             // given
+            // 브랜드 데이터 생성
+            Brand brand = brandRepository.save(new Brand("테스트 브랜드", "test@brand.com"));
+            
             final Product product = new Product(
                     "상세 조회 테스트 상품",
                     "상품 상세 설명",
@@ -203,7 +213,7 @@ public class ProductV1ApiE2ETest extends E2EIntegrationTest {
             ));
 
             product.setDetail(new Product.ProductDetail(
-                    null, "description"
+                    null, "테스트 상품 상세 설명"
             ));
 
             Product savedProduct = productRepository.save(product);

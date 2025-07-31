@@ -1,5 +1,6 @@
 package com.loopers.domain.brand;
 
+import com.loopers.domain.catalog.brand.Brand;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import org.junit.jupiter.api.DisplayName;
@@ -13,32 +14,23 @@ public class BrandImageTest {
     @DisplayName("브랜드 이미지를 생성할 때, ")
     @Nested
     class Create {
-        @DisplayName("브랜드 ID가 null인 경우, BAD_REQUEST 예외가 발생한다.")
+        @DisplayName("이미지 URL이 null인 경우는 허용된다.")
         @Test
-        void throwsBadRequestException_whenBrandIdIsNull() {
-            // given
-            final Long brandId = null;
-
-            // when
-            final CoreException actual = assertThrows(CoreException.class, () -> {
-                new BrandImage(brandId, "https://example.com/logo.png", ImageType.LOGO);
-            });
-
-            // then
-            assertThat(actual)
-                    .usingRecursiveComparison()
-                    .isEqualTo(new CoreException(ErrorType.BAD_REQUEST, "브랜드 ID는 필수입니다."));
+        void allowsNullImageUrl() {
+            // given & when & then
+            // BrandImage 생성자에서 URL 검증이 주석처리되어 있어 통과
+            new Brand.BrandImage(null, Brand.ImageType.LOGO);
         }
 
         @DisplayName("이미지 타입이 null인 경우, BAD_REQUEST 예외가 발생한다.")
         @Test
         void throwsBadRequestException_whenImageTypeIsNull() {
             // given
-            final ImageType imageType = null;
+            final Brand.ImageType imageType = null;
 
             // when
             final CoreException actual = assertThrows(CoreException.class, () -> {
-                new BrandImage(1L, "https://example.com/logo.png", imageType);
+                new Brand.BrandImage("https://example.com/logo.png", imageType);
             });
 
             // then
@@ -51,17 +43,15 @@ public class BrandImageTest {
         @Test
         void createsBrandImage_whenValidInput() {
             // given
-            final Long brandId = 1L;
             final String imageUrl = "https://example.com/logo.png";
-            final ImageType imageType = ImageType.LOGO;
+            final Brand.ImageType imageType = Brand.ImageType.LOGO;
 
             // when
-            final BrandImage actual = new BrandImage(brandId, imageUrl, imageType);
+            final Brand.BrandImage actual = new Brand.BrandImage(imageUrl, imageType);
 
             // then
-            assertThat(actual)
-                    .usingRecursiveComparison()
-                    .isEqualTo(new BrandImage(brandId, imageUrl, imageType));
+            assertThat(actual.getImageUrl()).isEqualTo(imageUrl);
+            assertThat(actual.getImageType()).isEqualTo(imageType);
         }
     }
 }

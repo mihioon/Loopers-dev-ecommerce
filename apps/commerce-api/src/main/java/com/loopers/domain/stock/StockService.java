@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Component
 public class StockService {
@@ -24,6 +26,13 @@ public class StockService {
         return productStockRepository.findByProductId(productId)
                 .map(StockInfo::from)
                 .orElse(new StockInfo(null, productId, 0));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public List<StockInfo> reduceAllStocks(final Long orderId, final List<StockCommand.Reduce> commands) {
+        return commands.stream()
+                .map(this::reduceStock)
+                .toList();
     }
 
     @Transactional(rollbackFor = Exception.class)

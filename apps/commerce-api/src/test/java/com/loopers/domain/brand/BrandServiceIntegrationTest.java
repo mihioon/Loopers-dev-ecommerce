@@ -1,5 +1,6 @@
 package com.loopers.domain.brand;
 
+import com.loopers.domain.catalog.brand.*;
 import com.loopers.support.IntegrationTest;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
@@ -29,9 +30,9 @@ public class BrandServiceIntegrationTest extends IntegrationTest {
         void saveBrand_whenCreateWithNewName() {
             // given
             final String brandName = "테스트브랜드";
-            List<BrandImageCommand.Create> images = List.of(
-                    new BrandImageCommand.Create(null, "https://example.com/logo.png", ImageType.LOGO),
-                    new BrandImageCommand.Create(null, "https://example.com/banner.png", ImageType.BANNER)
+            List<BrandCommand.BrandImageCommand.Create> images = List.of(
+                    new BrandCommand.BrandImageCommand.Create(null, "https://example.com/logo.png", Brand.ImageType.LOGO),
+                    new BrandCommand.BrandImageCommand.Create(null, "https://example.com/banner.png", Brand.ImageType.BANNER)
             );
             BrandCommand.Create command = new BrandCommand.Create(brandName, "테스트 브랜드 설명", images);
 
@@ -43,7 +44,7 @@ public class BrandServiceIntegrationTest extends IntegrationTest {
             assertThat(actual.description()).isEqualTo("테스트 브랜드 설명");
             assertThat(actual.images()).hasSize(2);
             assertThat(actual.images()).extracting("imageType")
-                    .containsExactly(ImageType.LOGO, ImageType.BANNER);
+                    .containsExactly(Brand.ImageType.LOGO, Brand.ImageType.BANNER);
         }
 
         @DisplayName("이미지 없이 브랜드만 생성할 경우, 성공한다.")
@@ -88,7 +89,7 @@ public class BrandServiceIntegrationTest extends IntegrationTest {
         void returnsBrandInformation_whenBrandExists() {
             // given
             Brand brand = brandRepository.save(new Brand("brand", "description"));
-            List<BrandImageInfo> images = List.of();
+            List<BrandInfo.BrandImageInfo> images = List.of();
 
             // when
             BrandInfo actual = sut.get(brand.getId());
