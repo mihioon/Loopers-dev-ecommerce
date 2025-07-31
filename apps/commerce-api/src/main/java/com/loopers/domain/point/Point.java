@@ -36,4 +36,8 @@ public class Point extends BaseEntity {
     public void charge(final Long point) {
         this.balance.charge(point);
     }
+
+    public void deduct(final Long point) {
+        this.balance.deduct(point);
+    }
 }

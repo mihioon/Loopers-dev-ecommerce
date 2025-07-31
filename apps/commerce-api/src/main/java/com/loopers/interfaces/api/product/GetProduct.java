@@ -1,6 +1,7 @@
 package com.loopers.interfaces.api.product;
 
-import com.loopers.application.product.ProductResult;
+import com.loopers.application.catalog.product.ProductResult;
+import com.loopers.domain.catalog.brand.BrandInfo;
 import java.math.BigDecimal;
 
 public record GetProduct() {
@@ -13,6 +14,7 @@ public record GetProduct() {
                 BigDecimal price,
                 Integer stock,
                 Long brandId,
+                BrandInfo brandInfo,
                 String category,
                 String imageUrl,
                 Long likeCount,
@@ -26,6 +28,7 @@ public record GetProduct() {
                         productResult.price(),
                         productResult.quantity(),
                         productResult.brandId(),
+                        productResult.brandInfo(),
                         productResult.category(),
                         productResult.images() != null && !productResult.images().isEmpty() 
                             ? productResult.images().getFirst().imageUrl()

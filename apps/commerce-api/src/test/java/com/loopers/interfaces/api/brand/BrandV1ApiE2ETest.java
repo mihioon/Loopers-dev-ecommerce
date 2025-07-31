@@ -1,8 +1,8 @@
 package com.loopers.interfaces.api.brand;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.loopers.domain.brand.Brand;
-import com.loopers.domain.brand.BrandRepository;
+import com.loopers.domain.catalog.brand.Brand;
+import com.loopers.domain.catalog.brand.BrandRepository;
 import com.loopers.support.E2EIntegrationTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

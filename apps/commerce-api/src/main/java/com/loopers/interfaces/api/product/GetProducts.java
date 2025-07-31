@@ -1,7 +1,7 @@
 package com.loopers.interfaces.api.product;
 
-import com.loopers.application.product.ProductCriteria;
-import com.loopers.application.product.ProductResult;
+import com.loopers.application.catalog.product.ProductCriteria;
+import com.loopers.application.catalog.product.ProductResult;
 
 import java.math.BigDecimal;
 import java.util.List;
