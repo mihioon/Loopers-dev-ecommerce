@@ -5,7 +5,10 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface ProductLikeRepository {
+
     ProductLike save(ProductLike productLike);
+
+    void deleteByProductIdAndUserId(Long productId, Long userId);
 
     Optional<ProductLike> findById(Long id);
 
@@ -14,4 +17,6 @@ public interface ProductLikeRepository {
     Map<Long, Long> getLikeCounts(List<Long> productIds);
 
     boolean isLikedByUser(Long productIds, Long userId);
+
+    List<ProductLike> findByUserId(Long userId);
 }
