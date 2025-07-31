@@ -14,7 +14,7 @@ public class StockService {
 
     @Transactional(rollbackFor = Exception.class)
     public StockInfo initializeStock(final StockCommand.Initialize command) {
-        final ProductStock stock = new ProductStock(command.productId(), command.initialQuantity(), 0);
+        final ProductStock stock = new ProductStock(command.productId(), command.initialQuantity());
         final ProductStock savedStock = productStockRepository.save(stock);
         return StockInfo.from(savedStock);
     }
@@ -23,21 +23,17 @@ public class StockService {
     public StockInfo getStock(final Long productId) {
         return productStockRepository.findByProductId(productId)
                 .map(StockInfo::from)
-                .orElse(new StockInfo(null, productId, 0, 0, 0));
+                .orElse(new StockInfo(null, productId, 0));
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void adjustStock(final StockCommand.Adjustment command) {
+    public StockInfo reduceStock(final StockCommand.Reduce command) {
         final ProductStock stock = productStockRepository.findByProductId(command.productId())
                 .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "상품 재고를 찾을 수 없습니다."));
 
-        switch (command.operation()) {
-            case ADD -> stock.addStock(command.amount());
-            case REDUCE -> stock.reduceStock(command.amount());
-            case RESERVE -> stock.reserveStock(command.amount());
-            case RELEASE_RESERVED -> stock.releaseReservedStock(command.amount());
-        }
-
-        productStockRepository.save(stock);
+        stock.reduceStock(command.amount());
+        final ProductStock savedStock = productStockRepository.save(stock);
+        return StockInfo.from(savedStock);
     }
+
 }

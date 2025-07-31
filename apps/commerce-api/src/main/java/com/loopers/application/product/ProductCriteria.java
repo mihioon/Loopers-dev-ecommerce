@@ -1,7 +1,6 @@
 package com.loopers.application.product;
 
 import com.loopers.domain.product.ProductCommand;
-import com.loopers.domain.stock.StockCommand;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -40,11 +39,5 @@ public class ProductCriteria {
             Integer initialStock,
             List<ProductCommand.ImageCommand> images,
             ProductCommand.DetailCommand detail
-    ) {}
-    
-    public record StockAdjustment(
-            Long productId,
-            Integer amount,
-            StockCommand.StockOperationType operation
     ) {}
 }

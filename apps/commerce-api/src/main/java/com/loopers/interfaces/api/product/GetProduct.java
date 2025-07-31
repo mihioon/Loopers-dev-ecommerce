@@ -24,11 +24,11 @@ public record GetProduct() {
                         productResult.name(),
                         productResult.description(),
                         productResult.price(),
-                        productResult.availableQuantity(),
+                        productResult.quantity(),
                         productResult.brandId(),
                         productResult.category(),
                         productResult.images() != null && !productResult.images().isEmpty() 
-                            ? productResult.images().get(0).imageUrl() 
+                            ? productResult.images().getFirst().imageUrl()
                             : null,
                         productResult.likeCount(),
                         productResult.isLikedByUser()

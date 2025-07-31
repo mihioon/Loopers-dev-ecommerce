@@ -66,7 +66,7 @@ public class ProductResult{
             BigDecimal price,
             String category,
             Long brandId,
-            Integer availableQuantity,
+            Integer quantity,
             List<ImageInfo> images,
             Long likeCount,
             Boolean isLikedByUser
@@ -84,7 +84,7 @@ public class ProductResult{
                     productInfo.price(),
                     productInfo.category(),
                     productInfo.brandId(),
-                    stockInfo.availableQuantity(),
+                    stockInfo.quantity(),
                     productInfo.images().stream()
                             .map(ProductResult.ImageInfo::from)
                             .toList(),
