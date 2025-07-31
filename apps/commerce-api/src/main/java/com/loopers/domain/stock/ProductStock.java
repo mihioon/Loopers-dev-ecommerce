@@ -62,7 +62,7 @@ public class ProductStock extends BaseEntity {
         }
     }
     
-    private void validateSufficientStock(final Integer amount) {
+    void validateSufficientStock(final Integer amount) {
         if (this.quantity < amount) {
             throw new CoreException(ErrorType.BAD_REQUEST, 
                 String.format("재고가 부족합니다. 현재: %d, 요청: %d", this.quantity, amount));

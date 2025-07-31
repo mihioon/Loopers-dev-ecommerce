@@ -45,4 +45,21 @@ public class StockService {
         return StockInfo.from(savedStock);
     }
 
+    //validateAndReduceStocks
+    @Transactional(rollbackFor = Exception.class)
+    public List<StockInfo> validateAndReduceStocks(final List<StockCommand.Reduce> commands) {
+        commands.forEach(this::validateStock);
+
+        return commands.stream()
+                .map(this::reduceStock)
+                .toList();
+    }
+
+    private void validateStock(final StockCommand.Reduce command) {
+        final ProductStock stock = productStockRepository.findByProductId(command.productId())
+                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "상품 재고를 찾을 수 없습니다."));
+
+        stock.validateSufficientStock(command.amount());
+    }
+
 }

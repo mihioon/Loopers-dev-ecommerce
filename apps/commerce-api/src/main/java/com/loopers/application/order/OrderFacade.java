@@ -10,11 +10,7 @@ import com.loopers.domain.payment.PaymentCommand;
 import com.loopers.domain.payment.PaymentService;
 import com.loopers.domain.point.PointService;
 import com.loopers.domain.point.PointCommand;
-import com.loopers.domain.stock.StockCommand;
-import com.loopers.domain.stock.StockInfo;
 import com.loopers.domain.stock.StockService;
-import com.loopers.support.error.CoreException;
-import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,18 +39,7 @@ public class OrderFacade {
                 .toList();
 
         // 2. 재고 확인 및 차감
-        List<StockCommand.Reduce> reduceCommands = criteria.items().stream()
-                .map(item -> {
-                    // 재고 확인
-                    StockInfo stockInfo = stockService.getStock(item.productId());
-                    if (stockInfo.quantity() < item.quantity()) {
-                        throw new CoreException(ErrorType.BAD_REQUEST, "재고가 부족합니다.");
-                    }
-                    return new StockCommand.Reduce(item.productId(), item.quantity());
-                })
-                .toList();
-        
-        stockService.reduceAllStocks(null, reduceCommands); // orderId는 아직 없으므로 null
+        stockService.validateAndReduceStocks(criteria.toStockReduceCommands());
 
         // 3. 주문 생성 (이미 검증된 상품 정보와 가격으로)
         OrderCommand.Create orderCommand = criteria.toCommand();
