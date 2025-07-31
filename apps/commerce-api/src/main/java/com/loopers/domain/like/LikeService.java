@@ -1,6 +1,7 @@
 package com.loopers.domain.like;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,8 +13,21 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Component
 public class LikeService {
-    
+    private final LikeTransactionHelper likeTransactionHelper;
     private final ProductLikeRepository productLikeRepository;
+
+    public void like(final LikeCommand.Like command) {
+        try {
+            likeTransactionHelper.saveLike(command);
+        } catch (DataIntegrityViolationException e) {
+            return;
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void unlike(final LikeCommand.Unlike command) {
+        productLikeRepository.deleteByProductIdAndUserId(command.productId(), command.userId());
+    }
 
     @Transactional(readOnly = true)
     public Long getLikeCount(final Long productId) {
@@ -43,5 +57,10 @@ public class LikeService {
         });
 
         return new LikeCountInfo(productLikeCounts);
+    }
+
+    @Transactional(readOnly = true)
+    public UserLikeProductInfo getUserLikeProducts(final Long userId) {
+        return UserLikeProductInfo.from(productLikeRepository.findByUserId(userId));
     }
 }

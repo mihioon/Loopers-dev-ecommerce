@@ -22,13 +22,18 @@ public class ProductLikeRepositoryImpl implements ProductLikeRepository {
     }
 
     @Override
+    public void deleteByProductIdAndUserId(Long productId, Long userId) {
+        productLikeJpaRepository.deleteByProductIdAndUserId(productId, userId);
+    }
+
+    @Override
     public Optional<ProductLike> findById(Long id) {
         return productLikeJpaRepository.findById(id);
     }
 
     @Override
-    public Long getLikeCount(Long productIds) {
-        return productLikeJpaRepository.countByProductId(productIds);
+    public Long getLikeCount(Long productId) {
+        return productLikeJpaRepository.countByProductId(productId);
     }
 
     public Map<Long, Long> getLikeCounts(List<Long> productIds) {
@@ -51,5 +56,10 @@ public class ProductLikeRepositoryImpl implements ProductLikeRepository {
 
     public boolean isLikedByUser(Long productId, Long userId) {
         return productLikeJpaRepository.existsByProductIdAndUserId(productId, userId);
+    }
+
+    @Override
+    public List<ProductLike> findByUserId(Long userId) {
+        return productLikeJpaRepository.findByUserId(userId);
     }
 }

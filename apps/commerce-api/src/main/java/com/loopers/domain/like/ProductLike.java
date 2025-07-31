@@ -7,7 +7,8 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-@Table(name = "product_like")
+@Table(name = "product_like",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"product_id", "user_id"}))
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductLike extends BaseEntity {
