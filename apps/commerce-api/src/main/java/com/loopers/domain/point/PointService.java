@@ -33,4 +33,14 @@ public class PointService {
 
         return PointInfo.from(point);
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    public PointInfo deduct(PointCommand.Deduct command) {
+        Point point = pointRepository.findByUserId(command.userId())
+                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 사용자입니다."));
+
+        point.deduct(command.amount());
+
+        return PointInfo.from(point);
+    }
 }

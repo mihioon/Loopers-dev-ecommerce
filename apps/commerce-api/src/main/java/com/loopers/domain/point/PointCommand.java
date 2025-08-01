@@ -13,4 +13,10 @@ public class PointCommand {
             Long amount
     ) {
     }
+
+    public record Deduct(
+            Long userId,
+            Long amount
+    ) {
+    }
 }
