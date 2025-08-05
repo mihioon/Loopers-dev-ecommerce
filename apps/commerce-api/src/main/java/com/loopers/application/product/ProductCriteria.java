@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class ProductCriteria {
-    public record Summery(
+    public record Summary(
             String category,
             Long brandId,
             String sortType,
@@ -15,11 +15,11 @@ public class ProductCriteria {
             int size,
             String loginId
     ) {
-        public ProductQuery.Summery toCommand() {
-            return new ProductQuery.Summery(
+        public ProductQuery.Summary toCommand() {
+            return new ProductQuery.Summary(
                     category,
                     brandId,
-                    ProductQuery.Summery.SortType.from(sortType),
+                    ProductQuery.Summary.SortType.from(sortType),
                     page,
                     size
             );

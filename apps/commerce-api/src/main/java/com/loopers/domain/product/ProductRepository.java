@@ -9,7 +9,7 @@ public interface ProductRepository {
     Product save(Product product);
     Optional<Product> findById(Long id);
 
-    List<Product> findProductsWithSort(ProductQuery.Summery command);
+    List<Product> findProductsWithSort(ProductQuery.Summary command);
     long countProductsWithFilter(String category, Long brandId);
     
     Optional<Product> findByIdWithImagesAndDetail(Long id);

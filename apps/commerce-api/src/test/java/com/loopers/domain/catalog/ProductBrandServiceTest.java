@@ -78,10 +78,10 @@ class ProductBrandServiceTest {
 
     @DisplayName("상품 목록 조회가 정상적으로 동작한다")
     @Test
-    void getSummery_Success() {
+    void getSummary_Success() {
         // given
-        ProductQuery.Summery command = new ProductQuery.Summery(
-                null, null, ProductQuery.Summery.SortType.LATEST, 0, 10
+        ProductQuery.Summary command = new ProductQuery.Summary(
+                null, null, ProductQuery.Summary.SortType.LATEST, 0, 10
         );
         
         List<Product> products = List.of(product);
@@ -89,7 +89,7 @@ class ProductBrandServiceTest {
         given(productRepository.countProductsWithFilter(null, null)).willReturn(1L);
 
         // when
-        ProductInfo.Summery result = productBrandService.getSummery(command);
+        ProductInfo.Summary result = productBrandService.getSummary(command);
 
         // then
         assertThat(result.products()).hasSize(1);

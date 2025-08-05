@@ -9,19 +9,19 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class ProductResult{
-    public record Summery(
-            List<Summery.Item> products,
+    public record Summary(
+            List<Summary.Item> products,
             int currentPage,
             int totalPages,
             long totalElements,
             boolean hasNext
     ) {
-        public static Summery from(
-                ProductInfo.Summery productInfo,
+        public static Summary from(
+                ProductInfo.Summary productInfo,
                 LikeCountInfo likeCount,
                 LikeCountInfo isLikedByUser
         ) {
-            return new Summery(
+            return new Summary(
                     productInfo.products().stream()
                             .map(item -> Item.from(item, 
                                     likeCount != null ? likeCount.likeCounts().get(item.id()) : null,
@@ -45,8 +45,8 @@ public class ProductResult{
                 Long likeCount,
                 Boolean isLikedByUser
         ) {
-            public static Summery.Item from(ProductInfo.Summery.Item productInfo, Long likeCount, Boolean isLikedByUser) {
-                return new Summery.Item(
+            public static Summary.Item from(ProductInfo.Summary.Item productInfo, Long likeCount, Boolean isLikedByUser) {
+                return new Summary.Item(
                         productInfo.id(),
                         productInfo.name(),
                         productInfo.description(),

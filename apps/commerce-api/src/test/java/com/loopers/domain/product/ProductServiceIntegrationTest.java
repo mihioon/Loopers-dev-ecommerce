@@ -93,12 +93,12 @@ public class ProductServiceIntegrationTest extends IntegrationTest {
 
     @DisplayName("상품 목록 조회")
     @Nested
-    class GetSummery {
+    class GetSummary {
         
         @DisplayName("정렬 조건으로 상품 목록 조회 시, 정렬된 상품 목록이 반환된다.")
         @ParameterizedTest
         @ValueSource(strings = {"latest", "price_asc"})
-        void getSummery_whenSortCommand(String sortType) {
+        void getSummary_whenSortCommand(String sortType) {
             // given
             productRepository.save(new Product(
                     "상품 A", "설명", BigDecimal.valueOf(10000), "의류", 1L
@@ -111,27 +111,27 @@ public class ProductServiceIntegrationTest extends IntegrationTest {
             ));
 
             // when
-            final ProductInfo.Summery actual = sut.getSummery(new ProductQuery.Summery(
+            final ProductInfo.Summary actual = sut.getSummary(new ProductQuery.Summary(
                     null,
                     null,
-                    ProductQuery.Summery.SortType.from(sortType),
+                    ProductQuery.Summary.SortType.from(sortType),
                     0,
                     10
             ));
 
             // then
             if(sortType.equals("latest")) {
-                assertThat(actual.products()).extracting(ProductInfo.Summery.Item::name)
+                assertThat(actual.products()).extracting(ProductInfo.Summary.Item::name)
                         .containsSequence("상품 C", "상품 B", "상품 A");
             } else if (sortType.equals("price_asc")) {
-                assertThat(actual.products()).extracting(ProductInfo.Summery.Item::name)
+                assertThat(actual.products()).extracting(ProductInfo.Summary.Item::name)
                         .containsSequence("상품 A", "상품 B", "상품 C");
             }
         }
 
         @DisplayName("브랜드 필터로 상품 목록 조회 시, 해당 브랜드의 상품만 반환된다.")
         @Test
-        void getSummery_whenBrandFilter() {
+        void getSummary_whenBrandFilter() {
             // given
             final Long targetBrandId = 5L;
             productRepository.save(new Product(
@@ -144,20 +144,20 @@ public class ProductServiceIntegrationTest extends IntegrationTest {
                     "다른 브랜드 상품", "설명", BigDecimal.valueOf(30000), "의류", 999L
             ));
 
-            final ProductQuery.Summery command = new ProductQuery.Summery(
+            final ProductQuery.Summary command = new ProductQuery.Summary(
                     null,
                     targetBrandId,
-                    ProductQuery.Summery.SortType.LATEST,
+                    ProductQuery.Summary.SortType.LATEST,
                     0,
                     10
             );
 
             // when
-            final ProductInfo.Summery actual = sut.getSummery(command);
+            final ProductInfo.Summary actual = sut.getSummary(command);
 
             // then
             assertThat(actual.products()).hasSizeGreaterThanOrEqualTo(2);
-            assertThat(actual.products()).extracting(ProductInfo.Summery.Item::brandId)
+            assertThat(actual.products()).extracting(ProductInfo.Summary.Item::brandId)
                     .allMatch(brandId -> targetBrandId.equals(brandId));
         }
     }

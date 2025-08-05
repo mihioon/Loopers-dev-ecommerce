@@ -32,7 +32,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public List<Product> findProductsWithSort(ProductQuery.Summery command) {
+    public List<Product> findProductsWithSort(ProductQuery.Summary command) {
         Pageable pageable = createPageable(command);
         Page<Product> productPage = productJpaRepository.findProductsWithFilter(
                 command.category(),
@@ -52,12 +52,12 @@ public class ProductRepositoryImpl implements ProductRepository {
         return productJpaRepository.findByIdWithImagesAndDetail(id);
     }
 
-    private Pageable createPageable(ProductQuery.Summery command) {
+    private Pageable createPageable(ProductQuery.Summary command) {
         Sort sort = createSort(command.sortType());
         return PageRequest.of(command.page(), command.size(), sort);
     }
 
-    private Sort createSort(ProductQuery.Summery.SortType sortType) {
+    private Sort createSort(ProductQuery.Summary.SortType sortType) {
         String field = sortType.getField();
         String direction = sortType.getDirection();
         

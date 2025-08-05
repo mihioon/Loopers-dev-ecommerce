@@ -7,17 +7,17 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class ProductInfo {
-    public record Summery(
-            List<Summery.Item> products,
+    public record Summary(
+            List<Summary.Item> products,
             int currentPage,
             int totalPages,
             long totalElements,
             boolean hasNext
     ) {
-        public static Summery from(List<Product> products, int currentPage, int totalPages, long totalElements, boolean hasNext) {
-            return new Summery(
+        public static Summary from(List<Product> products, int currentPage, int totalPages, long totalElements, boolean hasNext) {
+            return new Summary(
                     products.stream()
-                            .map(Summery.Item::from)
+                            .map(Summary.Item::from)
                             .toList(),
                     currentPage,
                     totalPages,

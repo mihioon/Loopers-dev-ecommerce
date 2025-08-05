@@ -20,20 +20,20 @@ public class ProductFacade {
     private final LikeService likeService;
     private final AuthService authService;
 
-    public ProductResult.Summery getProducts(final ProductCriteria.Summery criteria) {
+    public ProductResult.Summary getProducts(final ProductCriteria.Summary criteria) {
         final Long userId = authService.resolveUserId(criteria.loginId()).orElse(null);
 
         // 상품 목록
-        final ProductInfo.Summery productSummery = productBrandService.getSummery(criteria.toCommand());
+        final ProductInfo.Summary productSummary = productBrandService.getSummary(criteria.toCommand());
 
-        final LikeCountInfo likeCounts = likeService.getLikeCounts(LikeCommand.GetLikeCount.from(productSummery));
+        final LikeCountInfo likeCounts = likeService.getLikeCounts(LikeCommand.GetLikeCount.from(productSummary));
         final LikeCountInfo isLikedListByUser = userId == null
                 ? null
-                : likeService.getLikedListByUser(userId, productSummery.products().stream()
-                        .map(ProductInfo.Summery.Item::id)
+                : likeService.getLikedListByUser(userId, productSummary.products().stream()
+                        .map(ProductInfo.Summary.Item::id)
                         .toList());
 
-        return ProductResult.Summery.from(productSummery, likeCounts, isLikedListByUser);
+        return ProductResult.Summary.from(productSummary, likeCounts, isLikedListByUser);
     }
 
     public ProductResult.Detail getProduct(final Long productId, final String loginId) {

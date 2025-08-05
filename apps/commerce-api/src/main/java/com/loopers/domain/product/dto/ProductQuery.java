@@ -1,7 +1,7 @@
 package com.loopers.domain.product.dto;
 
 public class ProductQuery {
-    public record Summery (
+    public record Summary(
             String category,
             Long brandId,
             SortType sortType,

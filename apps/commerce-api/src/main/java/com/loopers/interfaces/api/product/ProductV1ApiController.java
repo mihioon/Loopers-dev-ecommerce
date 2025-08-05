@@ -21,9 +21,9 @@ public class ProductV1ApiController implements ProductV1ApiSpec {
             @ModelAttribute GetProducts.V1.Request request,
             @RequestHeader(value = "X-USER-ID", required = false) String loginId
     ) {
-        final ProductCriteria.Summery criteria = request.toCriteria(loginId);
+        final ProductCriteria.Summary criteria = request.toCriteria(loginId);
 
-        ProductResult.Summery result = productFacade.getProducts(criteria);
+        ProductResult.Summary result = productFacade.getProducts(criteria);
         GetProducts.V1.Response response = GetProducts.V1.Response.from(result);
         return ApiResponse.success(response);
     }

@@ -22,7 +22,7 @@ public class ProductBrandService {
     private final BrandRepository brandRepository;
 
     @Transactional(readOnly = true)
-    public ProductInfo.Summery getSummery(final ProductQuery.Summery command) {
+    public ProductInfo.Summary getSummary(final ProductQuery.Summary command) {
         final List<Product> products = productRepository.findProductsWithSort(command);
         final long totalElements = productRepository.countProductsWithFilter(command.category(), command.brandId());
 
@@ -31,7 +31,7 @@ public class ProductBrandService {
         final int totalPages = (int) Math.ceil((double) totalElements / size);
         final boolean hasNext = currentPage < totalPages - 1;
 
-        return ProductInfo.Summery.from(products, currentPage, totalPages, totalElements, hasNext);
+        return ProductInfo.Summary.from(products, currentPage, totalPages, totalElements, hasNext);
     }
 
     @Transactional(readOnly = true)
