@@ -2,8 +2,8 @@ package com.loopers.application.product;
 
 import com.loopers.domain.brand.BrandInfo;
 import com.loopers.domain.like.LikeCountInfo;
-import com.loopers.domain.product.ProductInfo;
-import com.loopers.domain.product.StockInfo;
+import com.loopers.domain.product.dto.ProductInfo;
+import com.loopers.domain.product.dto.StockInfo;
 
 import java.math.BigDecimal;
 import java.util.List;

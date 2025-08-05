@@ -17,7 +17,6 @@ public class ProductStock extends BaseEntity {
     
     @Column(nullable = false)
     private Integer quantity;
-    
 
     public ProductStock(
             final Long productId,

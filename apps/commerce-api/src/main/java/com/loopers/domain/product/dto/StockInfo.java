@@ -1,4 +1,6 @@
-package com.loopers.domain.product;
+package com.loopers.domain.product.dto;
+
+import com.loopers.domain.product.ProductStock;
 
 public record StockInfo(
         Long id,

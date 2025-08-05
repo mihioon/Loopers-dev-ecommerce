@@ -4,6 +4,8 @@ package com.loopers.domain.product;
 import com.loopers.domain.brand.Brand;
 import com.loopers.domain.brand.BrandInfo;
 import com.loopers.domain.brand.BrandRepository;
+import com.loopers.domain.product.dto.ProductInfo;
+import com.loopers.domain.product.dto.ProductQuery;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +22,7 @@ public class ProductBrandService {
     private final BrandRepository brandRepository;
 
     @Transactional(readOnly = true)
-    public ProductInfo.Summery getSummery(final ProductCommand.Summery command) {
+    public ProductInfo.Summery getSummery(final ProductQuery.Summery command) {
         final List<Product> products = productRepository.findProductsWithSort(command);
         final long totalElements = productRepository.countProductsWithFilter(command.category(), command.brandId());
 

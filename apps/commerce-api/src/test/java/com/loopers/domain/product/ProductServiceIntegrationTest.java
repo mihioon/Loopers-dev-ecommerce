@@ -2,6 +2,8 @@ package com.loopers.domain.product;
 
 import com.loopers.domain.brand.Brand;
 import com.loopers.domain.brand.BrandRepository;
+import com.loopers.domain.product.dto.ProductInfo;
+import com.loopers.domain.product.dto.ProductQuery;
 import com.loopers.support.IntegrationTest;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
@@ -109,10 +111,10 @@ public class ProductServiceIntegrationTest extends IntegrationTest {
             ));
 
             // when
-            final ProductInfo.Summery actual = sut.getSummery(new ProductCommand.Summery(
+            final ProductInfo.Summery actual = sut.getSummery(new ProductQuery.Summery(
                     null,
                     null,
-                    ProductCommand.Summery.SortType.from(sortType),
+                    ProductQuery.Summery.SortType.from(sortType),
                     0,
                     10
             ));
@@ -142,10 +144,10 @@ public class ProductServiceIntegrationTest extends IntegrationTest {
                     "다른 브랜드 상품", "설명", BigDecimal.valueOf(30000), "의류", 999L
             ));
 
-            final ProductCommand.Summery command = new ProductCommand.Summery(
+            final ProductQuery.Summery command = new ProductQuery.Summery(
                     null,
                     targetBrandId,
-                    ProductCommand.Summery.SortType.LATEST,
+                    ProductQuery.Summery.SortType.LATEST,
                     0,
                     10
             );

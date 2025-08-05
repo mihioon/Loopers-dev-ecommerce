@@ -3,6 +3,8 @@ package com.loopers.domain.catalog;
 import com.loopers.domain.brand.Brand;
 import com.loopers.domain.brand.BrandRepository;
 import com.loopers.domain.product.*;
+import com.loopers.domain.product.dto.ProductInfo;
+import com.loopers.domain.product.dto.ProductQuery;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import org.junit.jupiter.api.BeforeEach;
@@ -78,8 +80,8 @@ class ProductBrandServiceTest {
     @Test
     void getSummery_Success() {
         // given
-        ProductCommand.Summery command = new ProductCommand.Summery(
-                null, null, ProductCommand.Summery.SortType.LATEST, 0, 10
+        ProductQuery.Summery command = new ProductQuery.Summery(
+                null, null, ProductQuery.Summery.SortType.LATEST, 0, 10
         );
         
         List<Product> products = List.of(product);

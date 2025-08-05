@@ -1,6 +1,7 @@
 package com.loopers.application.product;
 
-import com.loopers.domain.product.ProductCommand;
+import com.loopers.domain.product.dto.ProductCommand;
+import com.loopers.domain.product.dto.ProductQuery;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -14,11 +15,11 @@ public class ProductCriteria {
             int size,
             String loginId
     ) {
-        public ProductCommand.Summery toCommand() {
-            return new ProductCommand.Summery(
+        public ProductQuery.Summery toCommand() {
+            return new ProductQuery.Summery(
                     category,
                     brandId,
-                    ProductCommand.Summery.SortType.from(sortType),
+                    ProductQuery.Summery.SortType.from(sortType),
                     page,
                     size
             );
@@ -37,7 +38,7 @@ public class ProductCriteria {
             String category,
             Long brandId,
             Integer initialStock,
-            List<ProductCommand.ImageCommand> images,
-            ProductCommand.DetailCommand detail
+            List<ProductCommand.ImageDto> images,
+            ProductCommand.DetailDto detail
     ) {}
 }

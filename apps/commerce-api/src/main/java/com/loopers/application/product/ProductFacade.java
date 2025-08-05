@@ -2,11 +2,11 @@ package com.loopers.application.product;
 
 import com.loopers.domain.auth.AuthService;
 import com.loopers.domain.product.ProductBrandService;
-import com.loopers.domain.product.ProductInfo;
+import com.loopers.domain.product.dto.ProductInfo;
 import com.loopers.domain.like.LikeCountInfo;
 import com.loopers.domain.like.LikeService;
-import com.loopers.domain.product.StockInfo;
-import com.loopers.domain.product.StockService;
+import com.loopers.domain.product.dto.StockInfo;
+import com.loopers.domain.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import com.loopers.domain.like.LikeCommand;
@@ -16,7 +16,7 @@ import com.loopers.domain.like.LikeCommand;
 @Component
 public class ProductFacade {
     private final ProductBrandService productBrandService;
-    private final StockService stockService;
+    private final ProductService stockService;
     private final LikeService likeService;
     private final AuthService authService;
 

@@ -1,7 +1,7 @@
 package com.loopers.application.order;
 
 import com.loopers.domain.product.ProductBrandService;
-import com.loopers.domain.product.ProductInfo;
+import com.loopers.domain.product.dto.ProductInfo;
 import com.loopers.domain.order.OrderCommand;
 import com.loopers.domain.order.OrderInfo;
 import com.loopers.domain.order.OrderItem;
@@ -10,7 +10,7 @@ import com.loopers.domain.payment.PaymentCommand;
 import com.loopers.domain.payment.PaymentService;
 import com.loopers.domain.point.PointService;
 import com.loopers.domain.point.PointCommand;
-import com.loopers.domain.product.StockService;
+import com.loopers.domain.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +24,7 @@ public class OrderFacade {
     
     private final OrderService orderService;
     private final PaymentService paymentService;
-    private final StockService stockService;
+    private final ProductService stockService;
     private final PointService pointService;
     private final ProductBrandService productBrandService;
 

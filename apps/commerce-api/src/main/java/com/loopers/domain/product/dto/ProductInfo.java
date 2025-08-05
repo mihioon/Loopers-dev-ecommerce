@@ -1,6 +1,8 @@
-package com.loopers.domain.product;
+package com.loopers.domain.product.dto;
 
 import com.loopers.domain.brand.BrandInfo;
+import com.loopers.domain.product.Product;
+
 import java.math.BigDecimal;
 import java.util.List;
 

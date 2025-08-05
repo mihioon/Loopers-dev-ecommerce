@@ -1,7 +1,7 @@
 package com.loopers.application.order;
 
 import com.loopers.domain.order.OrderCommand;
-import com.loopers.domain.product.StockCommand;
+import com.loopers.domain.product.dto.ProductStockCommand;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -28,9 +28,9 @@ public class OrderCriteria {
             );
         }
 
-        public List<StockCommand.Reduce> toStockReduceCommands() {
+        public List<ProductStockCommand.Reduce> toStockReduceCommands() {
             return items.stream()
-                    .map(item -> new StockCommand.Reduce(item.productId(), item.quantity()))
+                    .map(item -> new ProductStockCommand.Reduce(item.productId(), item.quantity()))
                     .toList();
         }
     }
