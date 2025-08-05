@@ -1,6 +1,6 @@
-package com.loopers.infrastructure.stock;
+package com.loopers.infrastructure.product;
 
-import com.loopers.domain.stock.ProductStock;
+import com.loopers.domain.product.ProductStock;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

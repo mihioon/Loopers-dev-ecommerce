@@ -1,13 +1,9 @@
-package com.loopers.domain.catalog;
+package com.loopers.domain.product;
 
 
-import com.loopers.domain.catalog.brand.Brand;
-import com.loopers.domain.catalog.brand.BrandInfo;
-import com.loopers.domain.catalog.brand.BrandRepository;
-import com.loopers.domain.catalog.product.Product;
-import com.loopers.domain.catalog.product.ProductCommand;
-import com.loopers.domain.catalog.product.ProductInfo;
-import com.loopers.domain.catalog.product.ProductRepository;
+import com.loopers.domain.brand.Brand;
+import com.loopers.domain.brand.BrandInfo;
+import com.loopers.domain.brand.BrandRepository;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;

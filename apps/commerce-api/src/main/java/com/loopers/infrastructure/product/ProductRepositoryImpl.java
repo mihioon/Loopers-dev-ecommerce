@@ -1,8 +1,8 @@
 package com.loopers.infrastructure.product;
 
-import com.loopers.domain.catalog.product.Product;
-import com.loopers.domain.catalog.product.ProductCommand;
-import com.loopers.domain.catalog.product.ProductRepository;
+import com.loopers.domain.product.Product;
+import com.loopers.domain.product.ProductCommand;
+import com.loopers.domain.product.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

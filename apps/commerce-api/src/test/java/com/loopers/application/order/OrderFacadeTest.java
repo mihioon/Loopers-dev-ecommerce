@@ -1,7 +1,7 @@
 package com.loopers.application.order;
 
-import com.loopers.domain.catalog.ProductBrandService;
-import com.loopers.domain.catalog.product.ProductInfo;
+import com.loopers.domain.product.ProductBrandService;
+import com.loopers.domain.product.ProductInfo;
 import com.loopers.domain.order.OrderCommand;
 import com.loopers.domain.order.OrderInfo;
 import com.loopers.domain.order.OrderService;
@@ -9,8 +9,8 @@ import com.loopers.domain.payment.PaymentCommand;
 import com.loopers.domain.payment.PaymentService;
 import com.loopers.domain.point.PointCommand;
 import com.loopers.domain.point.PointService;
-import com.loopers.domain.stock.StockInfo;
-import com.loopers.domain.stock.StockService;
+import com.loopers.domain.product.StockInfo;
+import com.loopers.domain.product.StockService;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,6 +1,5 @@
 package com.loopers.domain.brand;
 
-import com.loopers.domain.catalog.brand.*;
 import com.loopers.support.IntegrationTest;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;

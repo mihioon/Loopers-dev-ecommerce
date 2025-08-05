@@ -1,12 +1,12 @@
-package com.loopers.application.catalog.product;
+package com.loopers.application.product;
 
 import com.loopers.domain.auth.AuthService;
-import com.loopers.domain.catalog.ProductBrandService;
-import com.loopers.domain.catalog.product.ProductInfo;
+import com.loopers.domain.product.ProductBrandService;
+import com.loopers.domain.product.ProductInfo;
 import com.loopers.domain.like.LikeCountInfo;
 import com.loopers.domain.like.LikeService;
-import com.loopers.domain.stock.StockInfo;
-import com.loopers.domain.stock.StockService;
+import com.loopers.domain.product.StockInfo;
+import com.loopers.domain.product.StockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import com.loopers.domain.like.LikeCommand;

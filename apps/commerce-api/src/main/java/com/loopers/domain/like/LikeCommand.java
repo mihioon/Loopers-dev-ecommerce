@@ -1,6 +1,6 @@
 package com.loopers.domain.like;
 
-import com.loopers.domain.catalog.product.ProductInfo;
+import com.loopers.domain.product.ProductInfo;
 
 import java.util.List;
 

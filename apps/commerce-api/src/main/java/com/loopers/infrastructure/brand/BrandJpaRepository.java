@@ -1,6 +1,6 @@
 package com.loopers.infrastructure.brand;
 
-import com.loopers.domain.catalog.brand.Brand;
+import com.loopers.domain.brand.Brand;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -1,7 +1,7 @@
 package com.loopers.domain.order;
 
-import com.loopers.domain.catalog.product.Product;
-import com.loopers.domain.catalog.product.ProductRepository;
+import com.loopers.domain.product.Product;
+import com.loopers.domain.product.ProductRepository;
 import com.loopers.domain.user.*;
 import com.loopers.support.IntegrationTest;
 import com.loopers.support.error.CoreException;

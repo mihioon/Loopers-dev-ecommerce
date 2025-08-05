@@ -1,6 +1,6 @@
-package com.loopers.application.catalog.product;
+package com.loopers.application.product;
 
-import com.loopers.domain.catalog.product.ProductCommand;
+import com.loopers.domain.product.ProductCommand;
 
 import java.math.BigDecimal;
 import java.util.List;

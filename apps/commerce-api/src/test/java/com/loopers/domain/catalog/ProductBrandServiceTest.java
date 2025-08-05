@@ -1,11 +1,8 @@
 package com.loopers.domain.catalog;
 
-import com.loopers.domain.catalog.brand.Brand;
-import com.loopers.domain.catalog.brand.BrandRepository;
-import com.loopers.domain.catalog.product.Product;
-import com.loopers.domain.catalog.product.ProductCommand;
-import com.loopers.domain.catalog.product.ProductInfo;
-import com.loopers.domain.catalog.product.ProductRepository;
+import com.loopers.domain.brand.Brand;
+import com.loopers.domain.brand.BrandRepository;
+import com.loopers.domain.product.*;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import org.junit.jupiter.api.BeforeEach;

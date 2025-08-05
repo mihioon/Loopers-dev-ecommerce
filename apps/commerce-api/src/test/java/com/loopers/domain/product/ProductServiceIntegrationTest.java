@@ -1,9 +1,7 @@
 package com.loopers.domain.product;
 
-import com.loopers.domain.catalog.ProductBrandService;
-import com.loopers.domain.catalog.brand.Brand;
-import com.loopers.domain.catalog.brand.BrandRepository;
-import com.loopers.domain.catalog.product.*;
+import com.loopers.domain.brand.Brand;
+import com.loopers.domain.brand.BrandRepository;
 import com.loopers.support.IntegrationTest;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;

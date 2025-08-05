@@ -1,4 +1,4 @@
-package com.loopers.domain.stock;
+package com.loopers.domain.product;
 
 import java.util.Optional;
 

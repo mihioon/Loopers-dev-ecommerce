@@ -1,7 +1,7 @@
 package com.loopers.interfaces.api.product;
 
-import com.loopers.application.catalog.product.ProductResult;
-import com.loopers.domain.catalog.brand.BrandInfo;
+import com.loopers.application.product.ProductResult;
+import com.loopers.domain.brand.BrandInfo;
 import java.math.BigDecimal;
 
 public record GetProduct() {

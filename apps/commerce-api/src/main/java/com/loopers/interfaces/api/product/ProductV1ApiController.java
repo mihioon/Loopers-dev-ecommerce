@@ -1,8 +1,8 @@
 package com.loopers.interfaces.api.product;
 
-import com.loopers.application.catalog.product.ProductCriteria;
-import com.loopers.application.catalog.product.ProductFacade;
-import com.loopers.application.catalog.product.ProductResult;
+import com.loopers.application.product.ProductCriteria;
+import com.loopers.application.product.ProductFacade;
+import com.loopers.application.product.ProductResult;
 import com.loopers.interfaces.api.ApiResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
