@@ -8,42 +8,22 @@ import java.util.List;
 
 public class ProductInfo {
     public record Summary(
-            List<Summary.Item> products,
-            int currentPage,
-            int totalPages,
-            long totalElements,
-            boolean hasNext
+            Long id,
+            String name,
+            String description,
+            BigDecimal price,
+            String category,
+            Long brandId
     ) {
-        public static Summary from(List<Product> products, int currentPage, int totalPages, long totalElements, boolean hasNext) {
+        public static Summary from(Product product) {
             return new Summary(
-                    products.stream()
-                            .map(Summary.Item::from)
-                            .toList(),
-                    currentPage,
-                    totalPages,
-                    totalElements,
-                    hasNext
+                    product.getId(),
+                    product.getName(),
+                    product.getDescription(),
+                    product.getPrice(),
+                    product.getCategory(),
+                    product.getBrandId()
             );
-        }
-
-        public record Item(
-                Long id,
-                String name,
-                String description,
-                BigDecimal price,
-                String category,
-                Long brandId
-        ) {
-            public static Item from(Product product) {
-                return new Item(
-                        product.getId(),
-                        product.getName(),
-                        product.getDescription(),
-                        product.getPrice(),
-                        product.getCategory(),
-                        product.getBrandId()
-                );
-            }
         }
     }
 
@@ -68,11 +48,10 @@ public class ProductInfo {
             BigDecimal price,
             String category,
             Long brandId,
-            BrandInfo brandInfo,
             List<ImageInfo> images,
             DetailInfo detail
     ) {
-        public static Detail from(Product product, List<ImageInfo> images, DetailInfo detail, BrandInfo brandInfo) {
+        public static Detail from(Product product) {
             return new Detail(
                     product.getId(),
                     product.getName(),
@@ -80,12 +59,12 @@ public class ProductInfo {
                     product.getPrice(),
                     product.getCategory(),
                     product.getBrandId(),
-                    brandInfo,
-                    images,
-                    detail
+                    product.getImages().stream()
+                            .map(ImageInfo::from)
+                            .toList(),
+                    product.getDetail() != null ? DetailInfo.from(product.getDetail()) : null
             );
         }
-
     }
 
     public record ImageInfo(

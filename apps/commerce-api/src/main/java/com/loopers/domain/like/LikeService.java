@@ -5,9 +5,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @RequiredArgsConstructor
@@ -35,28 +33,22 @@ public class LikeService {
     }
 
     @Transactional(readOnly = true)
-    public LikeCountInfo getLikeCounts(final LikeCommand.GetLikeCount command) {
-        Map<Long, Long> productLikeCounts = new HashMap<>();
-        command.productIds().forEach(productId -> {
-            productLikeCounts.put(productId, productLikeRepository.getLikeCount(productId));
-        });
+    public LikeInfo getLikeCounts(final Long userId, final LikeCommand.GetLikeCount command) {
+        Map<Long, Long> productLikeCounts = productLikeRepository.getLikeCounts(command.productIds());
 
-        return new LikeCountInfo(productLikeCounts);
+        Set<Long> likedProductIds = (userId != null)
+                ? productLikeRepository.getLikedProductIds(userId, command.productIds())
+                : Set.of();
+
+        return new LikeInfo(
+                new LikeInfo.ProductLikeCount(productLikeCounts),
+                new LikeInfo.UserLiked(likedProductIds)
+        );
     }
 
     @Transactional(readOnly = true)
     public boolean isLikedByUser(final Long productId, final Long userId) {
         return productLikeRepository.isLikedByUser(productId, userId);
-    }
-
-    @Transactional(readOnly = true)
-    public LikeCountInfo getLikedListByUser(final Long userId, final List<Long> productIds) {
-        Map<Long, Long> productLikeCounts = new HashMap<>();
-        productIds.forEach(productId -> {
-            productLikeCounts.put(productId, productLikeRepository.isLikedByUser(productId, userId) ? 1L : 0L);
-        });
-
-        return new LikeCountInfo(productLikeCounts);
     }
 
     @Transactional(readOnly = true)

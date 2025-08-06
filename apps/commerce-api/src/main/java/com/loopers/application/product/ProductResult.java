@@ -1,9 +1,10 @@
 package com.loopers.application.product;
 
 import com.loopers.domain.brand.BrandInfo;
-import com.loopers.domain.like.LikeCountInfo;
+import com.loopers.domain.like.LikeInfo;
 import com.loopers.domain.product.dto.ProductInfo;
 import com.loopers.domain.product.dto.StockInfo;
+import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -17,20 +18,22 @@ public class ProductResult{
             boolean hasNext
     ) {
         public static Summary from(
-                ProductInfo.Summary productInfo,
-                LikeCountInfo likeCount,
-                LikeCountInfo isLikedByUser
+                Page<ProductInfo.Summary> productInfo,
+                LikeInfo likeInfo
         ) {
+            List<Item> items = productInfo.getContent().stream()
+                    .map(product -> Item.from(
+                            product,
+                            likeInfo.productLikeCount().likeCounts().getOrDefault(product.id(), 0L),
+                            likeInfo.userLiked().isLiked(product.id())
+                    ))
+                    .toList();
+
             return new Summary(
-                    productInfo.products().stream()
-                            .map(item -> Item.from(item, 
-                                    likeCount != null ? likeCount.likeCounts().get(item.id()) : null,
-                                    isLikedByUser != null && isLikedByUser.likeCounts().get(item.id()) == 1L
-                            ))
-                            .toList(),
-                    productInfo.currentPage(),
-                    productInfo.totalPages(),
-                    productInfo.totalElements(),
+                    items,
+                    productInfo.getNumber(),
+                    productInfo.getTotalPages(),
+                    productInfo.getTotalElements(),
                     productInfo.hasNext()
             );
         }
@@ -45,7 +48,7 @@ public class ProductResult{
                 Long likeCount,
                 Boolean isLikedByUser
         ) {
-            public static Summary.Item from(ProductInfo.Summary.Item productInfo, Long likeCount, Boolean isLikedByUser) {
+            public static Summary.Item from(ProductInfo.Summary productInfo, Long likeCount, Boolean isLikedByUser) {
                 return new Summary.Item(
                         productInfo.id(),
                         productInfo.name(),
@@ -75,6 +78,7 @@ public class ProductResult{
     ) {
         public static ProductResult.Detail from(
                 ProductInfo.Detail productInfo,
+                BrandInfo brandInfo,
                 StockInfo stockInfo,
                 Long likeCount,
                 Boolean isLikedByUser
@@ -86,7 +90,7 @@ public class ProductResult{
                     productInfo.price(),
                     productInfo.category(),
                     productInfo.brandId(),
-                    productInfo.brandInfo(),
+                    brandInfo,
                     stockInfo.quantity(),
                     productInfo.images().stream()
                             .map(ProductResult.ImageInfo::from)

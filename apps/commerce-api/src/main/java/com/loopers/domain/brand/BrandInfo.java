@@ -8,12 +8,14 @@ public record BrandInfo(
         String description,
         List<BrandInfo.BrandImageInfo> images
 ) {
-    public static BrandInfo from(final Brand brand, final List<BrandInfo.BrandImageInfo> images) {
+    public static BrandInfo from(final Brand brand) {
         return new BrandInfo(
                 brand.getId(),
                 brand.getName(),
                 brand.getDescription(),
-                images
+                brand.getImages().stream()
+                        .map(BrandInfo.BrandImageInfo::from)
+                        .toList()
         );
     }
 
@@ -23,7 +25,7 @@ public record BrandInfo(
             String imageUrl,
             Brand.ImageType imageType
     ) {
-        public static BrandImageInfo from(final Brand.BrandImage brandImage) {
+        public static BrandImageInfo from(final BrandImage brandImage) {
             return new BrandImageInfo(
                     brandImage.getId(),
                     brandImage.getBrand() != null ? brandImage.getBrand().getId() : null,

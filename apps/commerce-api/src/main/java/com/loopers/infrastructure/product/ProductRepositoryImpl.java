@@ -32,8 +32,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public List<Product> findProductsWithSort(ProductQuery.Summary command) {
-        Pageable pageable = createPageable(command);
+    public List<Product> findProductsWithSort(ProductQuery.Summary command, Pageable pageable) {
         Page<Product> productPage = productJpaRepository.findProductsWithFilter(
                 command.category(),
                 command.brandId(),

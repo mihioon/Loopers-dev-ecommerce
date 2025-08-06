@@ -67,7 +67,6 @@ public class Brand extends BaseEntity {
         this.images.clear();
     }
 
-
     public enum ImageType {
         LOGO,
         BANNER, 
@@ -86,54 +85,6 @@ public class Brand extends BaseEntity {
 
             throw new CoreException(ErrorType.BAD_REQUEST, 
                 "지원하지 않는 이미지 타입입니다: " + value + ". 지원 타입: LOGO, BANNER, THUMBNAIL");
-        }
-    }
-
-    @Table(name = "brand_image")
-    @Entity
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class BrandImage extends BaseEntity {
-
-        @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "brand_id", nullable = false)
-        private Brand brand;
-
-        @Column(nullable = false)
-        private String imageUrl;
-
-        @Enumerated(EnumType.STRING)
-        @Column(nullable = false)
-        private ImageType imageType;
-
-        public BrandImage(
-                final String imageUrl,
-                final ImageType imageType
-        ) {
-            if (imageUrl == null || imageUrl.trim().isEmpty()) {
-                //throw new CoreException(ErrorType.BAD_REQUEST, "이미지 URL은 필수입니다.");
-            }
-            if (imageType == null) {
-                throw new CoreException(ErrorType.BAD_REQUEST, "이미지 타입은 필수입니다.");
-            }
-
-            this.imageUrl = imageUrl;
-            this.imageType = imageType;
-        }
-
-        public Brand getBrand() {
-            return brand;
-        }
-
-        public void setBrand(Brand brand) {
-            this.brand = brand;
-        }
-
-        public String getImageUrl() {
-            return imageUrl;
-        }
-
-        public ImageType getImageType() {
-            return imageType;
         }
     }
 }

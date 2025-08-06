@@ -6,12 +6,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @RequiredArgsConstructor
 @Component
 public class BrandService {
+    public static final Long DEFAULT_BRAND_ID = 0L;
+
     private final BrandRepository brandRepository;
 
     @Transactional(rollbackFor = Exception.class)
@@ -25,35 +24,26 @@ public class BrandService {
                 command.description()
         ));
 
-        List<BrandInfo.BrandImageInfo> imageInfos = brandRepository.saveAll(
-                command.images().stream()
-                        .map(image -> new Brand.BrandImage(
-                                image.imageUrl(),
-                                image.imageType()
-                        ))
-                        .collect(Collectors.toList())
-        ).stream()
-         .map(BrandInfo.BrandImageInfo::from)
-         .collect(Collectors.toList());
+        command.images()
+                .forEach(image -> brand.addImage(new BrandImage(
+                        image.imageUrl(),
+                        image.imageType()
+                )));
 
-        return BrandInfo.from(brand, imageInfos);
+        return BrandInfo.from(brand);
     }
 
     @Transactional(readOnly = true)
-    public BrandInfo get(final Long brandId) {
-        return brandRepository.findById(brandId)
-                .map(brand -> {
-                    List<BrandInfo.BrandImageInfo> images = getBrandImages(brandId);
-                    return BrandInfo.from(brand, images);
-                })
+    public BrandInfo getBy(final Long brandId) {
+        Brand brand = brandRepository.findWithImagesById(brandId)
                 .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 브랜드입니다."));
+        return BrandInfo.from(brand);
+
     }
 
-    @Transactional(readOnly = true)
-    protected List<BrandInfo.BrandImageInfo> getBrandImages(final Long brandId) {
-        return brandRepository.findBrandImagesByBrandId(brandId)
-                .stream()
-                .map(BrandInfo.BrandImageInfo::from)
-                .collect(Collectors.toList());
+    public void validateBrandId(Long brandId) {
+        if (brandId == null || DEFAULT_BRAND_ID.equals(brandId)) {
+            throw new CoreException(ErrorType.BAD_REQUEST, "유효하지 않은 브랜드 ID입니다.");
+        }
     }
 }

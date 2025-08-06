@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class StockServiceIntegrationTest extends IntegrationTest {
 
     @Autowired
-    private ProductService sut;
+    private ProductStockService sut;
 
     @Autowired
     private ProductRepository productRepository;

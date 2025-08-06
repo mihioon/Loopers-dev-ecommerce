@@ -20,9 +20,9 @@ public class LikeCommand {
     public record GetLikeCount(
             List<Long> productIds
     ) {
-        public static GetLikeCount from(ProductInfo.Summary summary) {
-            return new GetLikeCount(summary.products().stream()
-                    .map(ProductInfo.Summary.Item::id)
+        public static GetLikeCount from(List<ProductInfo.Summary> summary) {
+            return new GetLikeCount(summary.stream()
+                    .map(ProductInfo.Summary::id)
                     .toList());
         }
 
@@ -35,9 +35,9 @@ public class LikeCommand {
             List<Long> productIds,
             Long userId
     ) {
-        public static GetLikedByUser from(ProductInfo.Summary summary, Long userId) {
-            return new GetLikedByUser(summary.products().stream()
-                    .map(ProductInfo.Summary.Item::id)
+        public static GetLikedByUser from(List<ProductInfo.Summary> summary, Long userId) {
+            return new GetLikedByUser(summary.stream()
+                    .map(ProductInfo.Summary::id)
                     .toList(), userId);
         }
     }

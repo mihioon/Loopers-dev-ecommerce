@@ -23,7 +23,7 @@ public class ProductV1ApiController implements ProductV1ApiSpec {
     ) {
         final ProductCriteria.Summary criteria = request.toCriteria(loginId);
 
-        ProductResult.Summary result = productFacade.getProducts(criteria);
+        ProductResult.Summary result = productFacade.getSummary(criteria);
         GetProducts.V1.Response response = GetProducts.V1.Response.from(result);
         return ApiResponse.success(response);
     }
@@ -34,7 +34,7 @@ public class ProductV1ApiController implements ProductV1ApiSpec {
             @PathVariable @NotNull Long productId,
             @RequestHeader(value = "X-USER-ID", required = false) String loginId
     ) {
-        ProductResult.Detail result = productFacade.getProduct(productId, loginId);
+        ProductResult.Detail result = productFacade.getDetail(productId, loginId);
         GetProduct.V1.Response response = GetProduct.V1.Response.from(result);
         return ApiResponse.success(response);
     }

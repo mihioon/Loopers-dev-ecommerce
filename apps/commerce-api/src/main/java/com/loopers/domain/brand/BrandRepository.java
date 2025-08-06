@@ -11,11 +11,15 @@ public interface BrandRepository {
     Optional<Brand> findById(Long brandId);
 
     // BrandImage 관련 메서드들
-    Brand.BrandImage save(Brand.BrandImage brandImage);
+    BrandImage save(BrandImage brandImage);
 
-    List<Brand.BrandImage> saveAll(List<Brand.BrandImage> brandImages);
+    List<BrandImage> saveAll(List<BrandImage> brandImages);
 
-    Optional<Brand.BrandImage> findBrandImageById(Long brandImageId);
+    Optional<BrandImage> findBrandImageById(Long brandImageId);
 
-    List<Brand.BrandImage> findBrandImagesByBrandId(Long brandId);
+    List<BrandImage> findBrandImagesByBrandId(Long brandId);
+
+    default Optional<Brand> findWithImagesById(Long brandId) {
+        return null;
+    }
 }

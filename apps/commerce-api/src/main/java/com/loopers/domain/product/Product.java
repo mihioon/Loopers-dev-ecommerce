@@ -83,7 +83,7 @@ public class Product extends BaseEntity {
         @Column(nullable = false)
         private ImageType imageType;
 
-        public ProductImage(Long productId, String imageUrl, ImageType imageType) {
+        public ProductImage(String imageUrl, ImageType imageType) {
             this.imageUrl = imageUrl;
             this.imageType = imageType;
         }
@@ -99,7 +99,7 @@ public class Product extends BaseEntity {
         @Column(columnDefinition = "TEXT")
         private String description;
 
-        public ProductDetail(Long productId, String description) {
+        public ProductDetail(String description) {
             this.description = description;
         }
 

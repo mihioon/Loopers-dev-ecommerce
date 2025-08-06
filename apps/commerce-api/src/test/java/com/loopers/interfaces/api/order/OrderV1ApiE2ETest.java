@@ -242,7 +242,7 @@ public class OrderV1ApiE2ETest extends E2EIntegrationTest {
         );
         
         // ProductDetail 추가 (ProductService.getDetail에서 필요)
-        Product.ProductDetail detail = new Product.ProductDetail(null, "테스트 상품 상세 설명");
+        Product.ProductDetail detail = new Product.ProductDetail("테스트 상품 상세 설명");
         product.setDetail(detail);
         
         return product;

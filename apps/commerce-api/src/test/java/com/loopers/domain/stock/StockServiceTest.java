@@ -29,7 +29,7 @@ class StockServiceTest {
     private ProductRepository productRepository;
 
     @InjectMocks
-    private ProductService stockService;
+    private ProductStockService stockService;
 
     private ProductStock productStock;
 
@@ -81,7 +81,7 @@ class StockServiceTest {
         given(productRepository.save(any(ProductStock.class))).willAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        StockInfo result = stockService.initializeStock(command);
+        StockInfo result = stockService.create(command);
 
         // then
         assertThat(result.productId()).isEqualTo(1L);
@@ -99,7 +99,7 @@ class StockServiceTest {
         given(productRepository.save(any(ProductStock.class))).willAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        StockInfo result = stockService.initializeStock(command);
+        StockInfo result = stockService.create(command);
 
         // then - Initialize creates new stock regardless of existing stock
         assertThat(result.productId()).isEqualTo(999L);
