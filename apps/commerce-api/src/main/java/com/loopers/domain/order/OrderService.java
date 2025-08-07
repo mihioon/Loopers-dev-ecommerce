@@ -18,7 +18,7 @@ public class OrderService {
 
     @Transactional(rollbackFor = Exception.class)
     public OrderInfo.Detail createOrder(OrderCommand.Create command, List<OrderItem> validatedItems) {
-        Order order = new Order(command.userId(), validatedItems);
+        Order order = new Order(command.userId(), command.paymentId(), validatedItems);
         Order savedOrder = orderRepository.save(order);
         return OrderInfo.Detail.from(savedOrder, command.pointAmount());
     }

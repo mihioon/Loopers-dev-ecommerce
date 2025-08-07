@@ -46,7 +46,7 @@ public class OrderServiceIntegrationTest extends IntegrationTest {
         List<OrderCommand.Create.Item> commandItems = List.of(
                 new OrderCommand.Create.Item(1L, 2)
         );
-        OrderCommand.Create command = new OrderCommand.Create(1L, commandItems, BigDecimal.ZERO);
+        OrderCommand.Create command = new OrderCommand.Create(1L, commandItems, BigDecimal.ZERO, 1L);
 
         // when - 주문 생성 (OrderItem 직접 생성)
         List<OrderItem> orderItems = command.items().stream()
@@ -80,7 +80,7 @@ public class OrderServiceIntegrationTest extends IntegrationTest {
         List<OrderCommand.Create.Item> commandItems = List.of(
                 new OrderCommand.Create.Item(1L, 1)
         );
-        OrderCommand.Create command = new OrderCommand.Create(1L, commandItems, BigDecimal.ZERO);
+        OrderCommand.Create command = new OrderCommand.Create(1L, commandItems, BigDecimal.ZERO, 1L);
         List<OrderItem> orderItems = command.items().stream()
                 .map(item -> new OrderItem(item.productId(), item.quantity(), new BigDecimal("10000")))
                 .toList();
@@ -113,7 +113,7 @@ public class OrderServiceIntegrationTest extends IntegrationTest {
         List<OrderCommand.Create.Item> commandItems1 = List.of(
                 new OrderCommand.Create.Item(1L, 1)
         );
-        OrderCommand.Create command1 = new OrderCommand.Create(1L, commandItems1, BigDecimal.ZERO);
+        OrderCommand.Create command1 = new OrderCommand.Create(1L, commandItems1, BigDecimal.ZERO, 1L);
         List<OrderItem> orderItems1 = command1.items().stream()
                 .map(item -> new OrderItem(item.productId(), item.quantity(), new BigDecimal("10000")))
                 .toList();
@@ -123,7 +123,7 @@ public class OrderServiceIntegrationTest extends IntegrationTest {
         List<OrderCommand.Create.Item> commandItems2 = List.of(
                 new OrderCommand.Create.Item(2L, 1)
         );
-        OrderCommand.Create command2 = new OrderCommand.Create(1L, commandItems2, BigDecimal.ZERO);
+        OrderCommand.Create command2 = new OrderCommand.Create(1L, commandItems2, BigDecimal.ZERO, 2L);
         List<OrderItem> orderItems2 = command2.items().stream()
                 .map(item -> new OrderItem(item.productId(), item.quantity(), new BigDecimal("20000")))
                 .toList();

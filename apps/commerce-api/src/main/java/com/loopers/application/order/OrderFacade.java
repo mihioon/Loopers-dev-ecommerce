@@ -5,6 +5,7 @@ import com.loopers.domain.coupon.CouponService;
 import com.loopers.domain.order.OrderInfo;
 import com.loopers.domain.order.OrderItem;
 import com.loopers.domain.order.OrderService;
+import com.loopers.domain.payment.PaymentInfo;
 import com.loopers.domain.payment.PaymentService;
 import com.loopers.domain.point.PointService;
 import com.loopers.domain.point.PointCommand;
@@ -72,11 +73,11 @@ public class OrderFacade {
             pointService.deduct(new PointCommand.Deduct(criteria.userId(), criteria.pointAmount().longValue()));
         }
 
-        // 결제
-        paymentService.processPayment(criteria.toPaymentCommand(totalAmount));
+        // 결제 처리
+        PaymentInfo.Detail paymentInfo = paymentService.processPayment(criteria.toPaymentCommand(totalAmount));
 
         // 주문 생성
-        OrderInfo.Detail orderInfo = orderService.createOrder(criteria.toCommand(), orderItems);
+        OrderInfo.Detail orderInfo = orderService.createOrder(criteria.toCommand(paymentInfo.id()), orderItems);
 
         return OrderResult.Detail.from(orderInfo);
     }

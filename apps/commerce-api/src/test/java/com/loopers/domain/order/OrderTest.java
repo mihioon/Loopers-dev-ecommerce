@@ -27,7 +27,7 @@ class OrderTest {
             List<OrderItem> orderItems = List.of(item);
 
             // when
-            Order order = new Order(userId, orderItems);
+            Order order = new Order(userId, 1L, orderItems);
 
             // then
             assertThat(order.getUserId()).isEqualTo(userId);
@@ -48,7 +48,7 @@ class OrderTest {
             List<OrderItem> orderItems = List.of(item1, item2, item3);
 
             // when
-            Order order = new Order(userId, orderItems);
+            Order order = new Order(userId, 1L, orderItems);
 
             // then
             assertThat(order.getUserId()).isEqualTo(userId);
@@ -66,7 +66,7 @@ class OrderTest {
             List<OrderItem> orderItems = List.of(item1, item2);
 
             // when
-            Order order = new Order(userId, orderItems);
+            Order order = new Order(userId, 1L, orderItems);
 
             // then
             assertThat(order.getTotalAmount()).isEqualTo(new BigDecimal("31500"));
@@ -86,7 +86,7 @@ class OrderTest {
 
             // when & then
             CoreException exception = assertThrows(CoreException.class, () -> {
-                new Order(null, orderItems);
+                new Order(null, 1L, orderItems);
             });
 
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
@@ -101,7 +101,7 @@ class OrderTest {
 
             // when & then
             CoreException exception = assertThrows(CoreException.class, () -> {
-                new Order(userId, null);
+                new Order(userId, 1L, null);
             });
 
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
@@ -117,7 +117,7 @@ class OrderTest {
 
             // when & then
             CoreException exception = assertThrows(CoreException.class, () -> {
-                new Order(userId, orderItems);
+                new Order(userId, 1L, orderItems);
             });
 
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
