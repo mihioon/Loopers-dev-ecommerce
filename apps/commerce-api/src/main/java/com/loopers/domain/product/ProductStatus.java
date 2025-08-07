@@ -1,4 +1,4 @@
-package com.loopers.domain.like;
+package com.loopers.domain.product;
 
 import com.loopers.domain.BaseEntity;
 import com.loopers.support.error.CoreException;
@@ -7,18 +7,21 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-@Table(name = "product_like_count")
+@Table(name = "product_status",
+        uniqueConstraints = {
+            @UniqueConstraint(name = "uk_product_like_count_product_id", columnNames = {"product_id"})
+        })
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ProductLikeCount extends BaseEntity {
+public class ProductStatus extends BaseEntity {
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private Long productId;
     
     @Column(nullable = false)
     private Integer likeCount;
 
-    public ProductLikeCount(Long productId) {
+    public ProductStatus(Long productId) {
         if (productId == null) {
             throw new CoreException(ErrorType.BAD_REQUEST, "상품 ID는 필수입니다.");
         }

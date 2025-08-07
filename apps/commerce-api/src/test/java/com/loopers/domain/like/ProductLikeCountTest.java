@@ -1,5 +1,6 @@
 package com.loopers.domain.like;
 
+import com.loopers.domain.product.ProductStatus;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import org.junit.jupiter.api.DisplayName;
@@ -9,12 +10,12 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@DisplayName("ProductLikeCount 엔티티 테스트")
-class ProductLikeCountTest {
+@DisplayName("ProductStatus 엔티티 테스트")
+class ProductStatusTest {
 
-    @DisplayName("ProductLikeCount 생성")
+    @DisplayName("ProductStatus 생성")
     @Nested
-    class CreateProductLikeCount {
+    class CreateProductStatus {
 
         @DisplayName("유효한 productId로 생성 시 초기 카운트는 0이다")
         @Test
@@ -23,7 +24,7 @@ class ProductLikeCountTest {
             Long productId = 1L;
 
             // when
-            ProductLikeCount likeCount = new ProductLikeCount(productId);
+            ProductStatus likeCount = new ProductStatus(productId);
 
             // then
             assertThat(likeCount.getProductId()).isEqualTo(productId);
@@ -35,7 +36,7 @@ class ProductLikeCountTest {
         void create_withNullProductId_shouldThrowException() {
             // when
             CoreException actual = assertThrows(CoreException.class, () -> {
-                new ProductLikeCount(null);
+                new ProductStatus(null);
             });
 
             // then
@@ -53,7 +54,7 @@ class ProductLikeCountTest {
         @Test
         void incrementLikeCount_shouldIncreaseByOne() {
             // given
-            ProductLikeCount likeCount = new ProductLikeCount(1L);
+            ProductStatus likeCount = new ProductStatus(1L);
 
             // when
             likeCount.increase();
@@ -66,7 +67,7 @@ class ProductLikeCountTest {
         @Test
         void incrementLikeCount_multiple_shouldAccumulateCorrectly() {
             // given
-            ProductLikeCount likeCount = new ProductLikeCount(1L);
+            ProductStatus likeCount = new ProductStatus(1L);
 
             // when
             for (int i = 0; i < 5; i++) {
@@ -86,7 +87,7 @@ class ProductLikeCountTest {
         @Test
         void decrementLikeCount_whenCountIsPositive_shouldDecreaseByOne() {
             // given
-            ProductLikeCount likeCount = new ProductLikeCount(1L);
+            ProductStatus likeCount = new ProductStatus(1L);
             likeCount.increase(); //+1
 
             // when
@@ -100,7 +101,7 @@ class ProductLikeCountTest {
         @Test
         void decrementLikeCount_whenCountIsZero_shouldThrowException() {
             // given
-            ProductLikeCount likeCount = new ProductLikeCount(1L);
+            ProductStatus likeCount = new ProductStatus(1L);
 
             // when
             CoreException actual = assertThrows(CoreException.class, likeCount::decrease);

@@ -24,7 +24,6 @@ public class ProductResult{
             List<Item> items = productInfo.getContent().stream()
                     .map(product -> Item.from(
                             product,
-                            likeInfo.productLikeCount().likeCounts().getOrDefault(product.id(), 0L),
                             likeInfo.userLiked().isLiked(product.id())
                     ))
                     .toList();
@@ -48,7 +47,7 @@ public class ProductResult{
                 Long likeCount,
                 Boolean isLikedByUser
         ) {
-            public static Summary.Item from(ProductInfo.Summary productInfo, Long likeCount, Boolean isLikedByUser) {
+            public static Summary.Item from(ProductInfo.Summary productInfo, Boolean isLikedByUser) {
                 return new Summary.Item(
                         productInfo.id(),
                         productInfo.name(),
@@ -56,7 +55,7 @@ public class ProductResult{
                         productInfo.price(),
                         productInfo.category(),
                         productInfo.brandId(),
-                        likeCount,
+                        productInfo.likeCount(),
                         isLikedByUser
                 );
             }

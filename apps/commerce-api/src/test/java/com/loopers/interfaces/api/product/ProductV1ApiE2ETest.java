@@ -1,13 +1,14 @@
 package com.loopers.interfaces.api.product;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.loopers.domain.like.ProductLikeCount;
+import com.loopers.domain.product.ProductStatus;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductRepository;
 import com.loopers.domain.brand.Brand;
 import com.loopers.domain.brand.BrandRepository;
 import com.loopers.domain.like.ProductLike;
 import com.loopers.domain.like.ProductLikeRepository;
+import com.loopers.domain.product.ProductStatusRepository;
 import com.loopers.domain.user.*;
 import com.loopers.support.E2EIntegrationTest;
 import org.junit.jupiter.api.DisplayName;
@@ -33,6 +34,8 @@ public class ProductV1ApiE2ETest extends E2EIntegrationTest {
     private ProductRepository productRepository;
     @Autowired
     private ProductLikeRepository productLikeRepository;
+    @Autowired
+    private ProductStatusRepository productStatusRepository;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -174,10 +177,10 @@ public class ProductV1ApiE2ETest extends E2EIntegrationTest {
             Product savedProduct = productRepository.save(product);
 
             // 좋아요 데이터
-            ProductLikeCount likeCount = new ProductLikeCount(savedProduct.getId());
+            ProductStatus likeCount = new ProductStatus(savedProduct.getId());
             likeCount.increase();
             likeCount.increase();
-            productLikeRepository.save(likeCount);
+            productStatusRepository.save(likeCount);
 
             // when&then
             mockMvc.perform(get(ENDPOINT, savedProduct.getId())
@@ -229,9 +232,9 @@ public class ProductV1ApiE2ETest extends E2EIntegrationTest {
                     "test"
             ));
 
-            ProductLikeCount likeCount = new ProductLikeCount(savedProduct.getId());
+            ProductStatus likeCount = new ProductStatus(savedProduct.getId());
             likeCount.increase();
-            productLikeRepository.save(likeCount);
+            productStatusRepository.save(likeCount);
 
             // when&then
             mockMvc.perform(get(ENDPOINT, savedProduct.getId())

@@ -24,11 +24,4 @@ public interface ProductLikeRepository {
     boolean isLikedByUser(Long productIds, Long userId);
 
     List<ProductLike> findByUserId(Long userId);
-    
-    // ProductLikeCount 관련 메서드들
-    ProductLikeCount save(ProductLikeCount productLikeCount);
-    
-    Optional<ProductLikeCount> findLikeCountByProductId(Long productId);
-    
-    Map<Long, Long> getLikeCountsFromCountTable(List<Long> productIds);
 }

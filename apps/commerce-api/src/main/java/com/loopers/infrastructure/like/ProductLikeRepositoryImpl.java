@@ -1,20 +1,17 @@
 package com.loopers.infrastructure.like;
 
 import com.loopers.domain.like.ProductLike;
-import com.loopers.domain.like.ProductLikeCount;
 import com.loopers.domain.like.ProductLikeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
 public class ProductLikeRepositoryImpl implements ProductLikeRepository {
     
     private final ProductLikeJpaRepository productLikeJpaRepository;
-    private final ProductLikeCountJpaRepository productLikeCountJpaRepository;
 
     @Override
     public ProductLike save(ProductLike productLike) {
@@ -72,27 +69,5 @@ public class ProductLikeRepositoryImpl implements ProductLikeRepository {
     @Override
     public List<ProductLike> findByUserId(Long userId) {
         return productLikeJpaRepository.findByUserId(userId);
-    }
-    
-    // ProductLikeCount 관련 메서드들
-    @Override
-    public ProductLikeCount save(ProductLikeCount productLikeCount) {
-        return productLikeCountJpaRepository.save(productLikeCount);
-    }
-    
-    @Override
-    public Optional<ProductLikeCount> findLikeCountByProductId(Long productId) {
-        return productLikeCountJpaRepository.findByProductId(productId);
-    }
-    
-    @Override
-    public Map<Long, Long> getLikeCountsFromCountTable(List<Long> productIds) {
-        List<ProductLikeCount> likeCounts = productLikeCountJpaRepository.findByProductIdIn(productIds);
-        
-        return likeCounts.stream()
-                .collect(Collectors.toMap(
-                        ProductLikeCount::getProductId,
-                        count -> Long.valueOf(count.getLikeCount())
-                ));
     }
 }
