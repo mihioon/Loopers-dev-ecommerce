@@ -1,7 +1,6 @@
 package com.loopers.application.order;
 
-import com.loopers.domain.catalog.ProductBrandService;
-import com.loopers.domain.catalog.product.ProductInfo;
+import com.loopers.domain.product.dto.ProductInfo;
 import com.loopers.domain.order.OrderCommand;
 import com.loopers.domain.order.OrderInfo;
 import com.loopers.domain.order.OrderService;
@@ -9,8 +8,9 @@ import com.loopers.domain.payment.PaymentCommand;
 import com.loopers.domain.payment.PaymentService;
 import com.loopers.domain.point.PointCommand;
 import com.loopers.domain.point.PointService;
-import com.loopers.domain.stock.StockInfo;
-import com.loopers.domain.stock.StockService;
+import com.loopers.domain.product.dto.StockInfo;
+import com.loopers.domain.product.ProductService;
+import com.loopers.domain.product.ProductStockService;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,20 +43,19 @@ class OrderFacadeTest {
     private PaymentService paymentService;
     
     @Mock
-    private StockService stockService;
-    
-    @Mock
     private PointService pointService;
     
     @Mock
-    private ProductBrandService productBrandService;
+    private ProductService productService;
+    
+    @Mock
+    private ProductStockService stockService;
 
     @InjectMocks
     private OrderFacade orderFacade;
 
     private OrderCriteria.Create criteria;
     private ProductInfo.Basic productInfo;
-    private StockInfo stockInfo;
     private OrderInfo.Detail orderInfo;
 
     @BeforeEach
@@ -72,7 +71,7 @@ class OrderFacadeTest {
         );
         
         productInfo = new ProductInfo.Basic(productId, "테스트 상품", price);
-        stockInfo = new StockInfo(1L, productId, 10);
+        
         
         orderInfo = new OrderInfo.Detail(
                 1L,
@@ -87,7 +86,7 @@ class OrderFacadeTest {
     @Test
     void createOrder_Success() {
         // given
-        given(productBrandService.getBasic(anyLong())).willReturn(productInfo);
+        given(productService.getBasic(anyLong())).willReturn(productInfo);
         given(orderService.createOrderWithValidatedItems(any(OrderCommand.Create.class), anyList()))
                 .willReturn(orderInfo);
 
@@ -99,7 +98,7 @@ class OrderFacadeTest {
         assertThat(result.totalAmount()).isEqualTo(new BigDecimal("20000"));
         assertThat(result.items()).hasSize(1);
         
-        then(productBrandService).should().getBasic(1L);
+        then(productService).should().getBasic(1L);
         then(stockService).should().validateAndReduceStocks(anyList());
         then(orderService).should().createOrderWithValidatedItems(any(OrderCommand.Create.class), anyList());
         then(pointService).should(never()).deduct(any());
@@ -124,7 +123,7 @@ class OrderFacadeTest {
                 List.of(new OrderInfo.ItemInfo(1L, 1L, 2, new BigDecimal("10000"), new BigDecimal("20000")))
         );
         
-        given(productBrandService.getBasic(anyLong())).willReturn(productInfo);
+        given(productService.getBasic(anyLong())).willReturn(productInfo);
         given(orderService.createOrderWithValidatedItems(any(OrderCommand.Create.class), anyList()))
                 .willReturn(orderInfoWithPoint);
 
@@ -142,9 +141,8 @@ class OrderFacadeTest {
     @Test
     void createOrder_InsufficientStock() {
         // given
-        StockInfo insufficientStock = new StockInfo(1L, 1L, 1);
         
-        given(productBrandService.getBasic(anyLong())).willReturn(productInfo);
+        given(productService.getBasic(anyLong())).willReturn(productInfo);
         given(stockService.validateAndReduceStocks(anyList())).willThrow(
                 new CoreException(ErrorType.BAD_REQUEST, "재고가 부족합니다.")
         );

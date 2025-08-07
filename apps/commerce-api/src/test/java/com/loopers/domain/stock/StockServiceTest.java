@@ -1,5 +1,8 @@
 package com.loopers.domain.stock;
 
+import com.loopers.domain.product.*;
+import com.loopers.domain.product.dto.ProductStockCommand;
+import com.loopers.domain.product.dto.StockInfo;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,10 +26,10 @@ import static org.mockito.Mockito.never;
 class StockServiceTest {
 
     @Mock
-    private ProductStockRepository productStockRepository;
+    private ProductRepository productRepository;
 
     @InjectMocks
-    private StockService stockService;
+    private ProductStockService stockService;
 
     private ProductStock productStock;
 
@@ -41,7 +44,7 @@ class StockServiceTest {
         // given
         Long productId = 1L;
         
-        given(productStockRepository.findByProductId(productId)).willReturn(Optional.of(productStock));
+        given(productRepository.findStockByProductId(productId)).willReturn(Optional.of(productStock));
 
         // when
         StockInfo result = stockService.getStock(productId);
@@ -50,7 +53,7 @@ class StockServiceTest {
         assertThat(result.productId()).isEqualTo(productId);
         assertThat(result.quantity()).isEqualTo(100);
         
-        then(productStockRepository).should().findByProductId(productId);
+        then(productRepository).should().findStockByProductId(productId);
     }
 
     @DisplayName("존재하지 않는 상품의 재고 조회 시 예외가 발생한다")
@@ -59,7 +62,7 @@ class StockServiceTest {
         // given
         Long productId = 999L;
         
-        given(productStockRepository.findByProductId(productId)).willReturn(Optional.empty());
+        given(productRepository.findStockByProductId(productId)).willReturn(Optional.empty());
 
         // when
         StockInfo result = stockService.getStock(productId);
@@ -73,46 +76,46 @@ class StockServiceTest {
     @Test
     void increase_Success() {
         // given
-        StockCommand.Initialize command = new StockCommand.Initialize(1L, 50);
+        ProductStockCommand.Create command = new ProductStockCommand.Create(1L, 50);
         
-        given(productStockRepository.save(any(ProductStock.class))).willAnswer(invocation -> invocation.getArgument(0));
+        given(productRepository.save(any(ProductStock.class))).willAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        StockInfo result = stockService.initializeStock(command);
+        StockInfo result = stockService.create(command);
 
         // then
         assertThat(result.productId()).isEqualTo(1L);
         assertThat(result.quantity()).isEqualTo(50);
         
-        then(productStockRepository).should().save(any(ProductStock.class));
+        then(productRepository).should().save(any(ProductStock.class));
     }
 
     @DisplayName("존재하지 않는 상품의 재고 증가 시 예외가 발생한다")
     @Test
     void increase_ProductNotFound() {
         // given
-        StockCommand.Initialize command = new StockCommand.Initialize(999L, 50);
+        ProductStockCommand.Create command = new ProductStockCommand.Create(999L, 50);
         
-        given(productStockRepository.save(any(ProductStock.class))).willAnswer(invocation -> invocation.getArgument(0));
+        given(productRepository.save(any(ProductStock.class))).willAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        StockInfo result = stockService.initializeStock(command);
+        StockInfo result = stockService.create(command);
 
         // then - Initialize creates new stock regardless of existing stock
         assertThat(result.productId()).isEqualTo(999L);
         assertThat(result.quantity()).isEqualTo(50);
         
-        then(productStockRepository).should().save(any(ProductStock.class));
+        then(productRepository).should().save(any(ProductStock.class));
     }
 
     @DisplayName("재고 감소가 정상적으로 동작한다")
     @Test
     void reduce_Success() {
         // given
-        StockCommand.Reduce command = new StockCommand.Reduce(1L, 30);
+        ProductStockCommand.Reduce command = new ProductStockCommand.Reduce(1L, 30);
         
-        given(productStockRepository.findByProductId(1L)).willReturn(Optional.of(productStock));
-        given(productStockRepository.save(productStock)).willReturn(productStock);
+        given(productRepository.findStockByProductId(1L)).willReturn(Optional.of(productStock));
+        given(productRepository.save(productStock)).willReturn(productStock);
 
         // when
         StockInfo result = stockService.reduceStock(command);
@@ -121,17 +124,17 @@ class StockServiceTest {
         assertThat(result.productId()).isEqualTo(1L);
         assertThat(result.quantity()).isEqualTo(70);
         
-        then(productStockRepository).should().findByProductId(1L);
-        then(productStockRepository).should().save(productStock);
+        then(productRepository).should().findStockByProductId(1L);
+        then(productRepository).should().save(productStock);
     }
 
     @DisplayName("재고가 부족할 때 감소 시 예외가 발생한다")
     @Test
     void reduce_InsufficientStock() {
         // given
-        StockCommand.Reduce command = new StockCommand.Reduce(1L, 150);
+        ProductStockCommand.Reduce command = new ProductStockCommand.Reduce(1L, 150);
         
-        given(productStockRepository.findByProductId(1L)).willReturn(Optional.of(productStock));
+        given(productRepository.findStockByProductId(1L)).willReturn(Optional.of(productStock));
 
         // when & then
         assertThatThrownBy(() -> stockService.reduceStock(command))
@@ -139,6 +142,6 @@ class StockServiceTest {
                 .hasMessageContaining("재고가 부족합니다")
                 .extracting("errorType").isEqualTo(ErrorType.BAD_REQUEST);
         
-        then(productStockRepository).should(never()).save(any(ProductStock.class));
+        then(productRepository).should(never()).save(any(ProductStock.class));
     }
 }

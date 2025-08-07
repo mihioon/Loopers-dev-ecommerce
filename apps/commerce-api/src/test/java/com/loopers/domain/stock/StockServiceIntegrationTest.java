@@ -1,5 +1,8 @@
 package com.loopers.domain.stock;
 
+import com.loopers.domain.product.*;
+import com.loopers.domain.product.dto.ProductStockCommand;
+import com.loopers.domain.product.dto.StockInfo;
 import com.loopers.support.IntegrationTest;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
@@ -15,10 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class StockServiceIntegrationTest extends IntegrationTest {
 
     @Autowired
-    private StockService sut;
+    private ProductStockService sut;
 
     @Autowired
-    private ProductStockRepository productStockRepository;
+    private ProductRepository productRepository;
 
     @DisplayName("재고 차감")
     @Nested
@@ -31,9 +34,9 @@ public class StockServiceIntegrationTest extends IntegrationTest {
             // given
             final Long productId = 1L;
             final ProductStock stock = new ProductStock(productId, 100);
-            productStockRepository.save(stock);
+            productRepository.save(stock);
             
-            final StockCommand.Reduce command = new StockCommand.Reduce(productId, 30);
+            final ProductStockCommand.Reduce command = new ProductStockCommand.Reduce(productId, 30);
 
             // when
             final StockInfo actual = sut.reduceStock(command);
@@ -52,9 +55,9 @@ public class StockServiceIntegrationTest extends IntegrationTest {
             // given
             final Long productId = 1L;
             final ProductStock stock = new ProductStock(productId, 50);
-            productStockRepository.save(stock);
+            productRepository.save(stock);
             
-            final StockCommand.Reduce command = new StockCommand.Reduce(productId, 100); // 재고보다 많음
+            final ProductStockCommand.Reduce command = new ProductStockCommand.Reduce(productId, 100); // 재고보다 많음
 
             // when
             final CoreException actual = assertThrows(CoreException.class, () -> {
@@ -75,7 +78,7 @@ public class StockServiceIntegrationTest extends IntegrationTest {
         void throwsNotFoundException_whenProductNotFound() {
             // given
             final Long nonExistentProductId = 999L;
-            final StockCommand.Reduce command = new StockCommand.Reduce(nonExistentProductId, 10);
+            final ProductStockCommand.Reduce command = new ProductStockCommand.Reduce(nonExistentProductId, 10);
 
             // when
             final CoreException actual = assertThrows(CoreException.class, () -> {

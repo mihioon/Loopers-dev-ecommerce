@@ -1,10 +1,10 @@
 package com.loopers.interfaces.api.product;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.loopers.domain.catalog.product.Product;
-import com.loopers.domain.catalog.product.ProductRepository;
-import com.loopers.domain.catalog.brand.Brand;
-import com.loopers.domain.catalog.brand.BrandRepository;
+import com.loopers.domain.product.Product;
+import com.loopers.domain.product.ProductRepository;
+import com.loopers.domain.brand.Brand;
+import com.loopers.domain.brand.BrandRepository;
 import com.loopers.domain.like.ProductLike;
 import com.loopers.domain.like.ProductLikeRepository;
 import com.loopers.domain.user.*;
@@ -164,11 +164,11 @@ public class ProductV1ApiE2ETest extends E2EIntegrationTest {
             );
 
             product.addImage(new Product.ProductImage(
-                    null, "https://example.com/test-image.jpg", Product.ImageType.MAIN
+                    "https://example.com/test-image.jpg", Product.ImageType.MAIN
             ));
 
             product.setDetail(new Product.ProductDetail(
-                    null, "테스트 상품 상세 설명"
+                    "테스트 상품 상세 설명"
             ));
             
             Product savedProduct = productRepository.save(product);
@@ -209,11 +209,11 @@ public class ProductV1ApiE2ETest extends E2EIntegrationTest {
             );
 
             product.addImage(new Product.ProductImage(
-                    null, "https://example.com/test-image.jpg", Product.ImageType.MAIN
+                    "https://example.com/test-image.jpg", Product.ImageType.MAIN
             ));
 
             product.setDetail(new Product.ProductDetail(
-                    null, "테스트 상품 상세 설명"
+                    "테스트 상품 상세 설명"
             ));
 
             Product savedProduct = productRepository.save(product);

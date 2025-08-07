@@ -1,4 +1,4 @@
-package com.loopers.domain.stock;
+package com.loopers.domain.product;
 
 import com.loopers.domain.BaseEntity;
 import com.loopers.support.error.CoreException;
@@ -17,7 +17,6 @@ public class ProductStock extends BaseEntity {
     
     @Column(nullable = false)
     private Integer quantity;
-    
 
     public ProductStock(
             final Long productId,

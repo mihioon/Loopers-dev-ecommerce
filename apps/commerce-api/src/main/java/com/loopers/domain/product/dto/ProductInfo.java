@@ -1,47 +1,29 @@
-package com.loopers.domain.catalog.product;
+package com.loopers.domain.product.dto;
 
-import com.loopers.domain.catalog.brand.BrandInfo;
+import com.loopers.domain.brand.BrandInfo;
+import com.loopers.domain.product.Product;
+
 import java.math.BigDecimal;
 import java.util.List;
 
 public class ProductInfo {
-    public record Summery(
-            List<Summery.Item> products,
-            int currentPage,
-            int totalPages,
-            long totalElements,
-            boolean hasNext
+    public record Summary(
+            Long id,
+            String name,
+            String description,
+            BigDecimal price,
+            String category,
+            Long brandId
     ) {
-        public static Summery from(List<Product> products, int currentPage, int totalPages, long totalElements, boolean hasNext) {
-            return new Summery(
-                    products.stream()
-                            .map(Summery.Item::from)
-                            .toList(),
-                    currentPage,
-                    totalPages,
-                    totalElements,
-                    hasNext
+        public static Summary from(Product product) {
+            return new Summary(
+                    product.getId(),
+                    product.getName(),
+                    product.getDescription(),
+                    product.getPrice(),
+                    product.getCategory(),
+                    product.getBrandId()
             );
-        }
-
-        public record Item(
-                Long id,
-                String name,
-                String description,
-                BigDecimal price,
-                String category,
-                Long brandId
-        ) {
-            public static Item from(Product product) {
-                return new Item(
-                        product.getId(),
-                        product.getName(),
-                        product.getDescription(),
-                        product.getPrice(),
-                        product.getCategory(),
-                        product.getBrandId()
-                );
-            }
         }
     }
 
@@ -66,11 +48,10 @@ public class ProductInfo {
             BigDecimal price,
             String category,
             Long brandId,
-            BrandInfo brandInfo,
             List<ImageInfo> images,
             DetailInfo detail
     ) {
-        public static Detail from(Product product, List<ImageInfo> images, DetailInfo detail, BrandInfo brandInfo) {
+        public static Detail from(Product product) {
             return new Detail(
                     product.getId(),
                     product.getName(),
@@ -78,12 +59,12 @@ public class ProductInfo {
                     product.getPrice(),
                     product.getCategory(),
                     product.getBrandId(),
-                    brandInfo,
-                    images,
-                    detail
+                    product.getImages().stream()
+                            .map(ImageInfo::from)
+                            .toList(),
+                    product.getDetail() != null ? DetailInfo.from(product.getDetail()) : null
             );
         }
-
     }
 
     public record ImageInfo(

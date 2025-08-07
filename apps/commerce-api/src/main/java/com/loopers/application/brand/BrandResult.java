@@ -1,6 +1,6 @@
-package com.loopers.application.catalog.brand;
+package com.loopers.application.brand;
 
-import com.loopers.domain.catalog.brand.BrandInfo;
+import com.loopers.domain.brand.BrandInfo;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
 package com.loopers.interfaces.api.product;
 
-import com.loopers.application.catalog.product.ProductCriteria;
-import com.loopers.application.catalog.product.ProductFacade;
-import com.loopers.application.catalog.product.ProductResult;
+import com.loopers.application.product.ProductCriteria;
+import com.loopers.application.product.ProductFacade;
+import com.loopers.application.product.ProductResult;
 import com.loopers.interfaces.api.ApiResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +21,9 @@ public class ProductV1ApiController implements ProductV1ApiSpec {
             @ModelAttribute GetProducts.V1.Request request,
             @RequestHeader(value = "X-USER-ID", required = false) String loginId
     ) {
-        final ProductCriteria.Summery criteria = request.toCriteria(loginId);
+        final ProductCriteria.Summary criteria = request.toCriteria(loginId);
 
-        ProductResult.Summery result = productFacade.getProducts(criteria);
+        ProductResult.Summary result = productFacade.getSummary(criteria);
         GetProducts.V1.Response response = GetProducts.V1.Response.from(result);
         return ApiResponse.success(response);
     }
@@ -34,7 +34,7 @@ public class ProductV1ApiController implements ProductV1ApiSpec {
             @PathVariable @NotNull Long productId,
             @RequestHeader(value = "X-USER-ID", required = false) String loginId
     ) {
-        ProductResult.Detail result = productFacade.getProduct(productId, loginId);
+        ProductResult.Detail result = productFacade.getDetail(productId, loginId);
         GetProduct.V1.Response response = GetProduct.V1.Response.from(result);
         return ApiResponse.success(response);
     }

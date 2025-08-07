@@ -4,10 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loopers.domain.point.PointRepository;
 import com.loopers.domain.point.Point;
 import com.loopers.domain.point.Balance;
-import com.loopers.domain.catalog.product.Product;
-import com.loopers.domain.catalog.product.ProductRepository;
-import com.loopers.domain.stock.ProductStock;
-import com.loopers.domain.stock.ProductStockRepository;
+import com.loopers.domain.product.Product;
+import com.loopers.domain.product.ProductRepository;
+import com.loopers.domain.product.ProductStock;
 import com.loopers.domain.user.*;
 import com.loopers.support.E2EIntegrationTest;
 import org.junit.jupiter.api.DisplayName;
@@ -37,10 +36,7 @@ public class OrderV1ApiE2ETest extends E2EIntegrationTest {
     
     @Autowired
     private ProductRepository productRepository;
-    
-    @Autowired
-    private ProductStockRepository productStockRepository;
-    
+
     @Autowired
     private PointRepository pointRepository;
 
@@ -58,7 +54,7 @@ public class OrderV1ApiE2ETest extends E2EIntegrationTest {
         Long productId = savedProduct.getId();
         
         ProductStock stock = new ProductStock(productId, 100);
-        productStockRepository.save(stock);
+        productRepository.save(stock);
         
         // 포인트 데이터 추가
         Point point = new Point(userId, new Balance(10000L));
@@ -100,7 +96,7 @@ public class OrderV1ApiE2ETest extends E2EIntegrationTest {
         Long productId = savedProduct.getId();
         
         ProductStock stock = new ProductStock(productId, 100);
-        productStockRepository.save(stock);
+        productRepository.save(stock);
         
         // 포인트 데이터 추가
         Point point = new Point(userId, new Balance(10000L));
@@ -150,7 +146,7 @@ public class OrderV1ApiE2ETest extends E2EIntegrationTest {
         Long productId = savedProduct.getId();
         
         ProductStock stock = new ProductStock(productId, 100);
-        productStockRepository.save(stock);
+        productRepository.save(stock);
         
         // 포인트 데이터 추가
         Point point = new Point(userId, new Balance(10000L));
@@ -204,7 +200,7 @@ public class OrderV1ApiE2ETest extends E2EIntegrationTest {
         Long productId = savedProduct.getId();
         
         ProductStock stock = new ProductStock(productId, 1); // 재고 1개만
-        productStockRepository.save(stock);
+        productRepository.save(stock);
         
         // 포인트 데이터 추가
         Point point = new Point(userId, new Balance(10000L));
@@ -246,7 +242,7 @@ public class OrderV1ApiE2ETest extends E2EIntegrationTest {
         );
         
         // ProductDetail 추가 (ProductService.getDetail에서 필요)
-        Product.ProductDetail detail = new Product.ProductDetail(null, "테스트 상품 상세 설명");
+        Product.ProductDetail detail = new Product.ProductDetail("테스트 상품 상세 설명");
         product.setDetail(detail);
         
         return product;

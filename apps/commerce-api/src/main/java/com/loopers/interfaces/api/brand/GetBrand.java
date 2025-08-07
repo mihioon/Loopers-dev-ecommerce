@@ -1,7 +1,7 @@
 package com.loopers.interfaces.api.brand;
 
-import com.loopers.application.catalog.brand.BrandResult;
-import com.loopers.domain.catalog.brand.BrandInfo;
+import com.loopers.application.brand.BrandResult;
+import com.loopers.domain.brand.BrandInfo;
 
 import java.util.List;
 

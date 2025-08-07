@@ -1,7 +1,7 @@
 package com.loopers.interfaces.api.product;
 
-import com.loopers.application.catalog.product.ProductCriteria;
-import com.loopers.application.catalog.product.ProductResult;
+import com.loopers.application.product.ProductCriteria;
+import com.loopers.application.product.ProductResult;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -16,8 +16,8 @@ public record GetProducts() {
                 int size
         ) {
             //toCriteria
-            public ProductCriteria.Summery toCriteria(String loginId) {
-                return new ProductCriteria.Summery(
+            public ProductCriteria.Summary toCriteria(String loginId) {
+                return new ProductCriteria.Summary(
                         category,
                         brandId,
                         sortType,
@@ -35,7 +35,7 @@ public record GetProducts() {
                 long totalElements,
                 boolean hasNext
         ) {
-            public static Response from(ProductResult.Summery result) {
+            public static Response from(ProductResult.Summary result) {
                 List<Response.Item> responseItems = result.products().stream()
                         .map(Response.Item::from)
                         .toList();
@@ -59,16 +59,16 @@ public record GetProducts() {
                     Long likeCount,
                     Boolean isLikedByUser
             ){
-                public static Item from(ProductResult.Summery.Item summeryItem) {
+                public static Item from(ProductResult.Summary.Item summaryItem) {
                     return new Item(
-                            summeryItem.id(),
-                            summeryItem.name(),
-                            summeryItem.description(),
-                            summeryItem.price(),
-                            summeryItem.category(),
-                            summeryItem.brandId(),
-                            summeryItem.likeCount(),
-                            summeryItem.isLikedByUser()
+                            summaryItem.id(),
+                            summaryItem.name(),
+                            summaryItem.description(),
+                            summaryItem.price(),
+                            summaryItem.category(),
+                            summaryItem.brandId(),
+                            summaryItem.likeCount(),
+                            summaryItem.isLikedByUser()
                     );
                 }
             }

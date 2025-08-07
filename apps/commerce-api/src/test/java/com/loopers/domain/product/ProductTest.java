@@ -1,6 +1,5 @@
 package com.loopers.domain.product;
 
-import com.loopers.domain.catalog.product.Product;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import org.junit.jupiter.api.DisplayName;
@@ -158,7 +157,7 @@ public class ProductTest {
             final Product.ImageType imageType = Product.ImageType.MAIN;
 
             // when
-            final Product.ProductImage actual = new Product.ProductImage(productId, imageUrl, imageType);
+            final Product.ProductImage actual = new Product.ProductImage(imageUrl, imageType);
 
             // then
             assertThat(actual.getImageUrl()).isEqualTo(imageUrl);
@@ -179,7 +178,7 @@ public class ProductTest {
 
             // when
             final Product.ProductDetail actual = new Product.ProductDetail(
-                    productId, description
+                    description
             );
 
             // then

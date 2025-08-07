@@ -1,6 +1,6 @@
 package com.loopers.domain.like;
 
-import com.loopers.domain.catalog.product.ProductInfo;
+import com.loopers.domain.product.dto.ProductInfo;
 
 import java.util.List;
 
@@ -20,9 +20,9 @@ public class LikeCommand {
     public record GetLikeCount(
             List<Long> productIds
     ) {
-        public static GetLikeCount from(ProductInfo.Summery summery) {
-            return new GetLikeCount(summery.products().stream()
-                    .map(ProductInfo.Summery.Item::id)
+        public static GetLikeCount from(List<ProductInfo.Summary> summary) {
+            return new GetLikeCount(summary.stream()
+                    .map(ProductInfo.Summary::id)
                     .toList());
         }
 
@@ -35,9 +35,9 @@ public class LikeCommand {
             List<Long> productIds,
             Long userId
     ) {
-        public static GetLikedByUser from(ProductInfo.Summery summery, Long userId) {
-            return new GetLikedByUser(summery.products().stream()
-                    .map(ProductInfo.Summery.Item::id)
+        public static GetLikedByUser from(List<ProductInfo.Summary> summary, Long userId) {
+            return new GetLikedByUser(summary.stream()
+                    .map(ProductInfo.Summary::id)
                     .toList(), userId);
         }
     }

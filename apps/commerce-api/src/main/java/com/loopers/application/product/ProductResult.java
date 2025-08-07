@@ -1,36 +1,39 @@
-package com.loopers.application.catalog.product;
+package com.loopers.application.product;
 
-import com.loopers.domain.catalog.brand.BrandInfo;
-import com.loopers.domain.like.LikeCountInfo;
-import com.loopers.domain.catalog.product.ProductInfo;
-import com.loopers.domain.stock.StockInfo;
+import com.loopers.domain.brand.BrandInfo;
+import com.loopers.domain.like.LikeInfo;
+import com.loopers.domain.product.dto.ProductInfo;
+import com.loopers.domain.product.dto.StockInfo;
+import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 public class ProductResult{
-    public record Summery(
-            List<Summery.Item> products,
+    public record Summary(
+            List<Summary.Item> products,
             int currentPage,
             int totalPages,
             long totalElements,
             boolean hasNext
     ) {
-        public static Summery from(
-                ProductInfo.Summery productInfo,
-                LikeCountInfo likeCount,
-                LikeCountInfo isLikedByUser
+        public static Summary from(
+                Page<ProductInfo.Summary> productInfo,
+                LikeInfo likeInfo
         ) {
-            return new Summery(
-                    productInfo.products().stream()
-                            .map(item -> Item.from(item, 
-                                    likeCount != null ? likeCount.likeCounts().get(item.id()) : null,
-                                    isLikedByUser != null && isLikedByUser.likeCounts().get(item.id()) == 1L
-                            ))
-                            .toList(),
-                    productInfo.currentPage(),
-                    productInfo.totalPages(),
-                    productInfo.totalElements(),
+            List<Item> items = productInfo.getContent().stream()
+                    .map(product -> Item.from(
+                            product,
+                            likeInfo.productLikeCount().likeCounts().getOrDefault(product.id(), 0L),
+                            likeInfo.userLiked().isLiked(product.id())
+                    ))
+                    .toList();
+
+            return new Summary(
+                    items,
+                    productInfo.getNumber(),
+                    productInfo.getTotalPages(),
+                    productInfo.getTotalElements(),
                     productInfo.hasNext()
             );
         }
@@ -45,8 +48,8 @@ public class ProductResult{
                 Long likeCount,
                 Boolean isLikedByUser
         ) {
-            public static Summery.Item from(ProductInfo.Summery.Item productInfo, Long likeCount, Boolean isLikedByUser) {
-                return new Summery.Item(
+            public static Summary.Item from(ProductInfo.Summary productInfo, Long likeCount, Boolean isLikedByUser) {
+                return new Summary.Item(
                         productInfo.id(),
                         productInfo.name(),
                         productInfo.description(),
@@ -75,6 +78,7 @@ public class ProductResult{
     ) {
         public static ProductResult.Detail from(
                 ProductInfo.Detail productInfo,
+                BrandInfo brandInfo,
                 StockInfo stockInfo,
                 Long likeCount,
                 Boolean isLikedByUser
@@ -86,7 +90,7 @@ public class ProductResult{
                     productInfo.price(),
                     productInfo.category(),
                     productInfo.brandId(),
-                    productInfo.brandInfo(),
+                    brandInfo,
                     stockInfo.quantity(),
                     productInfo.images().stream()
                             .map(ProductResult.ImageInfo::from)

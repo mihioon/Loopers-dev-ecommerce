@@ -1,4 +1,4 @@
-package com.loopers.domain.catalog.brand;
+package com.loopers.domain.brand;
 
 import java.util.List;
 

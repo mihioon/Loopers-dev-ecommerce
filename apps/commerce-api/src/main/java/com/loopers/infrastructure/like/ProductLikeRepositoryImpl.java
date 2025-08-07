@@ -5,10 +5,7 @@ import com.loopers.domain.like.ProductLikeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 @RequiredArgsConstructor
@@ -36,6 +33,11 @@ public class ProductLikeRepositoryImpl implements ProductLikeRepository {
         return productLikeJpaRepository.countByProductId(productId);
     }
 
+    @Override
+    public List<ProductLike> findLikeCounts(List<Long> productIds) {
+        return productLikeJpaRepository.findByProductIdIn(productIds);
+    }
+
     public Map<Long, Long> getLikeCounts(List<Long> productIds) {
         List<Object[]> results = productLikeJpaRepository.countByProductIds(productIds);
         Map<Long, Long> likeCountMap = new HashMap<>();
@@ -54,6 +56,12 @@ public class ProductLikeRepositoryImpl implements ProductLikeRepository {
         return likeCountMap;
     }
 
+    @Override
+    public Set<Long> getLikedProductIds(Long userId, List<Long> productIds) {
+        return productLikeJpaRepository.getLikedProductIds(productIds, userId);
+    }
+
+    @Override
     public boolean isLikedByUser(Long productId, Long userId) {
         return productLikeJpaRepository.existsByProductIdAndUserId(productId, userId);
     }

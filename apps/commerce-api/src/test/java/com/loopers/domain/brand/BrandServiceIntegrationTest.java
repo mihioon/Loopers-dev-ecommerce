@@ -1,6 +1,5 @@
 package com.loopers.domain.brand;
 
-import com.loopers.domain.catalog.brand.*;
 import com.loopers.support.IntegrationTest;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
@@ -92,13 +91,13 @@ public class BrandServiceIntegrationTest extends IntegrationTest {
             List<BrandInfo.BrandImageInfo> images = List.of();
 
             // when
-            BrandInfo actual = sut.get(brand.getId());
+            BrandInfo actual = sut.getBy(brand.getId());
 
             // then
             assertThat(actual)
                     .usingRecursiveComparison()
                     .isNotNull()
-                    .isEqualTo(BrandInfo.from(brand, images));
+                    .isEqualTo(BrandInfo.from(brand));
         }
 
         @DisplayName("해당 ID의 브랜드가 존재하지 않을 경우, NOT_FOUND 예외가 반환된다.")
@@ -109,7 +108,7 @@ public class BrandServiceIntegrationTest extends IntegrationTest {
 
             // when
             CoreException actual = assertThrows(CoreException.class, () -> {
-                sut.get(brandId);
+                sut.getBy(brandId);
             });
 
             // then

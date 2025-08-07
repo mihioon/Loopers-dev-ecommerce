@@ -3,10 +3,9 @@ package com.loopers.application.order;
 import com.loopers.domain.point.Point;
 import com.loopers.domain.point.PointRepository;
 import com.loopers.domain.point.Balance;
-import com.loopers.domain.catalog.product.Product;
-import com.loopers.domain.catalog.product.ProductRepository;
-import com.loopers.domain.stock.ProductStock;
-import com.loopers.domain.stock.ProductStockRepository;
+import com.loopers.domain.product.Product;
+import com.loopers.domain.product.ProductRepository;
+import com.loopers.domain.product.ProductStock;
 import com.loopers.domain.user.*;
 import com.loopers.support.IntegrationTest;
 import com.loopers.support.error.CoreException;
@@ -34,9 +33,6 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
     private ProductRepository productRepository;
     
     @Autowired
-    private ProductStockRepository productStockRepository;
-    
-    @Autowired
     private PointRepository pointRepository;
 
     @DisplayName("정상 주문 생성 통합 테스트")
@@ -53,7 +49,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
         Long productId = savedProduct.getId();
         
         ProductStock stock = new ProductStock(productId, 100);
-        productStockRepository.save(stock);
+        productRepository.save(stock);
         
         // 포인트 데이터 추가
         Point point = new Point(userId, new Balance(10000L));
@@ -88,7 +84,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
         Long productId = savedProduct.getId();
         
         ProductStock stock = new ProductStock(productId, 1); // 재고 1개만
-        productStockRepository.save(stock);
+        productRepository.save(stock);
         
         // 포인트 데이터 추가
         Point point = new Point(userId, new Balance(10000L));
@@ -145,7 +141,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
         Long productId = savedProduct.getId();
         
         ProductStock stock = new ProductStock(productId, 100);
-        productStockRepository.save(stock);
+        productRepository.save(stock);
         
         // 포인트 데이터 추가
         Point point = new Point(userId, new Balance(10000L));
@@ -180,7 +176,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
         Long productId = savedProduct.getId();
         
         ProductStock stock = new ProductStock(productId, 100);
-        productStockRepository.save(stock);
+        productRepository.save(stock);
         
         // 포인트 데이터 추가
         Point point = new Point(userId, new Balance(50000L));
@@ -224,7 +220,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
         );
         
         // ProductDetail 추가 (ProductService.getDetail에서 필요)
-        Product.ProductDetail detail = new Product.ProductDetail(null, "테스트 상품 상세 설명");
+        Product.ProductDetail detail = new Product.ProductDetail("테스트 상품 상세 설명");
         product.setDetail(detail);
         
         return product;

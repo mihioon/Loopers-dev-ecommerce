@@ -1,7 +1,7 @@
 package com.loopers.interfaces.api.brand;
 
-import com.loopers.application.catalog.brand.BrandFacade;
-import com.loopers.application.catalog.brand.BrandResult;
+import com.loopers.application.brand.BrandFacade;
+import com.loopers.application.brand.BrandResult;
 import com.loopers.interfaces.api.ApiResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;

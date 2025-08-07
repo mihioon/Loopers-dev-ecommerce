@@ -1,7 +1,7 @@
 package com.loopers.infrastructure.brand;
 
-import com.loopers.domain.catalog.brand.Brand;
-import com.loopers.domain.catalog.brand.BrandRepository;
+import com.loopers.domain.brand.*;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +11,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Component
 public class BrandRepositoryImpl implements BrandRepository {
+    private final JPAQueryFactory queryFactory;
+
+    private static final QBrand brand = QBrand.brand;
+    private static final QBrandImage image = QBrandImage.brandImage;
+
     private final BrandJpaRepository brandJpaRepository;
 
     @Override
@@ -30,7 +35,7 @@ public class BrandRepositoryImpl implements BrandRepository {
 
     // BrandImage 관련 메서드들
     @Override
-    public Brand.BrandImage save(final Brand.BrandImage brandImage) {
+    public BrandImage save(final BrandImage brandImage) {
         // BrandImage는 Brand를 통해서 저장됩니다
         Brand brand = brandImage.getBrand();
         if (brand != null) {
@@ -40,7 +45,7 @@ public class BrandRepositoryImpl implements BrandRepository {
     }
 
     @Override
-    public List<Brand.BrandImage> saveAll(final List<Brand.BrandImage> brandImages) {
+    public List<BrandImage> saveAll(final List<BrandImage> brandImages) {
         // 각 BrandImage의 Brand를 저장
         brandImages.forEach(image -> {
             Brand brand = image.getBrand();
@@ -52,12 +57,22 @@ public class BrandRepositoryImpl implements BrandRepository {
     }
 
     @Override
-    public Optional<Brand.BrandImage> findBrandImageById(final Long brandImageId) {
+    public Optional<BrandImage> findBrandImageById(final Long brandImageId) {
         return brandJpaRepository.findBrandImageById(brandImageId);
     }
 
     @Override
-    public List<Brand.BrandImage> findBrandImagesByBrandId(final Long brandId) {
+    public List<BrandImage> findBrandImagesByBrandId(final Long brandId) {
         return brandJpaRepository.findBrandImagesByBrandId(brandId);
     }
+
+    public Optional<Brand> findWithImagesById(Long brandId) {
+        return Optional.ofNullable(
+                queryFactory.selectFrom(brand)
+                        .leftJoin(brand.images, image).fetchJoin()
+                        .where(brand.id.eq(brandId))
+                        .fetchOne()
+        );
+    }
+
 }

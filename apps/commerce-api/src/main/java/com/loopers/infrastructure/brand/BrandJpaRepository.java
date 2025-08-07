@@ -1,6 +1,7 @@
 package com.loopers.infrastructure.brand;
 
-import com.loopers.domain.catalog.brand.Brand;
+import com.loopers.domain.brand.Brand;
+import com.loopers.domain.brand.BrandImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,8 +16,8 @@ public interface BrandJpaRepository extends JpaRepository<Brand, Long> {
 
     // BrandImage 관련 쿼리 메서드들
     @Query("SELECT bi FROM Brand b JOIN b.images bi WHERE b.id = :brandId")
-    List<Brand.BrandImage> findBrandImagesByBrandId(@Param("brandId") Long brandId);
+    List<BrandImage> findBrandImagesByBrandId(@Param("brandId") Long brandId);
 
     @Query("SELECT bi FROM Brand b JOIN b.images bi WHERE bi.id = :imageId")
-    Optional<Brand.BrandImage> findBrandImageById(@Param("imageId") Long imageId);
+    Optional<BrandImage> findBrandImageById(@Param("imageId") Long imageId);
 }

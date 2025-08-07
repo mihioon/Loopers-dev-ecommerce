@@ -1,9 +1,7 @@
-package com.loopers.domain.catalog.product;
+package com.loopers.domain.product.dto;
 
-import java.math.BigDecimal;
-
-public class ProductCommand {
-    public record Summery (
+public class ProductQuery {
+    public record Summary(
             String category,
             Long brandId,
             SortType sortType,
@@ -42,27 +40,4 @@ public class ProductCommand {
             }
         }
     }
-
-    public record Create(
-            String name,
-            String description, 
-            BigDecimal price,
-            String category,
-            Long brandId,
-            Integer initialStock,
-            java.util.List<ImageCommand> images,
-            DetailCommand detail
-    ) {}
-
-    public record ImageCommand(
-            String imageUrl,
-            Product.ImageType imageType
-    ) {}
-
-    public record DetailCommand(
-            String detailContent,
-            String specifications,
-            String materialInfo,
-            String careInstructions
-    ) {}
 }

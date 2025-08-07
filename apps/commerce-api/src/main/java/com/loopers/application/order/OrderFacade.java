@@ -1,7 +1,5 @@
 package com.loopers.application.order;
 
-import com.loopers.domain.catalog.ProductBrandService;
-import com.loopers.domain.catalog.product.ProductInfo;
 import com.loopers.domain.order.OrderCommand;
 import com.loopers.domain.order.OrderInfo;
 import com.loopers.domain.order.OrderItem;
@@ -10,7 +8,9 @@ import com.loopers.domain.payment.PaymentCommand;
 import com.loopers.domain.payment.PaymentService;
 import com.loopers.domain.point.PointService;
 import com.loopers.domain.point.PointCommand;
-import com.loopers.domain.stock.StockService;
+import com.loopers.domain.product.ProductService;
+import com.loopers.domain.product.ProductStockService;
+import com.loopers.domain.product.dto.ProductInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,17 +24,17 @@ public class OrderFacade {
     
     private final OrderService orderService;
     private final PaymentService paymentService;
-    private final StockService stockService;
     private final PointService pointService;
-    private final ProductBrandService productBrandService;
+    private final ProductService productService;
+    private final ProductStockService stockService;
 
     @Transactional(rollbackFor = Exception.class)
     public OrderResult.Detail createOrder(OrderCriteria.Create criteria) {
         // 1. 상품 정보 조회 및 검증
         List<OrderItem> orderItems = criteria.items().stream()
                 .map(item -> {
-                    ProductInfo.Basic productInfo = productBrandService.getBasic(item.productId());
-                    return new OrderItem(item.productId(), item.quantity(), productInfo.price());
+                    ProductInfo.Basic product = productService.getBasic(item.productId());
+                    return new OrderItem(item.productId(), item.quantity(), product.price());
                 })
                 .toList();
 

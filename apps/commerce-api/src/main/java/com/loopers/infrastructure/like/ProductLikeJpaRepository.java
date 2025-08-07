@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface ProductLikeJpaRepository extends JpaRepository<ProductLike, Long> {
     
@@ -19,7 +20,10 @@ public interface ProductLikeJpaRepository extends JpaRepository<ProductLike, Lon
     boolean existsByProductIdAndUserId(Long productId, Long userId);
     
     void deleteByProductIdAndUserId(Long productId, Long userId);
-    
+
+    @Query("SELECT pl.productId FROM ProductLike pl WHERE pl.productId IN :productIds AND pl.userId = :userId")
+    Set<Long> getLikedProductIds(@Param("productIds") List<Long> productIds, @Param("userId") Long userId);
+
     @Query("SELECT COUNT(pl) FROM ProductLike pl WHERE pl.productId = :productId")
     long countByProductId(@Param("productId") Long productId);
     
