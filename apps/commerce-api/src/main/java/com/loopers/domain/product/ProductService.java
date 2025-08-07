@@ -52,6 +52,12 @@ public class ProductService {
         return ProductInfo.Basic.from(product);
     }
 
+    public List<ProductInfo.Basic> getBasics(final List<Long> productIds) {
+        return productRepository.findByIds(productIds).stream()
+                .map(ProductInfo.Basic::from)
+                .toList();
+    }
+
     @Transactional(readOnly = true)
     public ProductInfo.Detail getDetail(final Long productId) {
         final Product product = productRepository.findByIdWithImagesAndDetail(productId)

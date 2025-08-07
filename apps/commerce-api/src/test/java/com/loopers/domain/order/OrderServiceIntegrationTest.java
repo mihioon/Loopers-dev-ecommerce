@@ -48,8 +48,11 @@ public class OrderServiceIntegrationTest extends IntegrationTest {
         );
         OrderCommand.Create command = new OrderCommand.Create(1L, commandItems, BigDecimal.ZERO);
 
-        // when - 주문 생성
-        OrderInfo.Detail orderResult = orderService.createOrder(command);
+        // when - 주문 생성 (OrderItem 직접 생성)
+        List<OrderItem> orderItems = command.items().stream()
+                .map(item -> new OrderItem(item.productId(), item.quantity(), new BigDecimal("10000")))
+                .toList();
+        OrderInfo.Detail orderResult = orderService.createOrder(command, orderItems);
 
         // then - 주문 생성 검증
         assertThat(orderResult.userId()).isEqualTo(1L);
@@ -78,7 +81,10 @@ public class OrderServiceIntegrationTest extends IntegrationTest {
                 new OrderCommand.Create.Item(1L, 1)
         );
         OrderCommand.Create command = new OrderCommand.Create(1L, commandItems, BigDecimal.ZERO);
-        OrderInfo.Detail createdOrder = orderService.createOrder(command);
+        List<OrderItem> orderItems = command.items().stream()
+                .map(item -> new OrderItem(item.productId(), item.quantity(), new BigDecimal("10000")))
+                .toList();
+        OrderInfo.Detail createdOrder = orderService.createOrder(command, orderItems);
 
         // when - 주문 조회
         OrderInfo.Detail result = orderService.getOrder(createdOrder.id());
@@ -108,14 +114,20 @@ public class OrderServiceIntegrationTest extends IntegrationTest {
                 new OrderCommand.Create.Item(1L, 1)
         );
         OrderCommand.Create command1 = new OrderCommand.Create(1L, commandItems1, BigDecimal.ZERO);
-        orderService.createOrder(command1);
+        List<OrderItem> orderItems1 = command1.items().stream()
+                .map(item -> new OrderItem(item.productId(), item.quantity(), new BigDecimal("10000")))
+                .toList();
+        orderService.createOrder(command1, orderItems1);
 
         // 두 번째 주문
         List<OrderCommand.Create.Item> commandItems2 = List.of(
                 new OrderCommand.Create.Item(2L, 1)
         );
         OrderCommand.Create command2 = new OrderCommand.Create(1L, commandItems2, BigDecimal.ZERO);
-        orderService.createOrder(command2);
+        List<OrderItem> orderItems2 = command2.items().stream()
+                .map(item -> new OrderItem(item.productId(), item.quantity(), new BigDecimal("20000")))
+                .toList();
+        orderService.createOrder(command2, orderItems2);
 
         // when - 사용자 주문 목록 조회
         List<OrderInfo.Detail> results = orderService.getUserOrders(1L);

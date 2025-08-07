@@ -8,7 +8,9 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Component
@@ -42,5 +44,13 @@ public class CouponService {
         } catch (ObjectOptimisticLockingFailureException | StaleObjectStateException e) {
             throw new CoreException(ErrorType.BAD_REQUEST, "이미 사용된 쿠폰입니다.");
         }
+    }
+
+    public List<CouponInfo.Discount> getByIds(List<Long> couponIds, Long userId){
+        return null;
+    }
+
+    public BigDecimal calculateTotalAmount(List<CouponInfo.Discount> couponDiscounts) {
+        return null;
     }
 }

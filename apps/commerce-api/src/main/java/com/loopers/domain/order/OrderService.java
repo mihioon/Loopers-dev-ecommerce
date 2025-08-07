@@ -1,5 +1,6 @@
 package com.loopers.domain.order;
 
+import com.loopers.domain.coupon.CouponInfo;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -16,18 +17,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
 
     @Transactional(rollbackFor = Exception.class)
-    public OrderInfo.Detail createOrder(OrderCommand.Create command) {
-        List<OrderItem> orderItems = command.items().stream()
-                .map(item -> new OrderItem(item.productId(), item.quantity(), BigDecimal.valueOf(10000))) // TODO: 실제 상품 가격 조회 필요
-                .toList();
-        
-        Order order = new Order(command.userId(), orderItems);
-        Order savedOrder = orderRepository.save(order);
-        return OrderInfo.Detail.from(savedOrder, command.pointAmount());
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    public OrderInfo.Detail createOrderWithValidatedItems(OrderCommand.Create command, List<OrderItem> validatedItems) {
+    public OrderInfo.Detail createOrder(OrderCommand.Create command, List<OrderItem> validatedItems) {
         Order order = new Order(command.userId(), validatedItems);
         Order savedOrder = orderRepository.save(order);
         return OrderInfo.Detail.from(savedOrder, command.pointAmount());
@@ -47,5 +37,18 @@ public class OrderService {
         return orders.stream()
                 .map(order -> OrderInfo.Detail.from(order, BigDecimal.ZERO))
                 .toList();
+    }
+
+    public BigDecimal calculateTotalAmount(List<OrderItem> orderItems, BigDecimal couponDiscount, BigDecimal pointAmount) {
+        BigDecimal itemsTotal = orderItems.stream()
+                .map(OrderItem::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        
+        BigDecimal couponDiscountAmount = couponDiscount != null ? couponDiscount : BigDecimal.ZERO;
+        BigDecimal pointDiscount = pointAmount != null ? pointAmount : BigDecimal.ZERO;
+        
+        BigDecimal totalAmount = itemsTotal.subtract(couponDiscountAmount).subtract(pointDiscount);
+        
+        return totalAmount.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : totalAmount;
     }
 }

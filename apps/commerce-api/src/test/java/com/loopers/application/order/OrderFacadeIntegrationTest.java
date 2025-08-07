@@ -56,7 +56,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
         pointRepository.save(point);
 
         OrderCriteria.Create.Item item = new OrderCriteria.Create.Item(productId, 2);
-        OrderCriteria.Create criteria = new OrderCriteria.Create(userId, List.of(item), BigDecimal.ZERO);
+        OrderCriteria.Create criteria = new OrderCriteria.Create(userId, List.of(item), BigDecimal.ZERO, List.of());
 
         // when
         OrderResult.Detail result = orderFacade.createOrder(criteria);
@@ -91,7 +91,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
         pointRepository.save(point);
 
         OrderCriteria.Create.Item item = new OrderCriteria.Create.Item(productId, 5); // 5개 주문
-        OrderCriteria.Create criteria = new OrderCriteria.Create(userId, List.of(item), BigDecimal.ZERO);
+        OrderCriteria.Create criteria = new OrderCriteria.Create(userId, List.of(item), BigDecimal.ZERO, List.of());
 
         // when & then
         CoreException exception = assertThrows(CoreException.class, () -> {
@@ -115,7 +115,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
         pointRepository.save(point);
         
         OrderCriteria.Create.Item item = new OrderCriteria.Create.Item(999L, 1); // 존재하지 않는 상품 ID
-        OrderCriteria.Create criteria = new OrderCriteria.Create(userId, List.of(item), BigDecimal.ZERO);
+        OrderCriteria.Create criteria = new OrderCriteria.Create(userId, List.of(item), BigDecimal.ZERO, List.of());
 
         // when & then
         CoreException exception = assertThrows(CoreException.class, () -> {
@@ -149,7 +149,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
 
         // 주문 생성
         OrderCriteria.Create.Item item = new OrderCriteria.Create.Item(productId, 2);
-        OrderCriteria.Create createCriteria = new OrderCriteria.Create(userId, List.of(item), BigDecimal.ZERO);
+        OrderCriteria.Create createCriteria = new OrderCriteria.Create(userId, List.of(item), BigDecimal.ZERO, List.of());
         OrderResult.Detail createdOrder = orderFacade.createOrder(createCriteria);
 
         // when
@@ -184,11 +184,11 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
 
         // 주문 2개 생성
         OrderCriteria.Create.Item item1 = new OrderCriteria.Create.Item(productId, 1);
-        OrderCriteria.Create createCriteria1 = new OrderCriteria.Create(userId, List.of(item1), BigDecimal.ZERO);
+        OrderCriteria.Create createCriteria1 = new OrderCriteria.Create(userId, List.of(item1), BigDecimal.ZERO, List.of());
         orderFacade.createOrder(createCriteria1);
         
         OrderCriteria.Create.Item item2 = new OrderCriteria.Create.Item(productId, 2);
-        OrderCriteria.Create createCriteria2 = new OrderCriteria.Create(userId, List.of(item2), BigDecimal.ZERO);
+        OrderCriteria.Create createCriteria2 = new OrderCriteria.Create(userId, List.of(item2), BigDecimal.ZERO, List.of());
         orderFacade.createOrder(createCriteria2);
 
         // when

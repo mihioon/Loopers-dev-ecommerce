@@ -11,6 +11,7 @@ import com.loopers.domain.point.PointService;
 import com.loopers.domain.product.dto.StockInfo;
 import com.loopers.domain.product.ProductService;
 import com.loopers.domain.product.ProductStockService;
+import com.loopers.domain.coupon.CouponService;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,6 +52,9 @@ class OrderFacadeTest {
     @Mock
     private ProductStockService stockService;
 
+    @Mock
+    private CouponService couponService;
+
     @InjectMocks
     private OrderFacade orderFacade;
 
@@ -67,7 +71,8 @@ class OrderFacadeTest {
         criteria = new OrderCriteria.Create(
                 userId,
                 List.of(new OrderCriteria.Create.Item(productId, 2)),
-                BigDecimal.ZERO
+                BigDecimal.ZERO,
+                List.of()
         );
         
         productInfo = new ProductInfo.Basic(productId, "테스트 상품", price);
@@ -86,8 +91,9 @@ class OrderFacadeTest {
     @Test
     void createOrder_Success() {
         // given
-        given(productService.getBasic(anyLong())).willReturn(productInfo);
-        given(orderService.createOrderWithValidatedItems(any(OrderCommand.Create.class), anyList()))
+        given(productService.getBasics(anyList())).willReturn(List.of(productInfo));
+        given(couponService.getByIds(anyList(), anyLong())).willReturn(List.of());
+        given(orderService.createOrder(any(OrderCommand.Create.class), anyList()))
                 .willReturn(orderInfo);
 
         // when
@@ -98,9 +104,9 @@ class OrderFacadeTest {
         assertThat(result.totalAmount()).isEqualTo(new BigDecimal("20000"));
         assertThat(result.items()).hasSize(1);
         
-        then(productService).should().getBasic(1L);
+        then(productService).should().getBasics(anyList());
         then(stockService).should().validateAndReduceStocks(anyList());
-        then(orderService).should().createOrderWithValidatedItems(any(OrderCommand.Create.class), anyList());
+        then(orderService).should().createOrder(any(OrderCommand.Create.class), anyList());
         then(pointService).should(never()).deduct(any());
         then(paymentService).should().processPayment(any(PaymentCommand.Process.class));
     }
@@ -112,7 +118,8 @@ class OrderFacadeTest {
         OrderCriteria.Create criteriaWithPoint = new OrderCriteria.Create(
                 1L,
                 List.of(new OrderCriteria.Create.Item(1L, 2)),
-                new BigDecimal("5000")
+                new BigDecimal("5000"),
+                List.of()
         );
         
         OrderInfo.Detail orderInfoWithPoint = new OrderInfo.Detail(
@@ -123,8 +130,9 @@ class OrderFacadeTest {
                 List.of(new OrderInfo.ItemInfo(1L, 1L, 2, new BigDecimal("10000"), new BigDecimal("20000")))
         );
         
-        given(productService.getBasic(anyLong())).willReturn(productInfo);
-        given(orderService.createOrderWithValidatedItems(any(OrderCommand.Create.class), anyList()))
+        given(productService.getBasics(anyList())).willReturn(List.of(productInfo));
+        given(couponService.getByIds(anyList(), anyLong())).willReturn(List.of());
+        given(orderService.createOrder(any(OrderCommand.Create.class), anyList()))
                 .willReturn(orderInfoWithPoint);
 
         // when
@@ -142,7 +150,8 @@ class OrderFacadeTest {
     void createOrder_InsufficientStock() {
         // given
         
-        given(productService.getBasic(anyLong())).willReturn(productInfo);
+        given(productService.getBasics(anyList())).willReturn(List.of(productInfo));
+        given(couponService.getByIds(anyList(), anyLong())).willReturn(List.of());
         given(stockService.validateAndReduceStocks(anyList())).willThrow(
                 new CoreException(ErrorType.BAD_REQUEST, "재고가 부족합니다.")
         );
@@ -154,7 +163,7 @@ class OrderFacadeTest {
                 .extracting("errorType").isEqualTo(ErrorType.BAD_REQUEST);
         
         then(stockService).should().validateAndReduceStocks(anyList());
-        then(orderService).should(never()).createOrderWithValidatedItems(any(), anyList());
+        then(orderService).should(never()).createOrder(any(), anyList());
     }
 
     @DisplayName("주문 조회가 정상적으로 동작한다")
