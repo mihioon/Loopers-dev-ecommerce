@@ -1,0 +1,30 @@
+package com.loopers.domain.coupon;
+
+import java.math.BigDecimal;
+import java.time.ZonedDateTime;
+
+public class CouponInfo {
+    public record Issue(
+            Long id,
+            Long userId,
+            boolean isUsed,
+            CouponType type,
+            BigDecimal value,
+            Long expiresInDays,
+            ZonedDateTime issuedAt,
+            ZonedDateTime expiresAt
+    ) {
+        public static CouponInfo.Issue from(IssuedCoupon coupon) {
+            return new CouponInfo.Issue(
+                    coupon.getId(),
+                    coupon.getUserId(),
+                    coupon.isUsed(),
+                    coupon.getCoupon().getType(),
+                    coupon.getCoupon().getValue(),
+                    coupon.getCoupon().getExpiresInDays(),
+                    coupon.getIssuedAt(),
+                    coupon.getExpiresAt()
+            );
+        }
+    }
+}
