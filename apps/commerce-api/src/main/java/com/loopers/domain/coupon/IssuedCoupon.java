@@ -3,10 +3,7 @@ package com.loopers.domain.coupon;
 import com.loopers.domain.BaseEntity;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -27,6 +24,9 @@ public class IssuedCoupon extends BaseEntity {
     private ZonedDateTime issuedAt;
 
     private ZonedDateTime expiresAt;
+
+    @Version
+    private Long version;
 
     public IssuedCoupon(Coupon coupon, Long userId, ZonedDateTime expiresAt) {
         this.coupon = coupon;
@@ -66,5 +66,9 @@ public class IssuedCoupon extends BaseEntity {
 
     public ZonedDateTime getExpiresAt() {
         return expiresAt;
+    }
+
+    public Long getVersion() {
+        return version;
     }
 }

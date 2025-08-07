@@ -28,4 +28,9 @@ public class CouponRepositoryImpl implements CouponRepository {
     public IssuedCoupon save(IssuedCoupon issuedCoupon) {
         return issuedCouponJpaRepository.save(issuedCoupon);
     }
+
+    @Override
+    public Optional<IssuedCoupon> findIssuedCouponById(Long issuedCouponId) {
+        return issuedCouponJpaRepository.findById(issuedCouponId);
+    }
 }

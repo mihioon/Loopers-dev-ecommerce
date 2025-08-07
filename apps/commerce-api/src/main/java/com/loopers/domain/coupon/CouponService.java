@@ -3,6 +3,8 @@ package com.loopers.domain.coupon;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.StaleObjectStateException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +14,7 @@ import java.time.ZonedDateTime;
 @Component
 public class CouponService {
     private final CouponRepository couponRepository;
+    private final UseCouponProcessor useCouponProcessor;
 
     @Transactional
     public CouponInfo.Issue issueCouponToUser(Long couponId, Long userId) {
@@ -31,5 +34,13 @@ public class CouponService {
         );
 
         return CouponInfo.Issue.from(couponRepository.save(issuedCoupon));
+    }
+
+    public void useIssuedCoupon(Long issuedCouponId) {
+        try {
+            useCouponProcessor.useCoupon(issuedCouponId);
+        } catch (ObjectOptimisticLockingFailureException | StaleObjectStateException e) {
+            throw new CoreException(ErrorType.BAD_REQUEST, "이미 사용된 쿠폰입니다.");
+        }
     }
 }
