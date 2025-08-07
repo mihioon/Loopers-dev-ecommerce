@@ -1,8 +1,7 @@
 package com.loopers.interfaces.api.like;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.loopers.domain.like.ProductLike;
-import com.loopers.domain.like.ProductLikeRepository;
+import com.loopers.domain.like.*;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductRepository;
 import com.loopers.domain.user.*;
@@ -32,6 +31,9 @@ public class LikeV1ApiE2ETest extends E2EIntegrationTest {
     
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private LikeService likeService;
     
     @Autowired
     private ProductLikeRepository productLikeRepository;
@@ -84,7 +86,7 @@ public class LikeV1ApiE2ETest extends E2EIntegrationTest {
                     "test"
             ));
 
-            productLikeRepository.save(new ProductLike(product.getId(), user.getId()));
+            likeService.like(new LikeCommand.Like(product.getId(), user.getId()));
 
             // when & then
             mockMvc.perform(post(ENDPOINT, product.getId())
@@ -160,7 +162,6 @@ public class LikeV1ApiE2ETest extends E2EIntegrationTest {
 
         @DisplayName("좋아요한 상품을 취소 시, 성공적으로 좋아요가 제거된다.")
         @Test
-        @Transactional
         void removesLike_whenUnlikeRequest() throws Exception {
             // given
             final Product product = productRepository.save(new Product(
@@ -176,7 +177,7 @@ public class LikeV1ApiE2ETest extends E2EIntegrationTest {
                     "test"
             ));
 
-            productLikeRepository.save(new ProductLike(product.getId(), user.getId()));
+            likeService.like(new LikeCommand.Like(product.getId(), user.getId()));
 
             // when & then
             mockMvc.perform(delete(ENDPOINT, product.getId())

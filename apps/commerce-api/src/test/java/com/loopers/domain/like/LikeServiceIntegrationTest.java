@@ -60,7 +60,6 @@ public class LikeServiceIntegrationTest extends IntegrationTest {
 
         @DisplayName("여러 사용자가 같은 상품에 좋아요 시, 각각 저장된다.")
         @Test
-        @Transactional
         void savesMultipleLikes_whenDifferentUsers() {
             // given
             final Long productId = 1L;
@@ -214,7 +213,6 @@ public class LikeServiceIntegrationTest extends IntegrationTest {
 
         @DisplayName("사용자가 좋아요한 상품 목록을 반환한다.")
         @Test
-        @Transactional
         void returnsLikedProducts_whenUserHasLikes() {
             // given
             final Long userId = 1L;

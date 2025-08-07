@@ -9,7 +9,7 @@ public interface ProductLikeRepository {
 
     ProductLike save(ProductLike productLike);
 
-    void deleteByProductIdAndUserId(Long productId, Long userId);
+    int deleteByProductIdAndUserId(Long productId, Long userId);
 
     Optional<ProductLike> findById(Long id);
 
@@ -24,4 +24,11 @@ public interface ProductLikeRepository {
     boolean isLikedByUser(Long productIds, Long userId);
 
     List<ProductLike> findByUserId(Long userId);
+    
+    // ProductLikeCount 관련 메서드들
+    ProductLikeCount save(ProductLikeCount productLikeCount);
+    
+    Optional<ProductLikeCount> findLikeCountByProductId(Long productId);
+    
+    Map<Long, Long> getLikeCountsFromCountTable(List<Long> productIds);
 }

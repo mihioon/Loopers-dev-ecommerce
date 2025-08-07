@@ -1,6 +1,7 @@
 package com.loopers.interfaces.api.product;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.loopers.domain.like.ProductLikeCount;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductRepository;
 import com.loopers.domain.brand.Brand;
@@ -149,7 +150,6 @@ public class ProductV1ApiE2ETest extends E2EIntegrationTest {
 
         @DisplayName("상품 상세 조회가 성공할 경우, 상품 상세 정보를 응답으로 반환한다.")
         @Test
-        @Transactional
         void returnsProductDetail_whenGetProductSuccessful() throws Exception {
             // given
             // 브랜드 데이터 생성
@@ -174,8 +174,10 @@ public class ProductV1ApiE2ETest extends E2EIntegrationTest {
             Product savedProduct = productRepository.save(product);
 
             // 좋아요 데이터
-            productLikeRepository.save(new ProductLike(savedProduct.getId(), 1L));
-            productLikeRepository.save(new ProductLike(savedProduct.getId(), 2L));
+            ProductLikeCount likeCount = new ProductLikeCount(savedProduct.getId());
+            likeCount.increase();
+            likeCount.increase();
+            productLikeRepository.save(likeCount);
 
             // when&then
             mockMvc.perform(get(ENDPOINT, savedProduct.getId())
@@ -226,7 +228,10 @@ public class ProductV1ApiE2ETest extends E2EIntegrationTest {
                     Gender.F,
                     "test"
             ));
-            productLikeRepository.save(new ProductLike(savedProduct.getId(), 1L));
+
+            ProductLikeCount likeCount = new ProductLikeCount(savedProduct.getId());
+            likeCount.increase();
+            productLikeRepository.save(likeCount);
 
             // when&then
             mockMvc.perform(get(ENDPOINT, savedProduct.getId())
