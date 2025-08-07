@@ -29,7 +29,7 @@ public class ProductFacade {
 
         final Page<ProductInfo.Summary> productSummary = productService.getSummary(criteria.toCommand());
 
-        final LikeInfo likeCounts = likeService.getLikeCounts(userId, LikeCommand.GetLikeCount.from(productSummary.getContent()));
+        final LikeInfo likeCounts = likeService.getUserLikedProducts(userId, LikeCommand.GetLikeCount.from(productSummary.getContent()));
 
         return ProductResult.Summary.from(productSummary, likeCounts);
     }
@@ -40,7 +40,7 @@ public class ProductFacade {
         final ProductInfo.Detail productDetail = productService.getDetail(productId);
         final BrandInfo brandInfo = brandService.getBy(productDetail.brandId());
         final StockInfo stockInfo = productStockService.getStock(productId);
-        final Long likeCount = likeService.getLikeCount(productId);
+        final Long likeCount = productService.getLikeCount(productId);
         final Boolean isLikedByUser = userId != null && likeService.isLikedByUser(productId, userId);
         
         return ProductResult.Detail.from(productDetail, brandInfo, stockInfo, likeCount, isLikedByUser);

@@ -8,7 +8,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @Table(name = "product_like",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"product_id", "user_id"}))
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_product_like_product_user", columnNames = {"product_id", "user_id"})
+        },
+        indexes = {
+                @Index(name = "idx_product_like_product_id", columnList = "product_id"),
+                @Index(name = "idx_product_like_user_id", columnList = "user_id")
+        })
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductLike extends BaseEntity {

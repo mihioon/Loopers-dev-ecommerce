@@ -1,6 +1,5 @@
 package com.loopers.domain.product.dto;
 
-import com.loopers.domain.brand.BrandInfo;
 import com.loopers.domain.product.Product;
 
 import java.math.BigDecimal;
@@ -13,16 +12,18 @@ public class ProductInfo {
             String description,
             BigDecimal price,
             String category,
-            Long brandId
+            Long brandId,
+            Long likeCount
     ) {
-        public static Summary from(Product product) {
+        public static Summary from(Product product, Long likeCount) {
             return new Summary(
                     product.getId(),
                     product.getName(),
                     product.getDescription(),
                     product.getPrice(),
                     product.getCategory(),
-                    product.getBrandId()
+                    product.getBrandId(),
+                    likeCount
             );
         }
     }

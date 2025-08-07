@@ -19,8 +19,8 @@ public class ProductLikeRepositoryImpl implements ProductLikeRepository {
     }
 
     @Override
-    public void deleteByProductIdAndUserId(Long productId, Long userId) {
-        productLikeJpaRepository.deleteByProductIdAndUserId(productId, userId);
+    public int deleteByProductIdAndUserId(Long productId, Long userId) {
+        return productLikeJpaRepository.deleteByProductIdAndUserId(productId, userId);
     }
 
     @Override
