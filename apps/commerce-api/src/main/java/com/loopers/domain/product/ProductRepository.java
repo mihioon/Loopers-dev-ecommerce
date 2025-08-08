@@ -10,6 +10,8 @@ public interface ProductRepository {
     Product save(Product product);
     Optional<Product> findById(Long id);
 
+    List<Product> findByIds(List<Long> ids);
+
     List<Product> findProductsWithSort(ProductQuery.Summary command, Pageable pageable);
     long countProductsWithFilter(String category, Long brandId);
     

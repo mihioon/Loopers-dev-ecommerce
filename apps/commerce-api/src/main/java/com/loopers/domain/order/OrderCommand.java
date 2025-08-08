@@ -8,7 +8,8 @@ public class OrderCommand {
     public record Create(
             Long userId,
             List<Item> items,
-            BigDecimal pointAmount
+            BigDecimal totalAmount,
+            Long paymentId
     ) {
         public record Item(
                 Long productId,
@@ -19,6 +20,6 @@ public class OrderCommand {
     public record Payment(
             Long orderId,
             Long userId,
-            BigDecimal pointAmount
+            BigDecimal totalAmount
     ) {}
 }

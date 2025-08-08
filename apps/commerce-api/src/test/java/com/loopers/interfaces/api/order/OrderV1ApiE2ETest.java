@@ -61,8 +61,9 @@ public class OrderV1ApiE2ETest extends E2EIntegrationTest {
         pointRepository.save(point);
 
         CreateOrder.V1.Request request = new CreateOrder.V1.Request(
-                List.of(new CreateOrder.V1.Request.Item(productId, 2)),
-                BigDecimal.ZERO
+                List.of(new CreateOrder.V1.Request.Item(productId, 2, 1L)),
+                BigDecimal.ZERO,
+                List.of()
         );
 
         // when & then
@@ -103,8 +104,9 @@ public class OrderV1ApiE2ETest extends E2EIntegrationTest {
         pointRepository.save(point);
 
         CreateOrder.V1.Request createRequest = new CreateOrder.V1.Request(
-                List.of(new CreateOrder.V1.Request.Item(productId, 1)),
-                BigDecimal.ZERO
+                List.of(new CreateOrder.V1.Request.Item(productId, 1, 1L)),
+                BigDecimal.ZERO,
+                List.of()
         );
 
         String createResponse = mockMvc.perform(post("/api/v1/orders")
@@ -153,12 +155,14 @@ public class OrderV1ApiE2ETest extends E2EIntegrationTest {
         pointRepository.save(point);
 
         CreateOrder.V1.Request request1 = new CreateOrder.V1.Request(
-                List.of(new CreateOrder.V1.Request.Item(productId, 1)),
-                BigDecimal.ZERO
+                List.of(new CreateOrder.V1.Request.Item(productId, 1, 1L)),
+                BigDecimal.ZERO,
+                List.of()
         );
         CreateOrder.V1.Request request2 = new CreateOrder.V1.Request(
-                List.of(new CreateOrder.V1.Request.Item(productId, 2)),
-                BigDecimal.ZERO
+                List.of(new CreateOrder.V1.Request.Item(productId, 2, 1L)),
+                BigDecimal.ZERO,
+                List.of()
         );
 
         mockMvc.perform(post("/api/v1/orders")
@@ -207,8 +211,9 @@ public class OrderV1ApiE2ETest extends E2EIntegrationTest {
         pointRepository.save(point);
 
         CreateOrder.V1.Request request = new CreateOrder.V1.Request(
-                List.of(new CreateOrder.V1.Request.Item(productId, 5)), // 5개 주문
-                BigDecimal.ZERO
+                List.of(new CreateOrder.V1.Request.Item(productId, 5, 1L)),
+                BigDecimal.ZERO,
+                List.of()
         );
 
         // when & then

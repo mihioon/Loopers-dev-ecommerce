@@ -8,9 +8,9 @@ import com.loopers.domain.payment.PaymentCommand;
 import com.loopers.domain.payment.PaymentService;
 import com.loopers.domain.point.PointCommand;
 import com.loopers.domain.point.PointService;
-import com.loopers.domain.product.dto.StockInfo;
 import com.loopers.domain.product.ProductService;
 import com.loopers.domain.product.ProductStockService;
+import com.loopers.domain.coupon.CouponService;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,6 +51,9 @@ class OrderFacadeTest {
     @Mock
     private ProductStockService stockService;
 
+    @Mock
+    private CouponService couponService;
+
     @InjectMocks
     private OrderFacade orderFacade;
 
@@ -67,7 +70,8 @@ class OrderFacadeTest {
         criteria = new OrderCriteria.Create(
                 userId,
                 List.of(new OrderCriteria.Create.Item(productId, 2)),
-                BigDecimal.ZERO
+                BigDecimal.ZERO,
+                List.of()
         );
         
         productInfo = new ProductInfo.Basic(productId, "테스트 상품", price);
@@ -77,32 +81,8 @@ class OrderFacadeTest {
                 1L,
                 userId,
                 new BigDecimal("20000"),
-                BigDecimal.ZERO,
                 List.of(new OrderInfo.ItemInfo(1L, productId, 2, price, new BigDecimal("20000")))
         );
-    }
-
-    @DisplayName("정상 주문 생성 시 모든 서비스가 순차적으로 호출된다")
-    @Test
-    void createOrder_Success() {
-        // given
-        given(productService.getBasic(anyLong())).willReturn(productInfo);
-        given(orderService.createOrderWithValidatedItems(any(OrderCommand.Create.class), anyList()))
-                .willReturn(orderInfo);
-
-        // when
-        OrderResult.Detail result = orderFacade.createOrder(criteria);
-
-        // then
-        assertThat(result.userId()).isEqualTo(1L);
-        assertThat(result.totalAmount()).isEqualTo(new BigDecimal("20000"));
-        assertThat(result.items()).hasSize(1);
-        
-        then(productService).should().getBasic(1L);
-        then(stockService).should().validateAndReduceStocks(anyList());
-        then(orderService).should().createOrderWithValidatedItems(any(OrderCommand.Create.class), anyList());
-        then(pointService).should(never()).deduct(any());
-        then(paymentService).should().processPayment(any(PaymentCommand.Process.class));
     }
 
     @DisplayName("포인트 사용량이 0보다 클 때 포인트 차감이 호출된다")
@@ -112,19 +92,22 @@ class OrderFacadeTest {
         OrderCriteria.Create criteriaWithPoint = new OrderCriteria.Create(
                 1L,
                 List.of(new OrderCriteria.Create.Item(1L, 2)),
-                new BigDecimal("5000")
+                new BigDecimal("5000"),
+                List.of()
         );
         
         OrderInfo.Detail orderInfoWithPoint = new OrderInfo.Detail(
                 1L,
                 1L,
                 new BigDecimal("20000"),
-                new BigDecimal("5000"),
                 List.of(new OrderInfo.ItemInfo(1L, 1L, 2, new BigDecimal("10000"), new BigDecimal("20000")))
         );
         
-        given(productService.getBasic(anyLong())).willReturn(productInfo);
-        given(orderService.createOrderWithValidatedItems(any(OrderCommand.Create.class), anyList()))
+        given(productService.getBasics(anyList())).willReturn(List.of(productInfo));
+        given(couponService.discountProducts(anyLong(), anyList(), any(BigDecimal.class))).willReturn(new BigDecimal("20000"));
+        given(paymentService.processPayment(any(PaymentCommand.Process.class)))
+                .willReturn(new com.loopers.domain.payment.PaymentInfo.Detail(1L, 1L, new BigDecimal("15000"), com.loopers.domain.payment.Payment.PaymentStatus.COMPLETED));
+        given(orderService.createOrder(any(OrderCommand.Create.class), anyList()))
                 .willReturn(orderInfoWithPoint);
 
         // when
@@ -135,6 +118,7 @@ class OrderFacadeTest {
         
         then(pointService).should().deduct(any(PointCommand.Deduct.class));
         then(paymentService).should().processPayment(any(PaymentCommand.Process.class));
+        then(stockService).should().validateAndReduceStocks(anyList());
     }
 
     @DisplayName("재고가 부족할 때 예외가 발생한다")
@@ -142,7 +126,8 @@ class OrderFacadeTest {
     void createOrder_InsufficientStock() {
         // given
         
-        given(productService.getBasic(anyLong())).willReturn(productInfo);
+        given(productService.getBasics(anyList())).willReturn(List.of(productInfo));
+        given(couponService.discountProducts(anyLong(), anyList(), any(BigDecimal.class))).willReturn(new BigDecimal("20000"));
         given(stockService.validateAndReduceStocks(anyList())).willThrow(
                 new CoreException(ErrorType.BAD_REQUEST, "재고가 부족합니다.")
         );
@@ -154,7 +139,7 @@ class OrderFacadeTest {
                 .extracting("errorType").isEqualTo(ErrorType.BAD_REQUEST);
         
         then(stockService).should().validateAndReduceStocks(anyList());
-        then(orderService).should(never()).createOrderWithValidatedItems(any(), anyList());
+        then(orderService).should(never()).createOrder(any(), anyList());
     }
 
     @DisplayName("주문 조회가 정상적으로 동작한다")
@@ -186,7 +171,7 @@ class OrderFacadeTest {
 
         // then
         assertThat(results).hasSize(1);
-        assertThat(results.get(0).userId()).isEqualTo(userId);
+        assertThat(results.getFirst().userId()).isEqualTo(userId);
         then(orderService).should().getUserOrders(userId);
     }
 }

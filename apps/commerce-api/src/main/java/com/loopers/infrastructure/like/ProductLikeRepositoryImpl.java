@@ -38,6 +38,7 @@ public class ProductLikeRepositoryImpl implements ProductLikeRepository {
         return productLikeJpaRepository.findByProductIdIn(productIds);
     }
 
+    @Override
     public Map<Long, Long> getLikeCounts(List<Long> productIds) {
         List<Object[]> results = productLikeJpaRepository.countByProductIds(productIds);
         Map<Long, Long> likeCountMap = new HashMap<>();

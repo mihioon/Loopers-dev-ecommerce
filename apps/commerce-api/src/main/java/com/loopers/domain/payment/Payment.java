@@ -15,39 +15,25 @@ import java.math.BigDecimal;
 public class Payment extends BaseEntity {
 
     @Column(nullable = false)
-    private Long orderId;
-
-    @Column(nullable = false)
     private Long userId;
 
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
 
-    @Column(nullable = false, precision = 19, scale = 2)
-    private BigDecimal pointAmount;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PaymentStatus status;
 
-    public Payment(Long orderId, Long userId, BigDecimal amount, BigDecimal pointAmount) {
-        if (orderId == null) {
-            throw new CoreException(ErrorType.BAD_REQUEST, "주문 ID는 필수입니다.");
-        }
+    public Payment(Long userId, BigDecimal amount) {
         if (userId == null) {
             throw new CoreException(ErrorType.BAD_REQUEST, "사용자 ID는 필수입니다.");
         }
         if (amount == null || amount.compareTo(BigDecimal.ZERO) < 0) {
             throw new CoreException(ErrorType.BAD_REQUEST, "결제 금액은 0 이상이어야 합니다.");
         }
-        if (pointAmount == null || pointAmount.compareTo(BigDecimal.ZERO) < 0) {
-            throw new CoreException(ErrorType.BAD_REQUEST, "포인트 사용 금액은 0 이상이어야 합니다.");
-        }
 
-        this.orderId = orderId;
         this.userId = userId;
         this.amount = amount;
-        this.pointAmount = pointAmount;
         this.status = PaymentStatus.PENDING;
     }
 
@@ -65,20 +51,12 @@ public class Payment extends BaseEntity {
         this.status = PaymentStatus.FAILED;
     }
 
-    public Long getOrderId() {
-        return orderId;
-    }
-
     public Long getUserId() {
         return userId;
     }
 
     public BigDecimal getAmount() {
         return amount;
-    }
-
-    public BigDecimal getPointAmount() {
-        return pointAmount;
     }
 
     public PaymentStatus getStatus() {

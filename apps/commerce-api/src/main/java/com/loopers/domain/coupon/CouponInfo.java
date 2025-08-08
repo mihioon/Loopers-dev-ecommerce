@@ -27,4 +27,26 @@ public class CouponInfo {
             );
         }
     }
+
+    public record Discount(
+            Long id,
+            CouponType type,
+            BigDecimal value
+    ) {
+        public static CouponInfo.Discount from(Coupon coupon) {
+            return new CouponInfo.Discount(
+                    coupon.getId(),
+                    coupon.getType(),
+                    coupon.getValue()
+            );
+        }
+
+        public static CouponInfo.Discount from(IssuedCoupon issuedCoupon) {
+            return new CouponInfo.Discount(
+                    issuedCoupon.getId(),
+                    issuedCoupon.getCoupon().getType(),
+                    issuedCoupon.getCoupon().getValue()
+            );
+        }
+    }
 }

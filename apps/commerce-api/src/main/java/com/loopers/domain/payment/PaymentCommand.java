@@ -5,9 +5,7 @@ import java.math.BigDecimal;
 public class PaymentCommand {
     
     public record Process(
-            Long orderId,
             Long userId,
-            BigDecimal amount,
-            BigDecimal pointAmount
+            BigDecimal amount
     ) {}
 }

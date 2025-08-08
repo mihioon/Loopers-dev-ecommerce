@@ -8,7 +8,9 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Component
@@ -42,5 +44,32 @@ public class CouponService {
         } catch (ObjectOptimisticLockingFailureException | StaleObjectStateException e) {
             throw new CoreException(ErrorType.BAD_REQUEST, "이미 사용된 쿠폰입니다.");
         }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public BigDecimal discountProducts(Long userId, List<Long> couponIds, BigDecimal orderAmount) {
+        if (couponIds == null || couponIds.isEmpty()) {
+            return orderAmount;
+        }
+        
+        List<IssuedCoupon> issuedCoupons = couponRepository.findByIds(couponIds);
+        issuedCoupons.forEach(issuedCoupon -> issuedCoupon.validateFor(userId));
+        
+        if (issuedCoupons.size() != couponIds.size()) {
+            throw new CoreException(ErrorType.NOT_FOUND, "유효하지 않은 쿠폰이 포함되어 있습니다.");
+        }
+        
+        BigDecimal remainingAmount = orderAmount;
+
+        for (IssuedCoupon issuedCoupon : issuedCoupons) {
+            remainingAmount = issuedCoupon.getCoupon().applyDiscount(remainingAmount);
+            if(remainingAmount.compareTo(BigDecimal.ZERO) == 0) break;
+        }
+
+        for (IssuedCoupon issuedCoupon : issuedCoupons) {
+            issuedCoupon.use();
+        }
+
+        return remainingAmount;
     }
 }
