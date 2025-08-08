@@ -78,6 +78,10 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public Optional<ProductStock> findStockByProductId(Long productId) {
         return productStockJpaRepository.findByProductId(productId);
+    }
 
+    @Override
+    public Optional<ProductStock> findStockByProductIdWithLock(Long productId) {
+        return productStockJpaRepository.findByProductIdWithLock(productId);
     }
 }

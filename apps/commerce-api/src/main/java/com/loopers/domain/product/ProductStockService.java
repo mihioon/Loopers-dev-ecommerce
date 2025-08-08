@@ -31,17 +31,11 @@ public class ProductStockService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public List<StockInfo> reduceAllStocks(final Long orderId, final List<ProductStockCommand.Reduce> commands) {
-        return commands.stream()
-                .map(this::reduceStock)
-                .toList();
-    }
-
-    @Transactional(rollbackFor = Exception.class)
     public StockInfo reduceStock(final ProductStockCommand.Reduce command) {
-        final ProductStock stock = productRepository.findStockByProductId(command.productId())
+        final ProductStock stock = productRepository.findStockByProductIdWithLock(command.productId())
                 .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "상품 재고를 찾을 수 없습니다."));
 
+        stock.validateSufficientStock(command.quantity());
         stock.reduceStock(command.quantity());
         final ProductStock savedStock = productRepository.save(stock);
         return StockInfo.from(savedStock);
@@ -50,17 +44,16 @@ public class ProductStockService {
     //validateAndReduceStocks
     @Transactional(rollbackFor = Exception.class)
     public List<StockInfo> validateAndReduceStocks(final List<ProductStockCommand.Reduce> commands) {
-        commands.forEach(this::validateStock);
+        List<ProductStockCommand.Reduce> sortedCommands = sortById(commands);
 
-        return commands.stream()
+        return sortedCommands.stream()
                 .map(this::reduceStock)
                 .toList();
     }
 
-    private void validateStock(final ProductStockCommand.Reduce command) {
-        final ProductStock stock = productRepository.findStockByProductId(command.productId())
-                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "상품 재고를 찾을 수 없습니다."));
-
-        stock.validateSufficientStock(command.quantity());
+    private List<ProductStockCommand.Reduce> sortById(final List<ProductStockCommand.Reduce> commands) {
+        return commands.stream()
+                .sorted((a, b) -> Long.compare(a.productId(), b.productId()))
+                .toList();
     }
 }
