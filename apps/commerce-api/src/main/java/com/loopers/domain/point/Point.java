@@ -1,13 +1,14 @@
 package com.loopers.domain.point;
 
 import com.loopers.domain.BaseEntity;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-@Table(name = "point")
+@Table(name = "point",
+        indexes = {
+                @Index(name = "idx_point_user_id", columnList = "userId")
+        })
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Point extends BaseEntity {
@@ -15,6 +16,7 @@ public class Point extends BaseEntity {
     @Embedded
     private Balance balance;
 
+    @Column(nullable = false)
     private Long userId;
 
     public Point(
