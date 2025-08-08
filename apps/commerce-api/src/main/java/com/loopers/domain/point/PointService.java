@@ -26,7 +26,7 @@ public class PointService {
 
     @Transactional(rollbackFor = Exception.class)
     public PointInfo charge(PointCommand.Charge command) {
-        Point point = pointRepository.findByUserId(command.userId())
+        Point point = pointRepository.findByUserIdWithLock(command.userId())
                 .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 사용자입니다."));
 
         point.charge(command.amount());
@@ -36,7 +36,7 @@ public class PointService {
 
     @Transactional(rollbackFor = Exception.class)
     public PointInfo deduct(PointCommand.Deduct command) {
-        Point point = pointRepository.findByUserId(command.userId())
+        Point point = pointRepository.findByUserIdWithLock(command.userId())
                 .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 사용자입니다."));
 
         point.deduct(command.amount());
