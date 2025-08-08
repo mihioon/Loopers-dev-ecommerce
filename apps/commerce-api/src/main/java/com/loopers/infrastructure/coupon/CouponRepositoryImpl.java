@@ -6,6 +6,7 @@ import com.loopers.domain.coupon.IssuedCoupon;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -32,5 +33,10 @@ public class CouponRepositoryImpl implements CouponRepository {
     @Override
     public Optional<IssuedCoupon> findIssuedCouponById(Long issuedCouponId) {
         return issuedCouponJpaRepository.findById(issuedCouponId);
+    }
+
+    @Override
+    public List<IssuedCoupon> findByIds(List<Long> issuedCouponIds) {
+        return issuedCouponJpaRepository.findAllById(issuedCouponIds);
     }
 }

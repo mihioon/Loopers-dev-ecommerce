@@ -46,11 +46,30 @@ public class CouponService {
         }
     }
 
-    public List<CouponInfo.Discount> getByIds(List<Long> couponIds, Long userId){
-        return null;
-    }
+    @Transactional(rollbackFor = Exception.class)
+    public BigDecimal discountProducts(Long userId, List<Long> couponIds, BigDecimal orderAmount) {
+        if (couponIds == null || couponIds.isEmpty()) {
+            return orderAmount;
+        }
+        
+        List<IssuedCoupon> issuedCoupons = couponRepository.findByIds(couponIds);
+        issuedCoupons.forEach(issuedCoupon -> issuedCoupon.validateFor(userId));
+        
+        if (issuedCoupons.size() != couponIds.size()) {
+            throw new CoreException(ErrorType.NOT_FOUND, "유효하지 않은 쿠폰이 포함되어 있습니다.");
+        }
+        
+        BigDecimal remainingAmount = orderAmount;
 
-    public BigDecimal calculateTotalAmount(List<CouponInfo.Discount> couponDiscounts) {
-        return null;
+        for (IssuedCoupon issuedCoupon : issuedCoupons) {
+            remainingAmount = issuedCoupon.getCoupon().applyDiscount(remainingAmount);
+            if(remainingAmount.compareTo(BigDecimal.ZERO) == 0) break;
+        }
+
+        for (IssuedCoupon issuedCoupon : issuedCoupons) {
+            issuedCoupon.use();
+        }
+
+        return remainingAmount;
     }
 }

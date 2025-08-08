@@ -39,12 +39,7 @@ public class IssuedCoupon extends BaseEntity {
     }
 
     public void use() {
-        if (this.isUsed) {
-            throw new CoreException(ErrorType.BAD_REQUEST, "이미 사용된 쿠폰입니다.");
-        }
-        if (ZonedDateTime.now().isAfter(this.expiresAt)) {
-            throw new CoreException(ErrorType.BAD_REQUEST, "만료된 쿠폰입니다.");
-        }
+        validateFor(this.userId);
         this.isUsed = true;
     }
 
@@ -70,5 +65,17 @@ public class IssuedCoupon extends BaseEntity {
 
     public Long getVersion() {
         return version;
+    }
+
+    public void validateFor(Long userId) {
+        if (!this.userId.equals(userId)) {
+            throw new CoreException(ErrorType.BAD_REQUEST, "사용자 ID가 일치하지 않습니다.");
+        }
+        if (this.isUsed) {
+            throw new CoreException(ErrorType.BAD_REQUEST, "이미 사용된 쿠폰입니다.");
+        }
+        if (ZonedDateTime.now().isAfter(this.expiresAt)) {
+            throw new CoreException(ErrorType.BAD_REQUEST, "만료된 쿠폰입니다.");
+        }
     }
 }

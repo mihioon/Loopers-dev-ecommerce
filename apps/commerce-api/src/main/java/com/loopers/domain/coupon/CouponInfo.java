@@ -40,5 +40,13 @@ public class CouponInfo {
                     coupon.getValue()
             );
         }
+
+        public static CouponInfo.Discount from(IssuedCoupon issuedCoupon) {
+            return new CouponInfo.Discount(
+                    issuedCoupon.getId(),
+                    issuedCoupon.getCoupon().getType(),
+                    issuedCoupon.getCoupon().getValue()
+            );
+        }
     }
 }

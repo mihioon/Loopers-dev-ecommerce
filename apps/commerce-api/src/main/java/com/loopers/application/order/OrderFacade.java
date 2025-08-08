@@ -1,6 +1,5 @@
 package com.loopers.application.order;
 
-import com.loopers.domain.coupon.CouponInfo;
 import com.loopers.domain.coupon.CouponService;
 import com.loopers.domain.order.OrderInfo;
 import com.loopers.domain.order.OrderItem;
@@ -12,6 +11,7 @@ import com.loopers.domain.point.PointCommand;
 import com.loopers.domain.product.ProductService;
 import com.loopers.domain.product.ProductStockService;
 import com.loopers.domain.product.dto.ProductInfo;
+import com.loopers.support.error.CoreException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @RequiredArgsConstructor
 @Component
@@ -40,7 +39,7 @@ public class OrderFacade {
         
         // 요청한 상품 수와 조회된 상품 수 비교
         if (products.size() != productIds.size()) {
-            throw new com.loopers.support.error.CoreException(
+            throw new CoreException(
                     com.loopers.support.error.ErrorType.NOT_FOUND, 
                     "상품을 찾을 수 없습니다."
             );
@@ -51,33 +50,29 @@ public class OrderFacade {
 
         // 주문 아이템 목록 생성 및 가격 검증
         List<OrderItem> orderItems = criteria.toOrderItems(productMap);
+        BigDecimal itemsTotal = orderItems.stream()
+                .map(OrderItem::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // 쿠폰 할인 계산
-        List<Long> couponIds = criteria.couponIds();
-        List<CouponInfo.Discount> couponDiscounts = couponService.getByIds(couponIds, criteria.userId());
-        BigDecimal couponDiscountAmount = couponService.calculateTotalAmount(couponDiscounts);
-        
-        // 최종 금액 계산
-        BigDecimal totalAmount = orderService.calculateTotalAmount(orderItems, couponDiscountAmount, criteria.pointAmount());
+        // 쿠폰 할인 계산 및 사용 처리 (전체 금액에 대해 할인, 남은 금액 반환)
+        BigDecimal remainingAmountAfterCoupon = couponService.discountProducts(criteria.userId(), criteria.couponIds(), itemsTotal);
+        BigDecimal couponDiscountAmount = itemsTotal.subtract(remainingAmountAfterCoupon);
+
+        // 포인트 차감
+        BigDecimal finalAmount = remainingAmountAfterCoupon;
+        if (criteria.pointAmount() != null && criteria.pointAmount().compareTo(BigDecimal.ZERO) > 0) {
+            pointService.deduct(new PointCommand.Deduct(criteria.userId(), criteria.pointAmount().longValue()));
+            finalAmount = remainingAmountAfterCoupon.subtract(criteria.pointAmount()).max(BigDecimal.ZERO);
+        }
+
+        // 결제 처리
+        PaymentInfo.Detail paymentInfo = paymentService.processPayment(criteria.toPaymentCommand(finalAmount));
 
         // 재고 차감
         stockService.validateAndReduceStocks(criteria.toStockReduceCommands());
 
-        // 쿠폰 사용
-        if (criteria.couponIds() != null && !criteria.couponIds().isEmpty()) {
-            criteria.couponIds().forEach(couponService::useIssuedCoupon);
-        }
-
-        // 포인트 차감
-        if (!(criteria.pointAmount() == null) && criteria.pointAmount().compareTo(BigDecimal.ZERO) > 0) {
-            pointService.deduct(new PointCommand.Deduct(criteria.userId(), criteria.pointAmount().longValue()));
-        }
-
-        // 결제 처리
-        PaymentInfo.Detail paymentInfo = paymentService.processPayment(criteria.toPaymentCommand(totalAmount));
-
         // 주문 생성
-        OrderInfo.Detail orderInfo = orderService.createOrder(criteria.toCommand(paymentInfo.id()), orderItems);
+        OrderInfo.Detail orderInfo = orderService.createOrder(criteria.toCommand(paymentInfo.id(), finalAmount), orderItems);
 
         return OrderResult.Detail.from(orderInfo);
     }

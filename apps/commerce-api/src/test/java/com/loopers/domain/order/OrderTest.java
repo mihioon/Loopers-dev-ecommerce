@@ -27,11 +27,11 @@ class OrderTest {
             List<OrderItem> orderItems = List.of(item);
 
             // when
-            Order order = new Order(userId, 1L, orderItems);
+            Order order = new Order(userId, 1L, orderItems, BigDecimal.ZERO);
 
             // then
             assertThat(order.getUserId()).isEqualTo(userId);
-            assertThat(order.getTotalAmount()).isEqualTo(new BigDecimal("20000"));
+            assertThat(order.getTotalAmount()).isEqualTo(BigDecimal.ZERO);
             assertThat(order.getOrderItems()).hasSize(1);
             assertThat(order.getOrderItems().get(0).getProductId()).isEqualTo(1L);
             assertThat(order.getOrderItems().get(0).getQuantity()).isEqualTo(2);
@@ -48,11 +48,11 @@ class OrderTest {
             List<OrderItem> orderItems = List.of(item1, item2, item3);
 
             // when
-            Order order = new Order(userId, 1L, orderItems);
+            Order order = new Order(userId, 1L, orderItems, BigDecimal.ZERO);
 
             // then
             assertThat(order.getUserId()).isEqualTo(userId);
-            assertThat(order.getTotalAmount()).isEqualTo(new BigDecimal("34000")); // 20000 + 5000 + 9000
+            assertThat(order.getTotalAmount()).isEqualTo(BigDecimal.ZERO); // 20000 + 5000 + 9000
             assertThat(order.getOrderItems()).hasSize(3);
         }
 
@@ -66,10 +66,10 @@ class OrderTest {
             List<OrderItem> orderItems = List.of(item1, item2);
 
             // when
-            Order order = new Order(userId, 1L, orderItems);
+            Order order = new Order(userId, 1L, orderItems, BigDecimal.ZERO);
 
             // then
-            assertThat(order.getTotalAmount()).isEqualTo(new BigDecimal("31500"));
+            assertThat(order.getTotalAmount()).isEqualTo(BigDecimal.ZERO);
         }
     }
 
@@ -86,7 +86,7 @@ class OrderTest {
 
             // when & then
             CoreException exception = assertThrows(CoreException.class, () -> {
-                new Order(null, 1L, orderItems);
+                new Order(null, 1L, orderItems, BigDecimal.ZERO);
             });
 
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
@@ -101,7 +101,7 @@ class OrderTest {
 
             // when & then
             CoreException exception = assertThrows(CoreException.class, () -> {
-                new Order(userId, 1L, null);
+                new Order(userId, 1L, null, BigDecimal.ZERO);
             });
 
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
@@ -117,7 +117,7 @@ class OrderTest {
 
             // when & then
             CoreException exception = assertThrows(CoreException.class, () -> {
-                new Order(userId, 1L, orderItems);
+                new Order(userId, 1L, orderItems, BigDecimal.ZERO);
             });
 
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);

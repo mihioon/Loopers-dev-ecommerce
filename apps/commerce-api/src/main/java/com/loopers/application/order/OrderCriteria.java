@@ -23,13 +23,13 @@ public class OrderCriteria {
                 Integer quantity
         ) {}
 
-        public OrderCommand.Create toCommand(Long paymentId) {
+        public OrderCommand.Create toCommand(Long paymentId, BigDecimal totalAmount) {
             return new OrderCommand.Create(
                     userId,
                     items.stream()
                             .map(item -> new OrderCommand.Create.Item(item.productId(), item.quantity()))
                             .toList(),
-                    pointAmount != null ? pointAmount : BigDecimal.ZERO,
+                    totalAmount,
                     paymentId
             );
         }

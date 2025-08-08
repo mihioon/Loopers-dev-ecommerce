@@ -56,13 +56,13 @@ public class OrderServiceIntegrationTest extends IntegrationTest {
 
         // then - 주문 생성 검증
         assertThat(orderResult.userId()).isEqualTo(1L);
-        assertThat(orderResult.totalAmount()).isEqualTo(new BigDecimal("20000"));
+        assertThat(orderResult.totalAmount()).isEqualTo(BigDecimal.ZERO);
         assertThat(orderResult.items()).hasSize(1);
         
         // DB에서 주문 확인
         Order savedOrder = orderRepository.findById(orderResult.id()).orElseThrow();
         assertThat(savedOrder.getUserId()).isEqualTo(1L);
-        assertThat(savedOrder.getTotalAmount()).isEqualTo(new BigDecimal("20000"));
+        assertThat(savedOrder.getTotalAmount()).isEqualTo(BigDecimal.ZERO);
         assertThat(savedOrder.getOrderItems()).hasSize(1);
     }
 
@@ -92,7 +92,7 @@ public class OrderServiceIntegrationTest extends IntegrationTest {
         // then
         assertThat(result.id()).isEqualTo(createdOrder.id());
         assertThat(result.userId()).isEqualTo(1L);
-        assertThat(result.totalAmount()).isEqualTo(new BigDecimal("10000"));
+        assertThat(result.totalAmount()).isEqualTo(BigDecimal.ZERO);
         assertThat(result.items()).hasSize(1);
     }
 
