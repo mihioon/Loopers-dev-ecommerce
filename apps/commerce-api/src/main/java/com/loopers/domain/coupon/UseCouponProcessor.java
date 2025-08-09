@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Propagation;
 public class UseCouponProcessor {
     private final CouponRepository couponRepository;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void useCoupon(Long issuedCouponId) {
         IssuedCoupon issuedCoupon = couponRepository.findIssuedCouponById(issuedCouponId)
                 .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 쿠폰입니다."));

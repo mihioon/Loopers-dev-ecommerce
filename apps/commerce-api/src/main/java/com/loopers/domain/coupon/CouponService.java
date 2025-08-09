@@ -67,7 +67,7 @@ public class CouponService {
         }
 
         for (IssuedCoupon issuedCoupon : issuedCoupons) {
-            issuedCoupon.use();
+            useIssuedCoupon(issuedCoupon.getId());
         }
 
         return remainingAmount;
