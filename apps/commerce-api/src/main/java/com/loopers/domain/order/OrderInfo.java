@@ -9,15 +9,13 @@ public class OrderInfo {
             Long id,
             Long userId,
             BigDecimal totalAmount,
-            BigDecimal pointAmount,
             List<ItemInfo> items
     ) {
-        public static Detail from(Order order, BigDecimal pointAmount) {
+        public static Detail from(Order order) {
             return new Detail(
                     order.getId(),
                     order.getUserId(),
                     order.getTotalAmount(),
-                    pointAmount,
                     order.getOrderItems().stream()
                             .map(ItemInfo::from)
                             .toList()

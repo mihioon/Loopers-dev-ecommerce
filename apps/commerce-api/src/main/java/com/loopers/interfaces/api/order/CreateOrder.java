@@ -11,11 +11,13 @@ public record CreateOrder() {
 
         public record Request(
                 List<Item> items,
-                BigDecimal pointAmount
+                BigDecimal pointAmount,
+                List<Long> couponIds
         ) {
             public record Item(
                     Long productId,
-                    Integer quantity
+                    Integer quantity,
+                    Long couponId
             ) {}
 
             public OrderCriteria.Create toCriteria(Long userId) {
@@ -24,7 +26,8 @@ public record CreateOrder() {
                         items.stream()
                                 .map(item -> new OrderCriteria.Create.Item(item.productId(), item.quantity()))
                                 .toList(),
-                        pointAmount != null ? pointAmount : BigDecimal.ZERO
+                        pointAmount != null ? pointAmount : BigDecimal.ZERO,
+                        couponIds
                 );
             }
         }

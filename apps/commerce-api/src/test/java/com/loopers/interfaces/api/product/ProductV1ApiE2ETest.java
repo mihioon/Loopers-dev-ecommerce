@@ -1,12 +1,14 @@
 package com.loopers.interfaces.api.product;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.loopers.domain.product.ProductStatus;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductRepository;
 import com.loopers.domain.brand.Brand;
 import com.loopers.domain.brand.BrandRepository;
 import com.loopers.domain.like.ProductLike;
 import com.loopers.domain.like.ProductLikeRepository;
+import com.loopers.domain.product.ProductStatusRepository;
 import com.loopers.domain.user.*;
 import com.loopers.support.E2EIntegrationTest;
 import org.junit.jupiter.api.DisplayName;
@@ -32,6 +34,8 @@ public class ProductV1ApiE2ETest extends E2EIntegrationTest {
     private ProductRepository productRepository;
     @Autowired
     private ProductLikeRepository productLikeRepository;
+    @Autowired
+    private ProductStatusRepository productStatusRepository;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -149,7 +153,6 @@ public class ProductV1ApiE2ETest extends E2EIntegrationTest {
 
         @DisplayName("상품 상세 조회가 성공할 경우, 상품 상세 정보를 응답으로 반환한다.")
         @Test
-        @Transactional
         void returnsProductDetail_whenGetProductSuccessful() throws Exception {
             // given
             // 브랜드 데이터 생성
@@ -174,8 +177,10 @@ public class ProductV1ApiE2ETest extends E2EIntegrationTest {
             Product savedProduct = productRepository.save(product);
 
             // 좋아요 데이터
-            productLikeRepository.save(new ProductLike(savedProduct.getId(), 1L));
-            productLikeRepository.save(new ProductLike(savedProduct.getId(), 2L));
+            ProductStatus likeCount = new ProductStatus(savedProduct.getId());
+            likeCount.increase();
+            likeCount.increase();
+            productStatusRepository.save(likeCount);
 
             // when&then
             mockMvc.perform(get(ENDPOINT, savedProduct.getId())
@@ -226,7 +231,10 @@ public class ProductV1ApiE2ETest extends E2EIntegrationTest {
                     Gender.F,
                     "test"
             ));
-            productLikeRepository.save(new ProductLike(savedProduct.getId(), 1L));
+
+            ProductStatus likeCount = new ProductStatus(savedProduct.getId());
+            likeCount.increase();
+            productStatusRepository.save(likeCount);
 
             // when&then
             mockMvc.perform(get(ENDPOINT, savedProduct.getId())

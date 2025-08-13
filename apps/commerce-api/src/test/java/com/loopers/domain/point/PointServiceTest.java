@@ -62,7 +62,7 @@ class PointServiceTest {
         // given
         PointCommand.Charge command = new PointCommand.Charge(1L, 3000L);
         
-        given(pointRepository.findByUserId(1L)).willReturn(Optional.of(point));
+        given(pointRepository.findByUserIdWithLock(1L)).willReturn(Optional.of(point));
 
         // when
         PointInfo result = pointService.charge(command);
@@ -71,7 +71,7 @@ class PointServiceTest {
         assertThat(result.userId()).isEqualTo(1L);
         assertThat(result.fetchAmount()).isEqualTo(13000L);
         
-        then(pointRepository).should().findByUserId(1L);
+        then(pointRepository).should().findByUserIdWithLock(1L);
    }
 
     @DisplayName("존재하지 않는 사용자의 포인트 충전 시 예외가 발생한다")
@@ -80,7 +80,7 @@ class PointServiceTest {
         // given
         PointCommand.Charge command = new PointCommand.Charge(999L, 3000L);
         
-        given(pointRepository.findByUserId(999L)).willReturn(Optional.empty());
+        given(pointRepository.findByUserIdWithLock(999L)).willReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> pointService.charge(command))
@@ -97,7 +97,7 @@ class PointServiceTest {
         // given
         PointCommand.Deduct command = new PointCommand.Deduct(1L, 3000L);
         
-        given(pointRepository.findByUserId(1L)).willReturn(Optional.of(point));
+        given(pointRepository.findByUserIdWithLock(1L)).willReturn(Optional.of(point));
 
         // when
         PointInfo result = pointService.deduct(command);
@@ -106,8 +106,7 @@ class PointServiceTest {
         assertThat(result.userId()).isEqualTo(1L);
         assertThat(result.fetchAmount()).isEqualTo(7000L);
         
-        then(pointRepository).should().findByUserId(1L);
-        // Note: deduct 메서드는 save를 호출하지 않음 (JPA dirty checking 사용)
+        then(pointRepository).should().findByUserIdWithLock(1L);
     }
 
     @DisplayName("존재하지 않는 사용자의 포인트 차감 시 예외가 발생한다")
@@ -116,7 +115,7 @@ class PointServiceTest {
         // given
         PointCommand.Deduct command = new PointCommand.Deduct(999L, 3000L);
         
-        given(pointRepository.findByUserId(999L)).willReturn(Optional.empty());
+        given(pointRepository.findByUserIdWithLock(999L)).willReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> pointService.deduct(command))
@@ -133,7 +132,7 @@ class PointServiceTest {
         // given
         PointCommand.Deduct command = new PointCommand.Deduct(1L, 15000L);
         
-        given(pointRepository.findByUserId(1L)).willReturn(Optional.of(point));
+        given(pointRepository.findByUserIdWithLock(1L)).willReturn(Optional.of(point));
 
         // when & then
         assertThatThrownBy(() -> pointService.deduct(command))

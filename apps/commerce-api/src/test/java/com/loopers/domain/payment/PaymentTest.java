@@ -27,13 +27,11 @@ class PaymentTest {
             BigDecimal pointAmount = BigDecimal.ZERO;
 
             // when
-            Payment payment = new Payment(orderId, userId, amount, pointAmount);
+            Payment payment = new Payment(userId, amount);
 
             // then
-            assertThat(payment.getOrderId()).isEqualTo(orderId);
             assertThat(payment.getUserId()).isEqualTo(userId);
             assertThat(payment.getAmount()).isEqualTo(amount);
-            assertThat(payment.getPointAmount()).isEqualTo(pointAmount);
             assertThat(payment.getStatus()).isEqualTo(Payment.PaymentStatus.PENDING);
         }
 
@@ -47,13 +45,11 @@ class PaymentTest {
             BigDecimal pointAmount = new BigDecimal("5000");
 
             // when
-            Payment payment = new Payment(orderId, userId, amount, pointAmount);
+            Payment payment = new Payment(userId, amount);
 
             // then
-            assertThat(payment.getOrderId()).isEqualTo(orderId);
             assertThat(payment.getUserId()).isEqualTo(userId);
             assertThat(payment.getAmount()).isEqualTo(amount);
-            assertThat(payment.getPointAmount()).isEqualTo(pointAmount);
             assertThat(payment.getStatus()).isEqualTo(Payment.PaymentStatus.PENDING);
         }
 
@@ -67,11 +63,10 @@ class PaymentTest {
             BigDecimal pointAmount = new BigDecimal("20000");
 
             // when
-            Payment payment = new Payment(orderId, userId, amount, pointAmount);
+            Payment payment = new Payment(userId, amount);
 
             // then
             assertThat(payment.getAmount()).isEqualTo(BigDecimal.ZERO);
-            assertThat(payment.getPointAmount()).isEqualTo(new BigDecimal("20000"));
             assertThat(payment.getStatus()).isEqualTo(Payment.PaymentStatus.PENDING);
         }
     }
@@ -84,7 +79,7 @@ class PaymentTest {
         @Test
         void completePayment_Success() {
             // given
-            Payment payment = new Payment(1L, 1L, new BigDecimal("10000"), BigDecimal.ZERO);
+            Payment payment = new Payment(1L, new BigDecimal("10000"));
 
             // when
             payment.complete();
@@ -97,7 +92,7 @@ class PaymentTest {
         @Test
         void failPayment_Success() {
             // given
-            Payment payment = new Payment(1L, 1L, new BigDecimal("10000"), BigDecimal.ZERO);
+            Payment payment = new Payment(1L, new BigDecimal("10000"));
 
             // when
             payment.fail();
@@ -110,7 +105,7 @@ class PaymentTest {
         @Test
         void completePayment_AlreadyCompleted() {
             // given
-            Payment payment = new Payment(1L, 1L, new BigDecimal("10000"), BigDecimal.ZERO);
+            Payment payment = new Payment(1L, new BigDecimal("10000"));
             payment.complete();
 
             // when & then
@@ -126,7 +121,7 @@ class PaymentTest {
         @Test
         void completePayment_AlreadyFailed() {
             // given
-            Payment payment = new Payment(1L, 1L, new BigDecimal("10000"), BigDecimal.ZERO);
+            Payment payment = new Payment(1L, new BigDecimal("10000"));
             payment.fail();
 
             // when & then
@@ -142,7 +137,7 @@ class PaymentTest {
         @Test
         void failPayment_AlreadyCompleted() {
             // given
-            Payment payment = new Payment(1L, 1L, new BigDecimal("10000"), BigDecimal.ZERO);
+            Payment payment = new Payment(1L, new BigDecimal("10000"));
             payment.complete();
 
             // when & then
@@ -159,24 +154,12 @@ class PaymentTest {
     @Nested
     class CreatePaymentFailure {
 
-        @DisplayName("주문 ID가 null일 때 예외")
-        @Test
-        void createPayment_OrderIdNull() {
-            // when & then
-            CoreException exception = assertThrows(CoreException.class, () -> {
-                new Payment(null, 1L, new BigDecimal("10000"), BigDecimal.ZERO);
-            });
-
-            assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
-            assertThat(exception.getMessage()).contains("주문 ID는 필수입니다");
-        }
-
         @DisplayName("사용자 ID가 null일 때 예외")
         @Test
         void createPayment_UserIdNull() {
             // when & then
             CoreException exception = assertThrows(CoreException.class, () -> {
-                new Payment(1L, null, new BigDecimal("10000"), BigDecimal.ZERO);
+                new Payment(null, new BigDecimal("10000"));
             });
 
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
@@ -188,7 +171,7 @@ class PaymentTest {
         void createPayment_AmountNull() {
             // when & then
             CoreException exception = assertThrows(CoreException.class, () -> {
-                new Payment(1L, 1L, null, BigDecimal.ZERO);
+                new Payment(1L, null);
             });
 
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
@@ -200,35 +183,11 @@ class PaymentTest {
         void createPayment_AmountNegative() {
             // when & then
             CoreException exception = assertThrows(CoreException.class, () -> {
-                new Payment(1L, 1L, new BigDecimal("-1000"), BigDecimal.ZERO);
+                new Payment(1L, new BigDecimal("-1000"));
             });
 
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
             assertThat(exception.getMessage()).contains("결제 금액은 0 이상이어야 합니다");
-        }
-
-        @DisplayName("포인트 금액이 null일 때 예외")
-        @Test
-        void createPayment_PointAmountNull() {
-            // when & then
-            CoreException exception = assertThrows(CoreException.class, () -> {
-                new Payment(1L, 1L, new BigDecimal("10000"), null);
-            });
-
-            assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
-            assertThat(exception.getMessage()).contains("포인트 사용 금액은 0 이상이어야 합니다");
-        }
-
-        @DisplayName("포인트 금액이 음수일 때 예외")
-        @Test
-        void createPayment_PointAmountNegative() {
-            // when & then
-            CoreException exception = assertThrows(CoreException.class, () -> {
-                new Payment(1L, 1L, new BigDecimal("10000"), new BigDecimal("-5000"));
-            });
-
-            assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
-            assertThat(exception.getMessage()).contains("포인트 사용 금액은 0 이상이어야 합니다");
         }
     }
 }

@@ -114,7 +114,7 @@ class StockServiceTest {
         // given
         ProductStockCommand.Reduce command = new ProductStockCommand.Reduce(1L, 30);
         
-        given(productRepository.findStockByProductId(1L)).willReturn(Optional.of(productStock));
+        given(productRepository.findStockByProductIdWithLock(1L)).willReturn(Optional.of(productStock));
         given(productRepository.save(productStock)).willReturn(productStock);
 
         // when
@@ -124,7 +124,7 @@ class StockServiceTest {
         assertThat(result.productId()).isEqualTo(1L);
         assertThat(result.quantity()).isEqualTo(70);
         
-        then(productRepository).should().findStockByProductId(1L);
+        then(productRepository).should().findStockByProductIdWithLock(1L);
         then(productRepository).should().save(productStock);
     }
 
@@ -134,7 +134,7 @@ class StockServiceTest {
         // given
         ProductStockCommand.Reduce command = new ProductStockCommand.Reduce(1L, 150);
         
-        given(productRepository.findStockByProductId(1L)).willReturn(Optional.of(productStock));
+        given(productRepository.findStockByProductIdWithLock(1L)).willReturn(Optional.of(productStock));
 
         // when & then
         assertThatThrownBy(() -> stockService.reduceStock(command))

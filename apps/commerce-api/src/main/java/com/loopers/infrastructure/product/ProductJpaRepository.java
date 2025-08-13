@@ -15,6 +15,9 @@ public interface ProductJpaRepository extends JpaRepository<Product, Long> {
     List<Product> findByBrandId(Long brandId);
     
     List<Product> findByCategory(String category);
+
+    @Query("SELECT p FROM Product p WHERE p.id IN :ids")
+    List<Product> findByIdIn(@Param("ids") List<Long> ids);
     
     @Query("SELECT p FROM Product p WHERE " +
            "(:category IS NULL OR p.category = :category) AND " +

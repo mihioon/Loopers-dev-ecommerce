@@ -17,21 +17,12 @@ public class PaymentService {
     @Transactional(rollbackFor = Exception.class)
     public PaymentInfo.Detail processPayment(PaymentCommand.Process command) {
         Payment payment = new Payment(
-                command.orderId(), 
-                command.userId(), 
-                command.amount(), 
-                command.pointAmount()
+                command.userId(),
+                command.amount()
         );
         payment.complete();
         Payment savedPayment = paymentRepository.save(payment);
         return PaymentInfo.Detail.from(savedPayment);
     }
 
-    @Transactional(readOnly = true)
-    public PaymentInfo.Detail getPaymentByOrderId(Long orderId) {
-        Payment payment = paymentRepository.findByOrderId(orderId)
-                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "결제 정보를 찾을 수 없습니다."));
-        
-        return PaymentInfo.Detail.from(payment);
-    }
 }

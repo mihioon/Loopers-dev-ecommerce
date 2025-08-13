@@ -9,7 +9,7 @@ public interface ProductLikeRepository {
 
     ProductLike save(ProductLike productLike);
 
-    void deleteByProductIdAndUserId(Long productId, Long userId);
+    int deleteByProductIdAndUserId(Long productId, Long userId);
 
     Optional<ProductLike> findById(Long id);
 

@@ -1,12 +1,12 @@
 package com.loopers.interfaces.api.like;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.loopers.domain.like.ProductLike;
-import com.loopers.domain.like.ProductLikeRepository;
+import com.loopers.application.like.LikeFacade;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductRepository;
 import com.loopers.domain.user.*;
 import com.loopers.support.E2EIntegrationTest;
+import com.loopers.support.TestHelper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -32,15 +32,18 @@ public class LikeV1ApiE2ETest extends E2EIntegrationTest {
     
     @Autowired
     private ProductRepository productRepository;
-    
+
     @Autowired
-    private ProductLikeRepository productLikeRepository;
+    private LikeFacade likeFacade;
 
     @Autowired
     private UserService userService;
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private TestHelper testHelper;
 
     @DisplayName("POST /api/v1/like/products/{productId}")
     @Nested
@@ -56,6 +59,7 @@ public class LikeV1ApiE2ETest extends E2EIntegrationTest {
             Product product = productRepository.save(new Product(
                     "테스트 상품", "설명", BigDecimal.valueOf(10000), "의류", 1L
             ));
+            testHelper.prepareLikeCount(product.getId());
 
             // when & then
             mockMvc.perform(post(ENDPOINT, product.getId())
@@ -74,6 +78,7 @@ public class LikeV1ApiE2ETest extends E2EIntegrationTest {
             final Product product = productRepository.save(new Product(
                     "테스트 상품", "설명", BigDecimal.valueOf(10000), "의류", 1L
             ));
+            testHelper.prepareLikeCount(product.getId());
 
             final String loginId = "test123456";
             final User user = userRepository.save(new User(
@@ -84,7 +89,7 @@ public class LikeV1ApiE2ETest extends E2EIntegrationTest {
                     "test"
             ));
 
-            productLikeRepository.save(new ProductLike(product.getId(), user.getId()));
+            likeFacade.like(product.getId(), loginId);
 
             // when & then
             mockMvc.perform(post(ENDPOINT, product.getId())
@@ -103,6 +108,7 @@ public class LikeV1ApiE2ETest extends E2EIntegrationTest {
             final Product product = productRepository.save(new Product(
                     "테스트 상품", "설명", BigDecimal.valueOf(10000), "의류", 1L
             ));
+            testHelper.prepareLikeCount(product.getId());
             
             final String loginId1 = "user1";
             final String loginId2 = "user2";
@@ -144,6 +150,7 @@ public class LikeV1ApiE2ETest extends E2EIntegrationTest {
             final Product product = productRepository.save(new Product(
                     "테스트 상품", "설명", BigDecimal.valueOf(10000), "의류", 1L
             ));
+            testHelper.prepareLikeCount(product.getId());
 
             // when & then
             mockMvc.perform(post(ENDPOINT, product.getId())
@@ -160,12 +167,12 @@ public class LikeV1ApiE2ETest extends E2EIntegrationTest {
 
         @DisplayName("좋아요한 상품을 취소 시, 성공적으로 좋아요가 제거된다.")
         @Test
-        @Transactional
         void removesLike_whenUnlikeRequest() throws Exception {
             // given
             final Product product = productRepository.save(new Product(
                     "테스트 상품", "설명", BigDecimal.valueOf(10000), "의류", 1L
             ));
+            testHelper.prepareLikeCount(product.getId());
 
             final String loginId = "test123456";
             final User user = userRepository.save(new User(
@@ -176,7 +183,7 @@ public class LikeV1ApiE2ETest extends E2EIntegrationTest {
                     "test"
             ));
 
-            productLikeRepository.save(new ProductLike(product.getId(), user.getId()));
+            likeFacade.like(product.getId(), loginId);
 
             // when & then
             mockMvc.perform(delete(ENDPOINT, product.getId())
@@ -196,6 +203,7 @@ public class LikeV1ApiE2ETest extends E2EIntegrationTest {
             final Product product = productRepository.save(new Product(
                     "테스트 상품", "설명", BigDecimal.valueOf(10000), "의류", 1L
             ));
+            testHelper.prepareLikeCount(product.getId());
 
             final String loginId = "test123456";
             userRepository.save(new User(
@@ -251,9 +259,11 @@ public class LikeV1ApiE2ETest extends E2EIntegrationTest {
             final Product product1 = productRepository.save(new Product(
                     "상품1", "설명1", BigDecimal.valueOf(10000), "의류", 1L
             ));
+            testHelper.prepareLikeCount(product1.getId());
             final Product product2 = productRepository.save(new Product(
                     "상품2", "설명2", BigDecimal.valueOf(20000), "전자제품", 2L
             ));
+            testHelper.prepareLikeCount(product2.getId());
 
             // 2개 상품에 좋아요
             mockMvc.perform(post("/api/v1/like/products/{productId}", product1.getId())

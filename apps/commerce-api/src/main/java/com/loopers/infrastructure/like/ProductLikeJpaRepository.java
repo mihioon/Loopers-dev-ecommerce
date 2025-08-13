@@ -19,7 +19,7 @@ public interface ProductLikeJpaRepository extends JpaRepository<ProductLike, Lon
     
     boolean existsByProductIdAndUserId(Long productId, Long userId);
     
-    void deleteByProductIdAndUserId(Long productId, Long userId);
+    int deleteByProductIdAndUserId(Long productId, Long userId);
 
     @Query("SELECT pl.productId FROM ProductLike pl WHERE pl.productId IN :productIds AND pl.userId = :userId")
     Set<Long> getLikedProductIds(@Param("productIds") List<Long> productIds, @Param("userId") Long userId);
