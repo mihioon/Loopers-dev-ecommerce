@@ -20,8 +20,13 @@ spring:
   config:
     import:
       - jpa.yml
+      - redis.yml
       - logging.yml
       - monitoring.yml
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/play?useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+    username: app
+    password: app1234
 
 springdoc:
   use-fqn: true
