@@ -12,13 +12,18 @@ import java.util.Optional;
 
 public interface ProductJpaRepository extends JpaRepository<Product, Long> {
     
-    List<Product> findByBrandId(Long brandId);
-    
-    List<Product> findByCategory(String category);
-
     @Query("SELECT p FROM Product p WHERE p.id IN :ids")
     List<Product> findByIdIn(@Param("ids") List<Long> ids);
-    
+
+    @Query("SELECT p, ps.likeCount FROM ProductStatus ps " +
+            "INNER JOIN Product p ON ps.productId = p.id " +
+            "WHERE (:category IS NULL OR p.category = :category) " +
+            "AND (:brandId IS NULL OR p.brandId = :brandId) " +
+            "ORDER BY ps.likeCount DESC, ps.productId DESC")
+    Page<Object[]> findProductsWithFilterByLikes(@Param("category") String category,
+                                                  @Param("brandId") Long brandId,
+                                                  Pageable pageable);
+
     @Query("SELECT p FROM Product p WHERE " +
            "(:category IS NULL OR p.category = :category) AND " +
            "(:brandId IS NULL OR p.brandId = :brandId)")
@@ -31,12 +36,6 @@ public interface ProductJpaRepository extends JpaRepository<Product, Long> {
            "(:brandId IS NULL OR p.brandId = :brandId)")
     long countProductsWithFilter(@Param("category") String category,
                                 @Param("brandId") Long brandId);
-    
-    @Query("SELECT p FROM Product p LEFT JOIN FETCH p.images WHERE p.id = :id")
-    Optional<Product> findByIdWithImages(@Param("id") Long id);
-    
-    @Query("SELECT p FROM Product p LEFT JOIN FETCH p.detail WHERE p.id = :id")
-    Optional<Product> findByIdWithDetail(@Param("id") Long id);
     
     @Query("SELECT p FROM Product p LEFT JOIN FETCH p.images LEFT JOIN FETCH p.detail WHERE p.id = :id")
     Optional<Product> findByIdWithImagesAndDetail(@Param("id") Long id);
