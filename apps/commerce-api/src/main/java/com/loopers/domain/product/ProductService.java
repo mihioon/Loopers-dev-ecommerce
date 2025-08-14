@@ -21,11 +21,7 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public Page<ProductInfo.Summary> getSummary(final ProductQuery.Summary command) {
-        final Pageable pageable = PageRequest.of(
-                command.page(),
-                command.size(),
-                Sort.by(Sort.Direction.fromString(command.sortType().getDirection()), command.sortType().getField())
-        );
+        final Pageable pageable = createPageableWithSort(command);
 
         final List<Product> products = productRepository.findProductsWithSort(command, pageable);
 
@@ -84,5 +80,19 @@ public class ProductService {
                 .map(ProductStatus::getLikeCount)
                 .map(Long::valueOf)
                 .orElse(0L);
+    }
+    
+    private Pageable createPageableWithSort(ProductQuery.Summary command) {
+        return switch (command.sortType()) {
+            case LATEST -> createPageable(command, "createdAt", Sort.Direction.DESC);
+            case PRICE_DESC -> createPageable(command, "price", Sort.Direction.DESC);
+            case PRICE_ASC -> createPageable(command, "price", Sort.Direction.ASC);
+            case LIKES_DESC -> PageRequest.of(command.page(), command.size()); // JPA 쿼리에서 ORDER BY 처리
+        };
+    }
+    
+    private Pageable createPageable(ProductQuery.Summary command, String property, Sort.Direction direction) {
+        Sort sort = Sort.by(direction, property).and(Sort.by(direction, "id"));
+        return PageRequest.of(command.page(), command.size(), sort);
     }
 }

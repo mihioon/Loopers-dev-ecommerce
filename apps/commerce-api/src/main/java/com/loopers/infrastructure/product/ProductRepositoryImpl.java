@@ -6,13 +6,12 @@ import com.loopers.domain.product.dto.ProductQuery;
 import com.loopers.domain.product.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -38,12 +37,30 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public List<Product> findProductsWithSort(ProductQuery.Summary command, Pageable pageable) {
-        Page<Product> productPage = productJpaRepository.findProductsWithFilter(
+        if (command.sortType() == ProductQuery.Summary.SortType.LIKES_DESC) {
+            return findProductsWithLikesSort(command, pageable);
+        }
+        return findProductsWithBasicSort(command, pageable);
+    }
+    
+    private List<Product> findProductsWithBasicSort(ProductQuery.Summary command, Pageable pageable) {
+        return productJpaRepository.findProductsWithFilter(
+                command.category(),
+                command.brandId(),
+                pageable
+        ).getContent();
+    }
+
+    private List<Product> findProductsWithLikesSort(ProductQuery.Summary command, Pageable pageable) {
+        Page<Object[]> result = productJpaRepository.findProductsWithFilterByLikes(
                 command.category(),
                 command.brandId(),
                 pageable
         );
-        return productPage.getContent();
+
+        return result.getContent().stream()
+                .map(objects -> (Product) objects[0])
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -54,20 +71,6 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public Optional<Product> findByIdWithImagesAndDetail(Long id) {
         return productJpaRepository.findByIdWithImagesAndDetail(id);
-    }
-
-    private Pageable createPageable(ProductQuery.Summary command) {
-        Sort sort = createSort(command.sortType());
-        return PageRequest.of(command.page(), command.size(), sort);
-    }
-
-    private Sort createSort(ProductQuery.Summary.SortType sortType) {
-        String field = sortType.getField();
-        String direction = sortType.getDirection();
-        
-        return "desc".equalsIgnoreCase(direction) 
-                ? Sort.by(Sort.Direction.DESC, field)
-                : Sort.by(Sort.Direction.ASC, field);
     }
 
     @Override
