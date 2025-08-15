@@ -45,4 +45,9 @@ public class ProductStatusRepositoryImpl implements ProductStatusRepository {
                         count -> Long.valueOf(count.getLikeCount())
                 ));
     }
+
+    @Override
+    public void deleteByProductId(Long productId) {
+        ProductStatusJpaRepository.deleteByProductId(productId);
+    }
 }

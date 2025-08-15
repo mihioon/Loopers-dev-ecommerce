@@ -2,6 +2,7 @@ package com.loopers.domain.product;
 
 import com.loopers.domain.product.dto.ProductInfo;
 import com.loopers.domain.product.dto.ProductQuery;
+import com.loopers.domain.product.dto.ProductCommand;
 import com.loopers.domain.product.dto.ProductWithLikeCountProjection;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -18,6 +20,7 @@ public class ProductService {
     
     private final ProductRepository productRepository;
     private final ProductStatusRepository productStatusRepository;
+    private final ProductCacheRepository productCacheRepository;
 
     @Transactional(readOnly = true)
     public Page<ProductInfo.Summary> getSummary(final ProductQuery.Summary command) {
@@ -36,8 +39,75 @@ public class ProductService {
     }
 
     public long countProductsWithFilter(String category, Long brandId) {
+        String cacheKey = createCacheKey(category, brandId);
+        
+        try {
+            Long cachedCount = productCacheRepository.get(cacheKey);
+            if (cachedCount != null) {
+                return cachedCount;
+            }
+        } catch (Exception e) {
+            // Redis 장애 시 로깅
+        }
+
         long totalElementCount = productRepository.countProductsWithFilter(category, brandId);
+        
+        try {
+            productCacheRepository.set(cacheKey, totalElementCount, Duration.ofHours(1));
+        } catch (Exception e) {
+            // Redis 장애 시 로깅
+        }
+
         return totalElementCount;
+    }
+
+    @Transactional
+    public Long createProduct(ProductCommand.Create command) {
+        Product product = new Product(
+                command.name(),
+                command.description(),
+                command.price(),
+                command.category(),
+                command.brandId()
+        );
+        
+        Product savedProduct = productRepository.save(product);
+        
+        ProductStatus initialStatus = new ProductStatus(savedProduct.getId());
+        productStatusRepository.save(initialStatus);
+
+        // TODO: 이외 연관된 엔티티 생성
+
+        // 캐시 무효화
+        evictProductCountCache(command.category(), command.brandId());
+
+        return savedProduct.getId();
+    }
+    
+    @Transactional
+    public void deleteProduct(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "상품을 찾을 수 없습니다."));
+        
+        productStatusRepository.deleteByProductId(productId);
+        productRepository.deleteById(productId);
+
+        // TODO: 이외 연관된 엔티티 삭제
+
+        // 캐시 무효화
+        evictProductCountCache(product.getCategory(), product.getBrandId());
+    }
+
+    public String createCacheKey(String category, Long brandId) {
+        return String.format("product_count:category=%s:brand=%s", category, brandId);
+    }
+
+    public void evictProductCountCache(String category, Long brandId) {
+        try {
+            productCacheRepository.delete(createCacheKey(category, brandId));
+        } catch (Exception e) {
+            // Redis 장애 시 로깅
+        }
     }
 
     public ProductInfo.Basic getBasic(final Long productId) {

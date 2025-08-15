@@ -10,6 +10,9 @@ import java.util.Optional;
 
 public interface ProductRepository {
     Product save(Product product);
+
+    void deleteById(Long id);
+
     Optional<Product> findById(Long id);
 
     List<Product> findByIds(List<Long> ids);
@@ -21,6 +24,7 @@ public interface ProductRepository {
     Optional<Product> findByIdWithImagesAndDetail(Long id);
 
     ProductStock save(ProductStock productStock);
+
     Optional<ProductStock> findStockByProductId(Long productId);
 
     Optional<ProductStock> findStockByProductIdWithLock(Long productId);

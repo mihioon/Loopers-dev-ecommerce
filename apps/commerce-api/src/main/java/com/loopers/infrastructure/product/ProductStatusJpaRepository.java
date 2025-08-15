@@ -19,4 +19,6 @@ interface ProductStatusJpaRepository extends JpaRepository<ProductStatus, Long> 
 
     @Query("SELECT plc FROM ProductStatus plc WHERE plc.productId IN :productIds")
     List<ProductStatus> findByProductIdIn(@Param("productIds") List<Long> productIds);
+
+    void deleteByProductId(Long productId);
 }
