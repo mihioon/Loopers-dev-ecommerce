@@ -2,6 +2,7 @@ package com.loopers.domain.product;
 
 import com.loopers.domain.product.dto.ProductInfo;
 import com.loopers.domain.product.dto.ProductQuery;
+import com.loopers.domain.product.dto.ProductWithLikeCountProjection;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @Component
@@ -23,22 +23,21 @@ public class ProductService {
     public Page<ProductInfo.Summary> getSummary(final ProductQuery.Summary command) {
         final Pageable pageable = createPageableWithSort(command);
 
-        final List<Product> products = productRepository.findProductsWithSort(command, pageable);
+        final Page<ProductWithLikeCountProjection> productsWithLikes =
+                productRepository.findProductsWithSort(command, pageable);
 
-        final long totalElements = productRepository.countProductsWithFilter(command.category(), command.brandId());
-
-        final Map<Long, Long> productStatus = productStatusRepository.getLikeCountsFromCountTable(products.stream()
-                .map(Product::getId)
-                .toList());
-
-        final List<ProductInfo.Summary> dtoList = products.stream()
-                .map(product -> ProductInfo.Summary.from(
-                        product,
-                        productStatus.getOrDefault(product.getId(), 0L))
-                )
+        final List<ProductInfo.Summary> dtoList = productsWithLikes.getContent().stream()
+                .map(ProductInfo.Summary::from)
                 .toList();
 
-        return new PageImpl<>(dtoList, pageable, totalElements);
+        final long totalElementCount = countProductsWithFilter(command.category(), command.brandId());
+
+        return new PageImpl<>(dtoList, pageable, totalElementCount);
+    }
+
+    public long countProductsWithFilter(String category, Long brandId) {
+        long totalElementCount = productRepository.countProductsWithFilter(category, brandId);
+        return totalElementCount;
     }
 
     public ProductInfo.Basic getBasic(final Long productId) {

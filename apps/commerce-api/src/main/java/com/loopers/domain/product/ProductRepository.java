@@ -1,6 +1,8 @@
 package com.loopers.domain.product;
 
 import com.loopers.domain.product.dto.ProductQuery;
+import com.loopers.domain.product.dto.ProductWithLikeCountProjection;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -12,7 +14,8 @@ public interface ProductRepository {
 
     List<Product> findByIds(List<Long> ids);
 
-    List<Product> findProductsWithSort(ProductQuery.Summary command, Pageable pageable);
+    Page<ProductWithLikeCountProjection> findProductsWithSort(ProductQuery.Summary command, Pageable pageable);
+
     long countProductsWithFilter(String category, Long brandId);
     
     Optional<Product> findByIdWithImagesAndDetail(Long id);

@@ -29,6 +29,9 @@ public class ProductServiceIntegrationTest extends IntegrationTest {
     private ProductRepository productRepository;
     
     @Autowired
+    private ProductStatusRepository productStatusRepository;
+
+    @Autowired
     private BrandRepository brandRepository;
 
     @DisplayName("상품 상세 조회")
@@ -97,15 +100,19 @@ public class ProductServiceIntegrationTest extends IntegrationTest {
         @ValueSource(strings = {"latest", "price_asc"})
         void getSummary_whenSortCommand(String sortType) {
             // given
-            productRepository.save(new Product(
+            Product productA = productRepository.save(new Product(
                     "상품 A", "설명", BigDecimal.valueOf(10000), "의류", 1L
             ));
-            productRepository.save(new Product(
+            Product productB = productRepository.save(new Product(
                     "상품 B", "설명", BigDecimal.valueOf(20000), "전자제품", 2L
             ));
-            productRepository.save(new Product(
+            Product productC = productRepository.save(new Product(
                     "상품 C", "설명", BigDecimal.valueOf(30000), "의류", 3L
             ));
+            
+            productStatusRepository.save(new ProductStatus(productA.getId()));
+            productStatusRepository.save(new ProductStatus(productB.getId()));
+            productStatusRepository.save(new ProductStatus(productC.getId()));
 
             // when
             final var actual = sut.getSummary(new ProductQuery.Summary(
@@ -132,15 +139,19 @@ public class ProductServiceIntegrationTest extends IntegrationTest {
         void getSummary_whenBrandFilter() {
             // given
             final Long targetBrandId = 5L;
-            productRepository.save(new Product(
+            Product product1 = productRepository.save(new Product(
                     "브랜드 5 상품 1", "설명", BigDecimal.valueOf(10000), "의류", targetBrandId
             ));
-            productRepository.save(new Product(
+            Product product2 = productRepository.save(new Product(
                     "브랜드 5 상품 2", "설명", BigDecimal.valueOf(20000), "전자제품", targetBrandId
             ));
-            productRepository.save(new Product(
+            Product product3 = productRepository.save(new Product(
                     "다른 브랜드 상품", "설명", BigDecimal.valueOf(30000), "의류", 999L
             ));
+
+            productStatusRepository.save(new ProductStatus(product1.getId()));
+            productStatusRepository.save(new ProductStatus(product2.getId()));
+            productStatusRepository.save(new ProductStatus(product3.getId()));
 
             final ProductQuery.Summary command = new ProductQuery.Summary(
                     null,

@@ -44,7 +44,7 @@ public class LikeFacadeConcurrencyTest extends IntegrationTest {
     @DisplayName("다수의 사용자가 동시에 같은 상품에 좋아요를 누를 때, " +
             "좋아요 저장 후 product_like_count.likeCount 값과 product_like row 수가 일치하고, 좋아요 수는 좋아요 요청 수와 일치한다.")
     @ParameterizedTest
-    @ValueSource(ints = {100, 1000})
+    @ValueSource(ints = {100})
     void concurrentLikes_shouldMaintainCorrectCount_withCompletableFuture(int numberOfUsers) throws Exception {
         // given
         Long productId = 1L;

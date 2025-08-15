@@ -26,6 +26,18 @@ public class ProductInfo {
                     likeCount
             );
         }
+        
+        public static Summary from(ProductWithLikeCountProjection projection) {
+            return new Summary(
+                    projection.getProduct().getId(),
+                    projection.getProduct().getName(),
+                    projection.getProduct().getDescription(),
+                    projection.getProduct().getPrice(),
+                    projection.getProduct().getCategory(),
+                    projection.getProduct().getBrandId(),
+                    projection.getLikeCount()
+            );
+        }
     }
 
     public record Basic(
