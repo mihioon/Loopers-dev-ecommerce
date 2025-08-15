@@ -3,6 +3,7 @@ package com.loopers.infrastructure.product;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductStock;
 import com.loopers.domain.product.dto.ProductQuery;
+import com.loopers.domain.product.dto.ProductWithLikeCountProjection;
 import com.loopers.domain.product.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -36,31 +36,11 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public List<Product> findProductsWithSort(ProductQuery.Summary command, Pageable pageable) {
+    public Page<ProductWithLikeCountProjection> findProductsWithSort(ProductQuery.Summary command, Pageable pageable) {
         if (command.sortType() == ProductQuery.Summary.SortType.LIKES_DESC) {
-            return findProductsWithLikesSort(command, pageable);
+            return productJpaRepository.findProductsWithFilterByLikes(command.category(), command.brandId(), pageable);
         }
-        return findProductsWithBasicSort(command, pageable);
-    }
-    
-    private List<Product> findProductsWithBasicSort(ProductQuery.Summary command, Pageable pageable) {
-        return productJpaRepository.findProductsWithFilter(
-                command.category(),
-                command.brandId(),
-                pageable
-        ).getContent();
-    }
-
-    private List<Product> findProductsWithLikesSort(ProductQuery.Summary command, Pageable pageable) {
-        Page<Object[]> result = productJpaRepository.findProductsWithFilterByLikes(
-                command.category(),
-                command.brandId(),
-                pageable
-        );
-
-        return result.getContent().stream()
-                .map(objects -> (Product) objects[0])
-                .collect(Collectors.toList());
+        return productJpaRepository.findProductsWithFilter(command.category(), command.brandId(), pageable);
     }
 
     @Override
