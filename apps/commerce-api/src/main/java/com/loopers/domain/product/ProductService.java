@@ -20,6 +20,7 @@ public class ProductService {
     
     private final ProductRepository productRepository;
     private final ProductStatusRepository productStatusRepository;
+    private final ProductCacheRepository productCacheRepository;
 
     @Transactional(readOnly = true)
     public Page<ProductInfo.Summary> getSummary(final ProductQuery.Summary command) {
@@ -38,7 +39,25 @@ public class ProductService {
     }
 
     public long countProductsWithFilter(String category, Long brandId) {
+        String cacheKey = createCacheKey(category, brandId);
+        
+        try {
+            Long cachedCount = productCacheRepository.get(cacheKey);
+            if (cachedCount != null) {
+                return cachedCount;
+            }
+        } catch (Exception e) {
+            // Redis 장애 시 로깅
+        }
+
         long totalElementCount = productRepository.countProductsWithFilter(category, brandId);
+        
+        try {
+            productCacheRepository.set(cacheKey, totalElementCount, Duration.ofHours(1));
+        } catch (Exception e) {
+            // Redis 장애 시 로깅
+        }
+
         return totalElementCount;
     }
 
@@ -59,6 +78,9 @@ public class ProductService {
 
         // TODO: 이외 연관된 엔티티 생성
 
+        // 캐시 무효화
+        evictProductCountCache(command.category(), command.brandId());
+
         return savedProduct.getId();
     }
     
@@ -71,6 +93,21 @@ public class ProductService {
         productRepository.deleteById(productId);
 
         // TODO: 이외 연관된 엔티티 삭제
+
+        // 캐시 무효화
+        evictProductCountCache(product.getCategory(), product.getBrandId());
+    }
+
+    public String createCacheKey(String category, Long brandId) {
+        return String.format("product_count:category=%s:brand=%s", category, brandId);
+    }
+
+    public void evictProductCountCache(String category, Long brandId) {
+        try {
+            productCacheRepository.delete(createCacheKey(category, brandId));
+        } catch (Exception e) {
+            // Redis 장애 시 로깅
+        }
     }
 
     public ProductInfo.Basic getBasic(final Long productId) {
