@@ -15,30 +15,33 @@ public class ProductCacheRepositoryImpl implements ProductCacheRepository {
 
     @Override
     public Long get(String key) {
-        Object value = cacheRepository.get(key);
-
-        if (value == null) {
+        try {
+            Object value = cacheRepository.get(key);
+            if (value == null) return null;
+            return Long.valueOf(value.toString());
+        } catch (Exception e) {
+            // TODO: 로깅
             return null;
         }
-
-        if (value instanceof String) {
-            try {
-                return Long.parseLong((String) value);
-            } catch (NumberFormatException e) {
-                return null;
-            }
-        }
-
-        return null;
     }
 
     @Override
     public void set(String key, Long count, Duration ttl) {
-        cacheRepository.set(key, String.valueOf(count), ttl);
+        try {
+            cacheRepository.set(key, String.valueOf(count), ttl);
+        } catch (Exception e) {
+            // TODO: 로깅
+            return;
+        }
     }
 
     @Override
     public void delete(String key) {
-        cacheRepository.delete(key);
+        try {
+            cacheRepository.delete(key);
+        } catch (Exception e) {
+            // TODO: 로깅
+            return;
+        }
     }
 }

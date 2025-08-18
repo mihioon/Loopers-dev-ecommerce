@@ -40,23 +40,14 @@ public class ProductService {
 
     public long countProductsWithFilter(String category, Long brandId) {
         String cacheKey = createCacheKey(category, brandId);
-        
-        try {
-            Long cachedCount = productCacheRepository.get(cacheKey);
-            if (cachedCount != null) {
-                return cachedCount;
-            }
-        } catch (Exception e) {
-            // Redis 장애 시 로깅
+
+        Long cachedCount = productCacheRepository.get(cacheKey);
+        if (cachedCount != null) {
+            return cachedCount;
         }
 
         long totalElementCount = productRepository.countProductsWithFilter(category, brandId);
-        
-        try {
-            productCacheRepository.set(cacheKey, totalElementCount, Duration.ofHours(1));
-        } catch (Exception e) {
-            // Redis 장애 시 로깅
-        }
+        productCacheRepository.set(cacheKey, totalElementCount, Duration.ofHours(1));
 
         return totalElementCount;
     }
@@ -103,11 +94,7 @@ public class ProductService {
     }
 
     public void evictProductCountCache(String category, Long brandId) {
-        try {
-            productCacheRepository.delete(createCacheKey(category, brandId));
-        } catch (Exception e) {
-            // Redis 장애 시 로깅
-        }
+        productCacheRepository.delete(createCacheKey(category, brandId));
     }
 
     public ProductInfo.Basic getBasic(final Long productId) {
