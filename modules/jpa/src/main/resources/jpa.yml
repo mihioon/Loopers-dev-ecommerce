@@ -37,14 +37,14 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
 
 datasource:
   mysql-jpa:
     main:
-      jdbc-url: jdbc:mysql://localhost:3306/loopers
-      username: application
-      password: application
+      jdbc-url: jdbc:mysql://localhost:3306/play
+      username: app
+      password: app1234
 
 ---
 spring.config.activate.on-profile: test

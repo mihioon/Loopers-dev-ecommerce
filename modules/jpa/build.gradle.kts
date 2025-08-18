@@ -17,5 +17,7 @@ dependencies {
     testImplementation("org.testcontainers:mysql")
 
     testFixturesImplementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    testFixturesImplementation("org.springframework.boot:spring-boot-starter-data-redis")
     testFixturesImplementation("org.testcontainers:mysql")
+    testFixturesImplementation("com.redis:testcontainers-redis")
 }

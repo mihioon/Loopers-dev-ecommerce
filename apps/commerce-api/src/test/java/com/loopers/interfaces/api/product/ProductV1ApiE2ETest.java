@@ -62,6 +62,15 @@ public class ProductV1ApiE2ETest extends E2EIntegrationTest {
             productLikeRepository.save(new ProductLike(product1.getId(), 1L));
             productLikeRepository.save(new ProductLike(product1.getId(), 2L));
             productLikeRepository.save(new ProductLike(product2.getId(), 1L));
+            
+            ProductStatus status1 = new ProductStatus(product1.getId());
+            status1.increase();
+            status1.increase();
+            productStatusRepository.save(status1);
+            
+            ProductStatus status2 = new ProductStatus(product2.getId());
+            status2.increase();
+            productStatusRepository.save(status2);
 
             // when&then
             mockMvc.perform(get(ENDPOINT)
@@ -88,6 +97,9 @@ public class ProductV1ApiE2ETest extends E2EIntegrationTest {
                     "전자제품", "전자제품 설명", BigDecimal.valueOf(25000), "전자제품", 2L
             ));
 
+            productStatusRepository.save(new ProductStatus(clothingProduct.getId()));
+            productStatusRepository.save(new ProductStatus(electronicsProduct.getId()));
+
             // when&then
             mockMvc.perform(get(ENDPOINT)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -110,6 +122,10 @@ public class ProductV1ApiE2ETest extends E2EIntegrationTest {
             
             final String loginId = "test123456";
             productLikeRepository.save(new ProductLike(product.getId(), 1L));
+            
+            ProductStatus status = new ProductStatus(product.getId());
+            status.increase();
+            productStatusRepository.save(status);
 
             // when&then
             mockMvc.perform(get(ENDPOINT)
@@ -127,12 +143,15 @@ public class ProductV1ApiE2ETest extends E2EIntegrationTest {
         @Transactional
         void returnsProductsSortedByPrice_whenPriceAscSortProvided() throws Exception {
             // given
-            productRepository.save(new Product(
+            Product expensiveProduct = productRepository.save(new Product(
                     "비싼 상품", "설명", BigDecimal.valueOf(30000), "의류", 1L
             ));
-            productRepository.save(new Product(
+            Product cheapProduct = productRepository.save(new Product(
                     "저렴한 상품", "설명", BigDecimal.valueOf(10000), "의류", 1L
             ));
+            
+            productStatusRepository.save(new ProductStatus(expensiveProduct.getId()));
+            productStatusRepository.save(new ProductStatus(cheapProduct.getId()));
 
             // when&then
             mockMvc.perform(get(ENDPOINT)

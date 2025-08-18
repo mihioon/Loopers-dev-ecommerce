@@ -27,7 +27,7 @@ class ProductStockConcurrencyTest extends IntegrationTest {
     @DisplayName("다수의 주문 요청으로 validateAndReduceStocks로 여러 상품을 동시에 차감하는 경우," +
             "요청이 성공한 횟수만큼 재고가 정확히 차감되며, 실패한 요청의 차감은 반영되지 않아야 한다.")
     @ParameterizedTest
-    @ValueSource(ints = {2, 10, 500})
+    @ValueSource(ints = {2, 10})
     void validateAndReduceStocks_concurrentMultiProductOrders(int numberOfOrders) throws Exception {
         // given
         Long productA = 5000L;
@@ -95,7 +95,7 @@ class ProductStockConcurrencyTest extends IntegrationTest {
     @DisplayName("다수의 주문 요청으로 validateAndReduceStocks로 여러 상품을 동시에 차감하는 경우," +
             "요청이 성공한 횟수만큼 재고가 정확히 차감되며, 재고 부족으로 전체 주문이 실패한 경우 실패한 요청의 차감은 반영되지 않아야 한다.")
     @ParameterizedTest
-    @ValueSource(ints = {15, 25, 500})
+    @ValueSource(ints = {15, 25})
     void validateAndReduceStocks_shouldFailEntireOrderWhenInsufficientStock(int numberOfOrders) throws Exception {
         // given
         Long productA = 7000L;

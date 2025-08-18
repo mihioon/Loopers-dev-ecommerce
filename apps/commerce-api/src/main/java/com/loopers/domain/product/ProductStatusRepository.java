@@ -14,4 +14,6 @@ public interface ProductStatusRepository {
     Optional<ProductStatus> findWithLockByProductId(Long productId);
 
     Map<Long, Long> getLikeCountsFromCountTable(List<Long> productIds);
+
+    void deleteByProductId(Long productId);
 }
