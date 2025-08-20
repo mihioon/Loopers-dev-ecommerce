@@ -15,7 +15,7 @@ datasource:
   mysql-jpa:
     main:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      jdbc-url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}
+      jdbc-url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DB}
       username: ${MYSQL_USER}
       password: "${MYSQL_PWD}"
       pool-name: mysql-main-pool
@@ -39,12 +39,6 @@ spring:
     hibernate:
       ddl-auto: validate
 
-datasource:
-  mysql-jpa:
-    main:
-      jdbc-url: jdbc:mysql://localhost:3306/play
-      username: app
-      password: app1234
 
 ---
 spring.config.activate.on-profile: test
