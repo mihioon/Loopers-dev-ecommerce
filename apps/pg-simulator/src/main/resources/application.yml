@@ -28,6 +28,8 @@ datasource:
   mysql-jpa:
     main:
       jdbc-url: jdbc:mysql://localhost:3306/paymentgateway
+      username: app
+      password: app1234
 
 springdoc:
   use-fqn: true
