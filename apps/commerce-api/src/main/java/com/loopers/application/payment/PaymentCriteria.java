@@ -12,10 +12,11 @@ public class PaymentCriteria {
             String cardType,
             String cardNo
     ) {
-        public PaymentCommand.Process toCommand() {
+        public PaymentCommand.Process toCommand(String orderUuid) {
             return new PaymentCommand.Process(
                     userId,
                     amount,
+                    orderUuid,
                     orderId,
                     cardType,
                     cardNo
@@ -25,7 +26,7 @@ public class PaymentCriteria {
 
     public record Callback(
             String transactionKey,
-            String orderId,
+            String orderUuid,
             String cardType,
             String cardNo,
             BigDecimal amount,

@@ -32,6 +32,7 @@ class PaymentServiceTest {
         processCommand = new PaymentCommand.Process(
                 1L,
                 new BigDecimal("15000"),
+                "orderUuid",
                 1L,
                 "cardType",
                 "cardNo"
@@ -39,6 +40,7 @@ class PaymentServiceTest {
         
         payment = new Payment(
                 1L,
+                "orderUuid",
                 new BigDecimal("15000"),
                 "paymentId",
                 1L
@@ -71,6 +73,7 @@ class PaymentServiceTest {
         PaymentCommand.Process commandWithoutPoint = new PaymentCommand.Process(
                 2L,
                 new BigDecimal("20000"),
+                "orderUuid",
                 2L,
                 "cardType",
                 "cardNo"
@@ -78,6 +81,7 @@ class PaymentServiceTest {
         
         Payment paymentWithoutPoint = new Payment(
                 2L,
+                "orderUuid",
                 new BigDecimal("20000"),
                 "paymentId",
                 2L
@@ -104,6 +108,7 @@ class PaymentServiceTest {
         PaymentCommand.Process zeroAmountCommand = new PaymentCommand.Process(
                 3L,
                 BigDecimal.ZERO,
+                "orderUuid",
                 3L,
                 "cardType",
                 "cardNo"
@@ -111,6 +116,7 @@ class PaymentServiceTest {
         
         Payment zeroAmountPayment = new Payment(
                 3L,
+                "orderUuid",
                 BigDecimal.ZERO,
                 "paymentId",
                 3L

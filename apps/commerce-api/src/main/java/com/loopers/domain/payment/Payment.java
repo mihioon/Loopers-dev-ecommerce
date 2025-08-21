@@ -18,10 +18,13 @@ public class Payment extends BaseEntity {
     private Long userId;
 
     @Column(nullable = false)
-    private String paymentId;
+    private String paymentUuid;
 
     @Column(nullable = false)
     private Long orderId;
+
+    @Column(nullable = false)
+    private String orderUuid;
 
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
@@ -30,9 +33,12 @@ public class Payment extends BaseEntity {
     @Column(nullable = false)
     private PaymentStatus status;
 
-    public Payment(Long userId, BigDecimal amount, String paymentId, Long orderId) {
+    public Payment(Long userId, String orderUuid, BigDecimal amount, String paymentId, Long orderId) {
         if (userId == null) {
             throw new CoreException(ErrorType.BAD_REQUEST, "사용자 ID는 필수입니다.");
+        }
+        if (orderUuid == null || orderUuid.trim().isEmpty()) {
+            throw new CoreException(ErrorType.BAD_REQUEST, "주문 ID는 필수입니다.");
         }
         if (amount == null || amount.compareTo(BigDecimal.ZERO) < 0) {
             throw new CoreException(ErrorType.BAD_REQUEST, "결제 금액은 0 이상이어야 합니다.");
@@ -45,6 +51,8 @@ public class Payment extends BaseEntity {
         }
 
         this.userId = userId;
+        this.orderUuid = orderUuid;
+        this.orderId = orderId;
         this.amount = amount;
         this.status = PaymentStatus.PENDING;
     }
@@ -71,8 +79,12 @@ public class Payment extends BaseEntity {
         return userId;
     }
 
-    public String getPaymentId() {
-        return paymentId;
+    public String getPaymentUuid() {
+        return paymentUuid;
+    }
+
+    public String getOrderUuid() {
+        return orderUuid;
     }
 
     public Long getOrderId() {

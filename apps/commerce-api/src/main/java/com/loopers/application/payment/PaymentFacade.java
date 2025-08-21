@@ -1,5 +1,6 @@
 package com.loopers.application.payment;
 
+import com.loopers.domain.order.OrderService;
 import com.loopers.domain.payment.PaymentInfo;
 import com.loopers.domain.payment.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -9,10 +10,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class PaymentFacade {
     private final PaymentService paymentService;
+    private final OrderService orderService;
 
     public String processPayment(PaymentCriteria.Process criteria) {
         // 결제 생성
-        PaymentInfo.Detail paymentInfo = paymentService.processPayment(criteria.toCommand());
+        String orderUuid = orderService.getUuid(criteria.orderId());
+        PaymentInfo.Detail paymentInfo = paymentService.processPayment(criteria.toCommand(orderUuid));
+
         // TODO - 외부 서비스 요청
 
         return paymentInfo.paymentId();

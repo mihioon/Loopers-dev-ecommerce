@@ -15,6 +15,7 @@ public class PaymentService {
     public PaymentInfo.Detail processPayment(PaymentCommand.Process command) {
         Payment payment = new Payment(
                 command.userId(),
+                command.orderUuid(),
                 command.amount(),
                 UlidCreator.getUlid().toString(),
                 command.orderId()

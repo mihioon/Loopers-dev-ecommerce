@@ -12,7 +12,7 @@ public class PaymentInfo {
     ) {
         public static Detail from(Payment payment) {
             return new Detail(
-                    payment.getPaymentId(),
+                    payment.getPaymentUuid(),
                     payment.getUserId(),
                     payment.getAmount(),
                     payment.getStatus()

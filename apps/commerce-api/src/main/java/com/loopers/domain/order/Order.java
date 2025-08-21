@@ -19,6 +19,9 @@ public class Order extends BaseEntity {
     @Column(nullable = false)
     private Long userId;
 
+    @Column(nullable = false)
+    private String orderUuid;
+
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal pointAmount;
 
@@ -32,9 +35,12 @@ public class Order extends BaseEntity {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    public Order(Long userId, List<OrderItem> orderItems, BigDecimal totalAmount, BigDecimal pointAmount) {
+    public Order(Long userId, String orderUuid, List<OrderItem> orderItems, BigDecimal totalAmount, BigDecimal pointAmount) {
         if (userId == null) {
             throw new CoreException(ErrorType.BAD_REQUEST, "사용자 ID는 필수입니다.");
+        }
+        if (orderUuid == null || orderUuid.trim().isEmpty()) {
+            throw new CoreException(ErrorType.BAD_REQUEST, "주문 ID는 필수입니다.");
         }
         if (orderItems == null || orderItems.isEmpty()) {
             throw new CoreException(ErrorType.BAD_REQUEST, "주문 항목이 없습니다.");
@@ -47,6 +53,7 @@ public class Order extends BaseEntity {
         }
 
         this.userId = userId;
+        this.orderUuid = orderUuid;
         this.totalAmount = totalAmount;
         this.pointAmount = pointAmount;
         this.status = OrderStatus.CREATED;
@@ -71,11 +78,18 @@ public class Order extends BaseEntity {
         return totalAmount;
     }
 
+    public String getOrderUuid() {
+        return orderUuid;
+    }
     public List<OrderItem> getOrderItems() {
         return new ArrayList<>(orderItems);
     }
 
     public void complete() {
         this.status = OrderStatus.COMPLETED;
+    }
+
+    public void cancel() {
+        this.status = OrderStatus.CANCELLED;
     }
 }

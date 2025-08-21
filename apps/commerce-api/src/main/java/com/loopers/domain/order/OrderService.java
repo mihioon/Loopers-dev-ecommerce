@@ -1,5 +1,6 @@
 package com.loopers.domain.order;
 
+import com.github.f4b6a3.ulid.UlidCreator;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,12 @@ public class OrderService {
         BigDecimal totalAmount = command.totalAmount().subtract(command.pointAmount());
 
         // 주문 생성
-        Order order = new Order(command.userId(), orderItems, totalAmount, command.pointAmount());
+        Order order = new Order(
+                command.userId(),
+                UlidCreator.getUlid().toString(),
+                orderItems,
+                totalAmount,
+                command.pointAmount());
         Order savedOrder = orderRepository.save(order);
 
         return OrderInfo.Detail.from(savedOrder);
@@ -50,6 +56,22 @@ public class OrderService {
                 .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "주문을 찾을 수 없습니다."));
 
         order.complete();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void completeOrderByUuid(String orderUuid) {
+        Order order = orderRepository.findByOrderUuid(orderUuid)
+                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "주문을 찾을 수 없습니다."));
+
+        order.complete();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void cancelOrderByUuid(String orderUuid) {
+        Order order = orderRepository.findByOrderUuid(orderUuid)
+                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "주문을 찾을 수 없습니다."));
+
+        order.cancel();
     }
 
     @Transactional(readOnly = true)
@@ -77,5 +99,13 @@ public class OrderService {
                     return item.price().multiply(BigDecimal.valueOf(item.quantity()));
                 })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    @Transactional(readOnly = true)
+    public String getUuid(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "주문을 찾을 수 없습니다."));
+
+        return order.getOrderUuid();
     }
 }
