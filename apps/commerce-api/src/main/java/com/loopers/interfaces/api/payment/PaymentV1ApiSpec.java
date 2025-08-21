@@ -13,4 +13,9 @@ public interface PaymentV1ApiSpec {
             @RequestBody ProcessPayment.V1.Request request,
             @RequestHeader("X-USER-ID") String loginId
     );
+    
+    @Operation(summary = "결제 콜백 처리", description = "외부 결제 시스템에서 호출하는 콜백을 처리합니다.")
+    ApiResponse<PaymentCallback.V1.Response> handlePaymentCallback(
+            @RequestBody PaymentCallback.V1.Request request
+    );
 }

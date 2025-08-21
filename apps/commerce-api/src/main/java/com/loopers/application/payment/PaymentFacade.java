@@ -17,4 +17,8 @@ public class PaymentFacade {
 
         return paymentInfo.paymentId();
     }
+
+    public void processCallback(PaymentCriteria.Callback criteria) {
+        // TODO - 외부 서비스 응답 처리
+    }
 }

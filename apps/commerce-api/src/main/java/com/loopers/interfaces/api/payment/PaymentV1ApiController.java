@@ -22,5 +22,13 @@ public class PaymentV1ApiController implements PaymentV1ApiSpec {
         String paymentId = paymentFacade.processPayment(request.toCriteria(userId));
         return ApiResponse.success(new ProcessPayment.V1.Response(paymentId));
     }
+    
+    @PostMapping("/callback")
+    public ApiResponse<PaymentCallback.V1.Response> handlePaymentCallback(
+            @RequestBody PaymentCallback.V1.Request request
+    ) {
+        paymentFacade.processCallback(request.toCriteria());
+        return ApiResponse.success(new PaymentCallback.V1.Response("콜백 수신 완료"));
+    }
 
 }

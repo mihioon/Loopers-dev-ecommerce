@@ -22,4 +22,14 @@ public class PaymentCriteria {
             );
         }
     }
+
+    public record Callback(
+            String transactionKey,
+            String orderId,
+            String cardType,
+            String cardNo,
+            BigDecimal amount,
+            String status,
+            String reason
+    ) {}
 }
