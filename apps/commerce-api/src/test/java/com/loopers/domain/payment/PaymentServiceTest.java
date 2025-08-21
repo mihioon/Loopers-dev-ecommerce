@@ -31,12 +31,17 @@ class PaymentServiceTest {
     void setUp() {
         processCommand = new PaymentCommand.Process(
                 1L,
-                new BigDecimal("15000")
+                new BigDecimal("15000"),
+                1L,
+                "cardType",
+                "cardNo"
         );
         
         payment = new Payment(
                 1L,
-                new BigDecimal("15000")
+                new BigDecimal("15000"),
+                "paymentId",
+                1L
         );
         payment.complete();
     }
@@ -65,12 +70,17 @@ class PaymentServiceTest {
         // given
         PaymentCommand.Process commandWithoutPoint = new PaymentCommand.Process(
                 2L,
-                new BigDecimal("20000")
+                new BigDecimal("20000"),
+                2L,
+                "cardType",
+                "cardNo"
         );
         
         Payment paymentWithoutPoint = new Payment(
                 2L,
-                new BigDecimal("20000")
+                new BigDecimal("20000"),
+                "paymentId",
+                2L
         );
         paymentWithoutPoint.complete();
         
@@ -93,12 +103,17 @@ class PaymentServiceTest {
         // given
         PaymentCommand.Process zeroAmountCommand = new PaymentCommand.Process(
                 3L,
-                BigDecimal.ZERO
+                BigDecimal.ZERO,
+                3L,
+                "cardType",
+                "cardNo"
         );
         
         Payment zeroAmountPayment = new Payment(
                 3L,
-                BigDecimal.ZERO
+                BigDecimal.ZERO,
+                "paymentId",
+                3L
         );
         zeroAmountPayment.complete();
         

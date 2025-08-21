@@ -98,11 +98,11 @@ public class BalanceTest {
         }
 
         @Test
-        @DisplayName("0 이하의 금액으로 차감 시 BAD_REQUEST 예외가 발생한다.")
+        @DisplayName("0 미만의 금액으로 차감 시 BAD_REQUEST 예외가 발생한다.")
         void throwsBadRequestException_whenAmountIsZeroOrNegative() {
             // given
             final Balance balance = new Balance(10000L);
-            final Long zeroAmount = 0L;
+            final Long zeroAmount =-1L;
 
             // when
             final CoreException actual = assertThrows(CoreException.class, () -> {
@@ -111,24 +111,7 @@ public class BalanceTest {
 
             // then
             assertThat(actual.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
-            assertThat(actual.getMessage()).isEqualTo("차감 금액은 0보다 커야 합니다.");
-        }
-
-        @Test
-        @DisplayName("음수 금액으로 차감 시 BAD_REQUEST 예외가 발생한다.")
-        void throwsBadRequestException_whenAmountIsNegative() {
-            // given
-            final Balance balance = new Balance(10000L);
-            final Long negativeAmount = -1000L;
-
-            // when
-            final CoreException actual = assertThrows(CoreException.class, () -> {
-                balance.deduct(negativeAmount);
-            });
-
-            // then
-            assertThat(actual.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
-            assertThat(actual.getMessage()).isEqualTo("차감 금액은 0보다 커야 합니다.");
+            assertThat(actual.getMessage()).isEqualTo("차감 금액은 0 이상이어야 합니다.");
         }
 
         @Test

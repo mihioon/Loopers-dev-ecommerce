@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -79,7 +80,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
     @DisplayName("재고 부족 시 주문 실패 통합 테스트")
     @Test
     @Transactional
-    void placeOrder_StockInsufficient() {
+    void completeOrder_StockInsufficient() {
         // given
         User user = createTestUser();
         User savedUser = userRepository.save(user);
@@ -96,12 +97,13 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
         Point point = new Point(userId, new Balance(10000L));
         pointRepository.save(point);
 
-        OrderCriteria.Create.Item item = new OrderCriteria.Create.Item(productId, 5); // 5개 주문
-        OrderCriteria.Create criteria = new OrderCriteria.Create(userId, List.of(item), BigDecimal.ZERO, List.of());
+        // 주문 생성
+        OrderCriteria.Create.Item createItem = new OrderCriteria.Create.Item(productId, 5);
+        OrderCriteria.Create createCriteria = new OrderCriteria.Create(userId, List.of(createItem), BigDecimal.ZERO, List.of());
 
         // when & then
         CoreException exception = assertThrows(CoreException.class, () -> {
-            orderFacade.placeOrder(criteria);
+            orderFacade.placeOrder(createCriteria);
         });
         
         assertThat(exception.getMessage()).contains("재고가 부족합니다");
@@ -337,7 +339,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
 
         @DisplayName("재고 차감에 실패한 경우, 주문에 실패하고 쿠폰, 포인트가 롤백된다.")
         @Test
-        void createOrder_StockReductionFailed_RollbackTest() {
+        void completeOrder_StockReductionFailed_RollbackTest() {
             // given
             User user = createTestUser();
             User savedUser = userRepository.save(user);
@@ -347,7 +349,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
             Product savedProduct = productRepository.save(product);
             Long productId = savedProduct.getId();
 
-            ProductStock stock = new ProductStock(productId, 1); // 재고 1개만
+            ProductStock stock = new ProductStock(productId, 5);
             productRepository.save(stock);
 
             Coupon savedCoupon = couponRepository.save(new Coupon(CouponType.FIXED, new BigDecimal("2000"), 10L));
@@ -356,13 +358,21 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
             Point point = new Point(userId, new Balance(30000L));
             pointRepository.save(point);
 
-            OrderCriteria.Create.Item item = new OrderCriteria.Create.Item(productId, 5); // 5개 주문 (재고 부족)
-            OrderCriteria.Create criteria = new OrderCriteria.Create(userId, List.of(item),
-                    new BigDecimal("5000"), List.of(savedIssuedCoupon.getId()));
+            // 주문 생성
+            OrderCriteria.Create.Item createItem = new OrderCriteria.Create.Item(productId, 5);
+            OrderCriteria.Create createCriteria = new OrderCriteria.Create(userId, List.of(createItem),
+                    BigDecimal.ZERO, List.of());
+            OrderResult.Detail createdOrder = orderFacade.placeOrder(createCriteria);
+
+            Optional<ProductStock> savedStock = productRepository.findStockByProductId(productId);
+            savedStock.ifPresent(s -> s.reduceStock(4));
+            productRepository.save(savedStock.get());
+
+            OrderCriteria.Complete criteria = new OrderCriteria.Complete(createdOrder.id(), userId, List.of(savedIssuedCoupon.getId()));
 
             // when & then
             CoreException exception = assertThrows(CoreException.class, () -> {
-                orderFacade.placeOrder(criteria);
+                orderFacade.completeOrder(criteria);
             });
 
             assertThat(exception.getMessage()).contains("재고가 부족합니다");
@@ -383,7 +393,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
         @DisplayName("주문이 성공한 경우, 모든 처리가 정상적으로 반영된다.")
         @Test
         @Transactional
-        void createOrder_Success_AllProcessingApplied() {
+        void completeOrder_Success_AllProcessingApplied() {
             // given
             User user = createTestUser();
             User savedUser = userRepository.save(user);
@@ -401,11 +411,15 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
             pointRepository.save(new Point(userId, new Balance(30000L)));
 
             OrderCriteria.Create.Item item = new OrderCriteria.Create.Item(productId, 2); // 20000원
-            OrderCriteria.Create criteria = new OrderCriteria.Create(userId, List.of(item),
-                    new BigDecimal("3000"), List.of(savedIssuedCoupon.getId())); // 쿠폰 2000원 + 포인트 3000원 = 5000원 할인
+            OrderCriteria.Create createCriteria = new OrderCriteria.Create(userId, List.of(item),
+                    new BigDecimal("3000"), List.of(savedIssuedCoupon.getId()));
+            OrderResult.Detail createdOrder = orderFacade.placeOrder(createCriteria);
+
+            OrderCriteria.Complete criteria = new OrderCriteria.Complete(createdOrder.id(), userId, List.of(savedIssuedCoupon.getId()));
 
             // when
-            OrderResult.Detail result = orderFacade.placeOrder(criteria);
+            orderFacade.completeOrder(criteria);
+            OrderResult.Detail result = orderFacade.getOrder(createdOrder.id());
 
             // then
             assertThat(result.userId()).isEqualTo(userId);
