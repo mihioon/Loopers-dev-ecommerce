@@ -6,6 +6,9 @@ public class PaymentCommand {
     
     public record Process(
             Long userId,
-            BigDecimal amount
+            BigDecimal amount,
+            Long orderId,
+            String cardType,
+            String cardNo
     ) {}
 }

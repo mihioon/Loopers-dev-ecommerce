@@ -27,7 +27,7 @@ class PaymentTest {
             BigDecimal pointAmount = BigDecimal.ZERO;
 
             // when
-            Payment payment = new Payment(userId, amount);
+            Payment payment = new Payment(userId, amount, "paymentId", orderId);
 
             // then
             assertThat(payment.getUserId()).isEqualTo(userId);
@@ -45,7 +45,7 @@ class PaymentTest {
             BigDecimal pointAmount = new BigDecimal("5000");
 
             // when
-            Payment payment = new Payment(userId, amount);
+            Payment payment = new Payment(userId, amount, "paymentId", orderId);
 
             // then
             assertThat(payment.getUserId()).isEqualTo(userId);
@@ -63,7 +63,7 @@ class PaymentTest {
             BigDecimal pointAmount = new BigDecimal("20000");
 
             // when
-            Payment payment = new Payment(userId, amount);
+            Payment payment = new Payment(userId, amount, "paymentId", orderId);
 
             // then
             assertThat(payment.getAmount()).isEqualTo(BigDecimal.ZERO);
@@ -79,7 +79,7 @@ class PaymentTest {
         @Test
         void completePayment_Success() {
             // given
-            Payment payment = new Payment(1L, new BigDecimal("10000"));
+            Payment payment = new Payment(1L, new BigDecimal("10000"), "paymentId", 1L);
 
             // when
             payment.complete();
@@ -92,7 +92,7 @@ class PaymentTest {
         @Test
         void failPayment_Success() {
             // given
-            Payment payment = new Payment(1L, new BigDecimal("10000"));
+            Payment payment = new Payment(1L, new BigDecimal("10000"), "paymentId", 1L);
 
             // when
             payment.fail();
@@ -105,7 +105,7 @@ class PaymentTest {
         @Test
         void completePayment_AlreadyCompleted() {
             // given
-            Payment payment = new Payment(1L, new BigDecimal("10000"));
+            Payment payment = new Payment(1L, new BigDecimal("10000"), "paymentId", 1L);
             payment.complete();
 
             // when & then
@@ -121,7 +121,7 @@ class PaymentTest {
         @Test
         void completePayment_AlreadyFailed() {
             // given
-            Payment payment = new Payment(1L, new BigDecimal("10000"));
+            Payment payment = new Payment(1L, new BigDecimal("10000"), "paymentId", 1L);
             payment.fail();
 
             // when & then
@@ -137,7 +137,7 @@ class PaymentTest {
         @Test
         void failPayment_AlreadyCompleted() {
             // given
-            Payment payment = new Payment(1L, new BigDecimal("10000"));
+            Payment payment = new Payment(1L, new BigDecimal("10000"), "paymentId", 1L);
             payment.complete();
 
             // when & then
@@ -159,7 +159,7 @@ class PaymentTest {
         void createPayment_UserIdNull() {
             // when & then
             CoreException exception = assertThrows(CoreException.class, () -> {
-                new Payment(null, new BigDecimal("10000"));
+                new Payment(null, new BigDecimal("10000"), "paymentId", 1L);
             });
 
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
@@ -171,7 +171,7 @@ class PaymentTest {
         void createPayment_AmountNull() {
             // when & then
             CoreException exception = assertThrows(CoreException.class, () -> {
-                new Payment(1L, null);
+                new Payment(1L, null, "paymentId", 1L);
             });
 
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
@@ -183,7 +183,7 @@ class PaymentTest {
         void createPayment_AmountNegative() {
             // when & then
             CoreException exception = assertThrows(CoreException.class, () -> {
-                new Payment(1L, new BigDecimal("-1000"));
+                new Payment(1L, new BigDecimal("-1000"), "paymentId", 1L);
             });
 
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);

@@ -55,6 +55,8 @@ subprojects {
         // Lombok
         implementation("org.projectlombok:lombok")
         annotationProcessor("org.projectlombok:lombok")
+        // ULID
+        implementation("com.github.f4b6a3:ulid-creator:5.2.3")
         // Test
         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
         // testcontainers:mysql 이 jdbc 사용함

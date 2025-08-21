@@ -7,13 +7,21 @@ public class OrderCommand {
     
     public record Create(
             Long userId,
-            List<Item> items,
+            List<Item> orderItems,
+            List<Product> products,
             BigDecimal totalAmount,
-            Long paymentId
+            BigDecimal pointAmount
     ) {
         public record Item(
                 Long productId,
-                Integer quantity
+                Integer quantity,
+                BigDecimal price
+        ) {}
+
+        public record Product(
+                Long id,
+                String name,
+                BigDecimal price
         ) {}
     }
     

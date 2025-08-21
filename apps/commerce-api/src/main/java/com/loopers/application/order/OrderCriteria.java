@@ -1,14 +1,16 @@
 package com.loopers.application.order;
 
 import com.loopers.domain.order.OrderCommand;
-import com.loopers.domain.order.OrderItem;
-import com.loopers.domain.payment.PaymentCommand;
+import com.loopers.domain.order.OrderInfo;
+import com.loopers.domain.point.PointCommand;
 import com.loopers.domain.product.dto.ProductInfo;
 import com.loopers.domain.product.dto.ProductStockCommand;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class OrderCriteria {
     
@@ -23,27 +25,21 @@ public class OrderCriteria {
                 Integer quantity
         ) {}
 
-        public OrderCommand.Create toCommand(Long paymentId, BigDecimal totalAmount) {
+        public record Product(
+                Long id,
+                String name,
+                BigDecimal price
+        ) {}
+
+        public OrderCommand.Create toCommand(List<ProductInfo.Basic> products, BigDecimal totalAmount) {
             return new OrderCommand.Create(
                     userId,
-                    items.stream()
-                            .map(item -> new OrderCommand.Create.Item(item.productId(), item.quantity()))
+                    toOrderItems(products),
+                    products.stream()
+                            .map(product -> new OrderCommand.Create.Product(product.id(), product.name(), product.price()))
                             .toList(),
                     totalAmount,
-                    paymentId
-            );
-        }
-
-        public List<ProductStockCommand.Reduce> toStockReduceCommands() {
-            return items.stream()
-                    .map(item -> new ProductStockCommand.Reduce(item.productId(), item.quantity()))
-                    .toList();
-        }
-
-        public PaymentCommand.Process toPaymentCommand(BigDecimal totalAmount) {
-            return new PaymentCommand.Process(
-                    userId,
-                    totalAmount
+                    pointAmount
             );
         }
 
@@ -53,20 +49,42 @@ public class OrderCriteria {
                     .toList();
         }
 
-        public List<OrderItem> toOrderItems(Map<Long, ProductInfo.Basic> productMap) {
+        public List<OrderCommand.Create.Item> toOrderItems(List<ProductInfo.Basic> products) {
+            Map<Long, ProductInfo.Basic> productMap = products.stream()
+                    .collect(Collectors.toMap(ProductInfo.Basic::id, Function.identity()));
+
             return items.stream()
                     .map(item -> {
                         ProductInfo.Basic product = productMap.get(item.productId());
-                        if (product == null) {
-                            throw new IllegalArgumentException("존재하지 않는 상품입니다: " + item.productId());
+                        if (product != null) {
+                            return new OrderCommand.Create.Item(item.productId(), item.quantity(), product.price());
+                        } else {
+                            return new OrderCommand.Create.Item(item.productId(), item.quantity(), null);
                         }
-                        return new OrderItem(item.productId(), item.quantity(), product.price());
                     })
                     .toList();
         }
+
+        public List<ProductStockCommand.Reduce> toStockCommands(List<ProductInfo.Basic> products) {
+            return items.stream()
+                    .map(item -> new ProductStockCommand.Reduce(item.productId(), item.quantity()))
+                    .toList();
+        }
     }
-    
-    public record Payment(
-            Long userId
-    ) {}
+
+    public record Complete(
+            Long orderId,
+            Long userId,
+            List<Long> couponIds
+    ) {
+        public PointCommand.Deduct toPointDeductCommand(BigDecimal pointAmount) {
+            return new PointCommand.Deduct(userId, pointAmount.longValue());
+        }
+
+        public List<ProductStockCommand.Reduce> toStockReduceCommands(List<OrderInfo.ItemInfo> items) {
+            return items.stream()
+                    .map(item -> new ProductStockCommand.Reduce(item.productId(), item.quantity()))
+                    .toList();
+        }
+    }
 }

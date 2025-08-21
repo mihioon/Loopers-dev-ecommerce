@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+
 @RequiredArgsConstructor
 @Component
 public class PointService {
@@ -42,5 +44,16 @@ public class PointService {
         point.deduct(command.amount());
 
         return PointInfo.from(point);
+    }
+
+    public void validatePoint(Long userId, BigDecimal pointAmount) {
+        if (pointAmount == null || pointAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            return;
+        }
+
+        Point point = pointRepository.findByUserIdWithLock(userId)
+                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 사용자입니다."));
+
+        point.validateDeductAmount(pointAmount.longValue());
     }
 }
