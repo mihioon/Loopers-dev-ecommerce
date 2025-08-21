@@ -8,19 +8,23 @@ public class OrderInfo {
     public record Detail(
             Long id,
             Long userId,
+            String orderUuid,
             BigDecimal pointAmount,
             BigDecimal totalAmount,
-            List<ItemInfo> items
+            List<ItemInfo> items,
+            List<Long> couponIds
     ) {
         public static Detail from(Order order) {
             return new Detail(
                     order.getId(),
                     order.getUserId(),
+                    order.getOrderUuid(),
                     order.getPointAmount(),
                     order.getTotalAmount(),
                     order.getOrderItems().stream()
                             .map(ItemInfo::from)
-                            .toList()
+                            .toList(),
+                    order.getCouponIds()
             );
         }
     }

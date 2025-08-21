@@ -47,7 +47,7 @@ public class OrderFacade {
         // 포인트 차감
         pointService.deduct(criteria.toPointDeductCommand(orderInfo.pointAmount()));
         // 쿠폰 사용
-        couponService.useCoupons(criteria.userId(), criteria.couponIds());
+        couponService.useCoupons(criteria.userId(), orderInfo.couponIds());
         // 재고 차감
         stockService.validateAndReduceStocks(criteria.toStockReduceCommands(orderInfo.items()));
         // 주문 상태 변경

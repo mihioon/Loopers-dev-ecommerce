@@ -39,7 +39,8 @@ public class OrderCriteria {
                             .map(product -> new OrderCommand.Create.Product(product.id(), product.name(), product.price()))
                             .toList(),
                     totalAmount,
-                    pointAmount
+                    pointAmount,
+                    couponIds
             );
         }
 

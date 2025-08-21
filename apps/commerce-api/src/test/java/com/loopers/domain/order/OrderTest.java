@@ -11,7 +11,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyString;
 
 class OrderTest {
 
@@ -28,7 +27,7 @@ class OrderTest {
             List<OrderItem> orderItems = List.of(item);
 
             // when
-            Order order = new Order(userId, "orderUuid", orderItems, BigDecimal.ZERO, BigDecimal.ZERO);
+            Order order = new Order(userId, "orderUuid", orderItems, BigDecimal.ZERO, BigDecimal.ZERO, List.of());
 
             // then
             assertThat(order.getUserId()).isEqualTo(userId);
@@ -49,7 +48,7 @@ class OrderTest {
             List<OrderItem> orderItems = List.of(item1, item2, item3);
 
             // when
-            Order order = new Order(userId, "orderUuid", orderItems, BigDecimal.ZERO, BigDecimal.ZERO);
+            Order order = new Order(userId, "orderUuid", orderItems, BigDecimal.ZERO, BigDecimal.ZERO, List.of());
 
             // then
             assertThat(order.getUserId()).isEqualTo(userId);
@@ -67,7 +66,7 @@ class OrderTest {
             List<OrderItem> orderItems = List.of(item1, item2);
 
             // when
-            Order order = new Order(userId, "orderUuid", orderItems, BigDecimal.ZERO, BigDecimal.ZERO);
+            Order order = new Order(userId, "orderUuid", orderItems, BigDecimal.ZERO, BigDecimal.ZERO, List.of());
 
             // then
             assertThat(order.getTotalAmount()).isEqualTo(BigDecimal.ZERO);
@@ -87,7 +86,7 @@ class OrderTest {
 
             // when & then
             CoreException exception = assertThrows(CoreException.class, () -> {
-                new Order(null, "orderUuid", orderItems, BigDecimal.ZERO, BigDecimal.ZERO);
+                new Order(null, "orderUuid", orderItems, BigDecimal.ZERO, BigDecimal.ZERO, List.of());
             });
 
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
@@ -102,7 +101,7 @@ class OrderTest {
 
             // when & then
             CoreException exception = assertThrows(CoreException.class, () -> {
-                new Order(userId, "orderUuid", null, BigDecimal.ZERO, BigDecimal.ZERO);
+                new Order(userId, "orderUuid", null, BigDecimal.ZERO, BigDecimal.ZERO, List.of());
             });
 
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
@@ -118,7 +117,7 @@ class OrderTest {
 
             // when & then
             CoreException exception = assertThrows(CoreException.class, () -> {
-                new Order(userId, "orderUuid", orderItems, BigDecimal.ZERO, BigDecimal.ZERO);
+                new Order(userId, "orderUuid", orderItems, BigDecimal.ZERO, BigDecimal.ZERO, List.of());
             });
 
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);

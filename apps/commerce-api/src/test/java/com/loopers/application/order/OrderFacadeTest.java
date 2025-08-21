@@ -72,9 +72,11 @@ class OrderFacadeTest {
         orderInfo = new OrderInfo.Detail(
                 1L,
                 userId,
+                "orderUuid",
                 new BigDecimal("20000"),
                 new BigDecimal("10000"),
-                List.of(new OrderInfo.ItemInfo(1L, productId, 2, price, new BigDecimal("20000")))
+                List.of(new OrderInfo.ItemInfo(1L, productId, 2, price, new BigDecimal("20000"))),
+                List.of()
         );
     }
 

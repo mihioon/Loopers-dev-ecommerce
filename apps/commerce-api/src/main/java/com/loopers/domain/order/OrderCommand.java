@@ -10,7 +10,8 @@ public class OrderCommand {
             List<Item> orderItems,
             List<Product> products,
             BigDecimal totalAmount,
-            BigDecimal pointAmount
+            BigDecimal pointAmount,
+            List<Long> couponIds
     ) {
         public record Item(
                 Long productId,

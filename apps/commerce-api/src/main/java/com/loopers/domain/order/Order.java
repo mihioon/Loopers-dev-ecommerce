@@ -1,6 +1,7 @@
 package com.loopers.domain.order;
 
 import com.loopers.domain.BaseEntity;
+import com.loopers.support.StringListConverter;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import jakarta.persistence.*;
@@ -32,10 +33,13 @@ public class Order extends BaseEntity {
     @Column(nullable = false)
     private OrderStatus status;
 
+    @Convert(converter = StringListConverter.class)
+    private List<Long> couponIds;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    public Order(Long userId, String orderUuid, List<OrderItem> orderItems, BigDecimal totalAmount, BigDecimal pointAmount) {
+    public Order(Long userId, String orderUuid, List<OrderItem> orderItems, BigDecimal totalAmount, BigDecimal pointAmount, List<Long> couponIds) {
         if (userId == null) {
             throw new CoreException(ErrorType.BAD_REQUEST, "사용자 ID는 필수입니다.");
         }
@@ -56,6 +60,7 @@ public class Order extends BaseEntity {
         this.orderUuid = orderUuid;
         this.totalAmount = totalAmount;
         this.pointAmount = pointAmount;
+        this.couponIds = couponIds;
         this.status = OrderStatus.CREATED;
         
         orderItems.forEach(item -> item.assignOrder(this));
@@ -83,6 +88,14 @@ public class Order extends BaseEntity {
     }
     public List<OrderItem> getOrderItems() {
         return new ArrayList<>(orderItems);
+    }
+
+    public List<Long> getCouponIds() {
+        return couponIds;
+    }
+
+    public OrderStatus getStatus() {
+        return status;
     }
 
     public void complete() {

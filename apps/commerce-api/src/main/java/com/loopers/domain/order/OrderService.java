@@ -44,7 +44,8 @@ public class OrderService {
                 UlidCreator.getUlid().toString(),
                 orderItems,
                 totalAmount,
-                command.pointAmount());
+                command.pointAmount(),
+                command.couponIds());
         Order savedOrder = orderRepository.save(order);
 
         return OrderInfo.Detail.from(savedOrder);

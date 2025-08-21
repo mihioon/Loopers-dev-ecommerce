@@ -49,7 +49,7 @@ public class OrderServiceIntegrationTest extends IntegrationTest {
         List<OrderCommand.Create.Product> products = List.of(
                 new OrderCommand.Create.Product(1L, "테스트 상품", new BigDecimal("10000"))
         );
-        OrderCommand.Create command = new OrderCommand.Create(1L, commandItems, products, new BigDecimal("20000"), new BigDecimal("10000"));
+        OrderCommand.Create command = new OrderCommand.Create(1L, commandItems, products, new BigDecimal("20000"), new BigDecimal("10000"), List.of());
 
         // when - 주문 생성
         OrderInfo.Detail orderResult = orderService.createOrder(command);
@@ -83,7 +83,7 @@ public class OrderServiceIntegrationTest extends IntegrationTest {
         List<OrderCommand.Create.Product> products = List.of(
                 new OrderCommand.Create.Product(1L, "테스트 상품", new BigDecimal("10000"))
         );
-        OrderCommand.Create command = new OrderCommand.Create(1L, commandItems, products, new BigDecimal("10000"), BigDecimal.ZERO);
+        OrderCommand.Create command = new OrderCommand.Create(1L, commandItems, products, new BigDecimal("10000"), BigDecimal.ZERO, List.of());
         OrderInfo.Detail createdOrder = orderService.createOrder(command);
 
         // when - 주문 조회
@@ -116,7 +116,7 @@ public class OrderServiceIntegrationTest extends IntegrationTest {
         List<OrderCommand.Create.Item> commandItems1 = List.of(
                 new OrderCommand.Create.Item(1L, 1, new BigDecimal("10000"))
         );
-        OrderCommand.Create command1 = new OrderCommand.Create(1L, commandItems1, products1, new BigDecimal("10000"), BigDecimal.ZERO);
+        OrderCommand.Create command1 = new OrderCommand.Create(1L, commandItems1, products1, new BigDecimal("10000"), BigDecimal.ZERO, List.of());
         orderService.createOrder(command1);
 
         // 두 번째 주문
@@ -126,7 +126,7 @@ public class OrderServiceIntegrationTest extends IntegrationTest {
         List<OrderCommand.Create.Item> commandItems2 = List.of(
                 new OrderCommand.Create.Item(2L, 1, new BigDecimal("20000"))
         );
-        OrderCommand.Create command2 = new OrderCommand.Create(1L, commandItems2, products2, new BigDecimal("20000"), BigDecimal.ZERO);
+        OrderCommand.Create command2 = new OrderCommand.Create(1L, commandItems2, products2, new BigDecimal("20000"), BigDecimal.ZERO, List.of());
         orderService.createOrder(command2);
 
         // when - 사용자 주문 목록 조회
