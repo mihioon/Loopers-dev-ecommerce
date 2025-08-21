@@ -87,7 +87,7 @@ class OrderFacadeTest {
 
     @DisplayName("포인트 사용량이 0보다 클 때 포인트 차감이 호출된다")
     @Test
-    void createOrder_WithPointDeduction() {
+    void placeOrder_WithPointDeduction() {
         // given
         OrderCriteria.Create criteriaWithPoint = new OrderCriteria.Create(
                 1L,
@@ -111,7 +111,7 @@ class OrderFacadeTest {
                 .willReturn(orderInfoWithPoint);
 
         // when
-        OrderResult.Detail result = orderFacade.createOrder(criteriaWithPoint);
+        OrderResult.Detail result = orderFacade.placeOrder(criteriaWithPoint);
 
         // then
         assertThat(result.totalAmount()).isEqualTo(new BigDecimal("20000"));
@@ -123,7 +123,7 @@ class OrderFacadeTest {
 
     @DisplayName("재고가 부족할 때 예외가 발생한다")
     @Test
-    void createOrder_InsufficientStock() {
+    void placeOrder_InsufficientStock() {
         // given
         
         given(productService.getBasics(anyList())).willReturn(List.of(productInfo));
@@ -133,7 +133,7 @@ class OrderFacadeTest {
         );
 
         // when & then
-        assertThatThrownBy(() -> orderFacade.createOrder(criteria))
+        assertThatThrownBy(() -> orderFacade.placeOrder(criteria))
                 .isInstanceOf(CoreException.class)
                 .hasMessageContaining("재고가 부족")
                 .extracting("errorType").isEqualTo(ErrorType.BAD_REQUEST);

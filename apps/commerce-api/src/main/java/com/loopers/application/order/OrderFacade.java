@@ -32,7 +32,7 @@ public class OrderFacade {
     private final CouponService couponService;
 
     @Transactional(rollbackFor = Exception.class)
-    public OrderResult.Detail createOrder(OrderCriteria.Create criteria) {
+    public OrderResult.Detail placeOrder(OrderCriteria.Create criteria) {
         // 상품 정보 조회 및 검증
         List<Long> productIds = criteria.toProductIds();
         List<ProductInfo.Basic> products = productService.getBasics(productIds);

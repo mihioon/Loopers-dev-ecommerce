@@ -44,7 +44,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
     @DisplayName("정상 주문 생성 통합 테스트")
     @Test
     @Transactional
-    void createOrder_Success() {
+    void placeOrder_Success() {
         // given - 테스트 데이터 준비
         User user = createTestUser();
         User savedUser = userRepository.save(user);
@@ -65,7 +65,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
         OrderCriteria.Create criteria = new OrderCriteria.Create(userId, List.of(item), BigDecimal.ZERO, List.of());
 
         // when
-        OrderResult.Detail result = orderFacade.createOrder(criteria);
+        OrderResult.Detail result = orderFacade.placeOrder(criteria);
 
         // then
         assertThat(result.userId()).isEqualTo(userId);
@@ -79,7 +79,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
     @DisplayName("재고 부족 시 주문 실패 통합 테스트")
     @Test
     @Transactional
-    void createOrder_StockInsufficient() {
+    void placeOrder_StockInsufficient() {
         // given
         User user = createTestUser();
         User savedUser = userRepository.save(user);
@@ -101,7 +101,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
 
         // when & then
         CoreException exception = assertThrows(CoreException.class, () -> {
-            orderFacade.createOrder(criteria);
+            orderFacade.placeOrder(criteria);
         });
         
         assertThat(exception.getMessage()).contains("재고가 부족합니다");
@@ -110,7 +110,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
     @DisplayName("상품을 찾을 수 없을 때 주문 실패 통합 테스트")
     @Test
     @Transactional
-    void createOrder_ProductNotFound() {
+    void placeOrder_ProductNotFound() {
         // given
         User user = createTestUser();
         User savedUser = userRepository.save(user);
@@ -125,7 +125,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
 
         // when & then
         CoreException exception = assertThrows(CoreException.class, () -> {
-            orderFacade.createOrder(criteria);
+            orderFacade.placeOrder(criteria);
         });
         
         assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
@@ -156,7 +156,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
         // 주문 생성
         OrderCriteria.Create.Item item = new OrderCriteria.Create.Item(productId, 2);
         OrderCriteria.Create createCriteria = new OrderCriteria.Create(userId, List.of(item), BigDecimal.ZERO, List.of());
-        OrderResult.Detail createdOrder = orderFacade.createOrder(createCriteria);
+        OrderResult.Detail createdOrder = orderFacade.placeOrder(createCriteria);
 
         // when
         OrderResult.Detail result = orderFacade.getOrder(createdOrder.id());
@@ -191,11 +191,11 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
         // 주문 2개 생성
         OrderCriteria.Create.Item item1 = new OrderCriteria.Create.Item(productId, 1);
         OrderCriteria.Create createCriteria1 = new OrderCriteria.Create(userId, List.of(item1), BigDecimal.ZERO, List.of());
-        orderFacade.createOrder(createCriteria1);
+        orderFacade.placeOrder(createCriteria1);
         
         OrderCriteria.Create.Item item2 = new OrderCriteria.Create.Item(productId, 2);
         OrderCriteria.Create createCriteria2 = new OrderCriteria.Create(userId, List.of(item2), BigDecimal.ZERO, List.of());
-        orderFacade.createOrder(createCriteria2);
+        orderFacade.placeOrder(createCriteria2);
 
         // when
         List<OrderResult.Detail> results = orderFacade.getUserOrders(userId);
@@ -240,7 +240,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
 
             // when & then
             CoreException exception = assertThrows(CoreException.class, () -> {
-                orderFacade.createOrder(criteria);
+                orderFacade.placeOrder(criteria);
             });
 
             assertThat(exception.getMessage()).contains("만료된 쿠폰입니다");
@@ -279,7 +279,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
 
             // when & then
             CoreException exception = assertThrows(CoreException.class, () -> {
-                orderFacade.createOrder(criteria);
+                orderFacade.placeOrder(criteria);
             });
 
             assertThat(exception.getMessage()).contains("유효하지 않은 쿠폰이 포함되어 있습니다");
@@ -321,7 +321,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
 
             // when & then
             CoreException exception = assertThrows(CoreException.class, () -> {
-                orderFacade.createOrder(criteria);
+                orderFacade.placeOrder(criteria);
             });
 
             assertThat(exception.getMessage()).contains("잔액이 부족합니다");
@@ -362,7 +362,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
 
             // when & then
             CoreException exception = assertThrows(CoreException.class, () -> {
-                orderFacade.createOrder(criteria);
+                orderFacade.placeOrder(criteria);
             });
 
             assertThat(exception.getMessage()).contains("재고가 부족합니다");
@@ -405,7 +405,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
                     new BigDecimal("3000"), List.of(savedIssuedCoupon.getId())); // 쿠폰 2000원 + 포인트 3000원 = 5000원 할인
 
             // when
-            OrderResult.Detail result = orderFacade.createOrder(criteria);
+            OrderResult.Detail result = orderFacade.placeOrder(criteria);
 
             // then
             assertThat(result.userId()).isEqualTo(userId);

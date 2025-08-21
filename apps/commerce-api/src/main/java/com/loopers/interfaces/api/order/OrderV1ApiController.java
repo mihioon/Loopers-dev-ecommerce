@@ -6,7 +6,6 @@ import com.loopers.application.order.OrderFacade;
 import com.loopers.application.order.OrderResult;
 import com.loopers.interfaces.api.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,7 +29,7 @@ public class OrderV1ApiController implements OrderV1ApiSpec {
         OrderCriteria.Create criteria = request.toCriteria(userId);
 
         // 주문 생성
-        OrderResult.Detail result = orderFacade.createOrder(criteria);
+        OrderResult.Detail result = orderFacade.placeOrder(criteria);
 
         CreateOrder.V1.Response response = CreateOrder.V1.Response.from(result);
         
