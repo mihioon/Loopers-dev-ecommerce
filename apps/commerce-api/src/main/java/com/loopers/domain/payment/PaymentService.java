@@ -24,4 +24,19 @@ public class PaymentService {
         return PaymentInfo.Detail.from(savedPayment);
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    public void completePayment(String orderUuid) {
+        Payment payment = paymentRepository.findByOrderUuid(orderUuid)
+                .orElseThrow(() -> new RuntimeException("결제를 찾을 수 없습니다."));
+
+        payment.complete();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void cancelPayment(String orderUuid) {
+        Payment payment = paymentRepository.findByOrderUuid(orderUuid)
+                .orElseThrow(() -> new RuntimeException("결제를 찾을 수 없습니다."));
+
+        payment.fail();
+    }
 }

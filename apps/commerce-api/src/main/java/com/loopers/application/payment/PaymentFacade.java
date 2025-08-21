@@ -5,6 +5,7 @@ import com.loopers.domain.payment.PaymentInfo;
 import com.loopers.domain.payment.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Component
@@ -22,7 +23,16 @@ public class PaymentFacade {
         return paymentInfo.paymentId();
     }
 
+    @Transactional
     public void processCallback(PaymentCriteria.Callback criteria) {
-        // TODO - 외부 서비스 응답 처리
+        if (orderService.isAlreadyCompleted(criteria.orderUuid())) {
+            return;
+        }
+
+        if("SUCCESS".equals(criteria.status())) {
+            paymentService.completePayment(criteria.orderUuid());
+        } else if("FAILED".equals(criteria.status())) {
+            paymentService.cancelPayment(criteria.orderUuid());
+        }
     }
 }
