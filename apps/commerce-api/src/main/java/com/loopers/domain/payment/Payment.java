@@ -32,6 +32,8 @@ public class Payment extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PaymentStatus status;
+    
+    private String transactionKey;
 
     public Payment(Long userId, String orderUuid, BigDecimal amount, String paymentId, Long orderId) {
         if (userId == null) {
@@ -97,5 +99,13 @@ public class Payment extends BaseEntity {
 
     public PaymentStatus getStatus() {
         return status;
+    }
+    
+    public String getTransactionKey() {
+        return transactionKey;
+    }
+    
+    public void updateTransactionKey(String transactionKey) {
+        this.transactionKey = transactionKey;
     }
 }

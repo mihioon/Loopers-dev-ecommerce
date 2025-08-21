@@ -39,4 +39,12 @@ public class PaymentService {
 
         payment.fail();
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void updateTransactionKey(String orderUuid, String transactionKey) {
+        Payment payment = paymentRepository.findByOrderUuid(orderUuid)
+                .orElseThrow(() -> new RuntimeException("결제를 찾을 수 없습니다."));
+
+        payment.updateTransactionKey(transactionKey);
+    }
 }
