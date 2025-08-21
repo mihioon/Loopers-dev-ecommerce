@@ -105,7 +105,17 @@ public class ProductService {
     }
 
     public List<ProductInfo.Basic> getBasics(final List<Long> productIds) {
-        return productRepository.findByIds(productIds).stream()
+        List<Product> products = productRepository.findByIds(productIds);
+
+        if (products.size() != productIds.size()) {
+            throw new CoreException(ErrorType.NOT_FOUND, "상품을 찾을 수 없습니다");
+        }
+
+        if(products.isEmpty()) {
+            throw new CoreException(ErrorType.NOT_FOUND, "상품을 찾을 수 없습니다");
+        }
+
+        return products.stream()
                 .map(ProductInfo.Basic::from)
                 .toList();
     }

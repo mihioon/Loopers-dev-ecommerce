@@ -41,8 +41,6 @@ public class ProductStock extends BaseEntity {
         return quantity;
     }
 
-
-
     public void reduceStock(final Integer amount) {
         validateReduceAmount(amount);
         validateSufficientStock(amount);

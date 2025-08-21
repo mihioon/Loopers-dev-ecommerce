@@ -5,14 +5,14 @@ import java.math.BigDecimal;
 public class PaymentInfo {
     
     public record Detail(
-            Long id,
+            String paymentId,
             Long userId,
             BigDecimal amount,
             Payment.PaymentStatus status
     ) {
         public static Detail from(Payment payment) {
             return new Detail(
-                    payment.getId(),
+                    payment.getPaymentId(),
                     payment.getUserId(),
                     payment.getAmount(),
                     payment.getStatus()

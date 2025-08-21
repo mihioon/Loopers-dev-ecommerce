@@ -8,6 +8,7 @@ public class OrderInfo {
     public record Detail(
             Long id,
             Long userId,
+            BigDecimal pointAmount,
             BigDecimal totalAmount,
             List<ItemInfo> items
     ) {
@@ -15,6 +16,7 @@ public class OrderInfo {
             return new Detail(
                     order.getId(),
                     order.getUserId(),
+                    order.getPointAmount(),
                     order.getTotalAmount(),
                     order.getOrderItems().stream()
                             .map(ItemInfo::from)
