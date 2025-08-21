@@ -21,8 +21,8 @@ public class FeignConfig {
     @Bean
     public Request.Options requestOptions() {
         return new Request.Options(
-                5000, TimeUnit.MILLISECONDS,  // connection timeout
-                10000, TimeUnit.MILLISECONDS, // read timeout
+                2000, TimeUnit.MILLISECONDS,  // connection timeout - PG 연결 고려
+                5000, TimeUnit.MILLISECONDS,  // read timeout - PG 응답 시간 고려
                 true // follow redirects
         );
     }
@@ -31,7 +31,7 @@ public class FeignConfig {
     public Retryer retryer() {
         return new Retryer.Default(
                 100,  // period
-                1000, // maxPeriod
+                200, // maxPeriod
                 3     // maxAttempts
         );
     }
