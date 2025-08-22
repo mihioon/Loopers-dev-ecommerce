@@ -41,6 +41,36 @@ custom-payments:
   user-id: mihi-commerce
   callback-url: http://localhost:8080/api/v1/payments/callback
 
+# Resilience4j 설정
+resilience4j:
+  circuitbreaker:
+    instances:
+      pgCircuit:
+        sliding-window-size: 10
+        failure-rate-threshold: 50       # 실패율이 50% 넘으면 Open
+        wait-duration-in-open-state: 10s # Open 상태 유지 시간
+        permitted-number-of-calls-in-half-open-state: 2
+        slow-call-duration-threshold: 2s
+        slow-call-rate-threshold: 50
+        register-health-indicator: true
+        
+  retry:
+    instances:
+      pgRetry:
+        max-attempts: 1
+        wait-duration: 1s
+        retry-exceptions:
+          - feign.RetryableException
+          - java.net.SocketTimeoutException
+          - java.net.ConnectException
+        fail-after-max-attempts: true
+        
+  timelimiter:
+    instances:
+      pgTimeLimiter:
+        timeout-duration: 400ms
+        cancel-running-future: true
+
 springdoc:
   use-fqn: true
   swagger-ui:

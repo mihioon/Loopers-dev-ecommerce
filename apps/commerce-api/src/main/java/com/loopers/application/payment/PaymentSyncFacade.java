@@ -40,10 +40,6 @@ public class PaymentSyncFacade {
         Payment payment = paymentRepository.findByPaymentUuid(paymentId)
                 .orElseThrow(() -> new IllegalArgumentException("Payment not found: " + paymentId));
         
-        if (payment.getStatus() != Payment.PaymentStatus.PENDING) {
-            return;
-        }
-        
         if (payment.getTransactionKey() == null) {
             return;
         }
@@ -57,10 +53,24 @@ public class PaymentSyncFacade {
     private void updatePaymentStatus(Payment payment, String pgStatus) {
         switch (pgStatus.toUpperCase()) {
             case "SUCCESS" -> payment.complete();
-            case "FAILED" -> payment.fail();
+            case "FAILED" -> {
+                payment.fail();
+                // 결제 실패 시 주문도 실패 처리
+                processFailedPayment(payment);
+            }
             case "PENDING" -> {}
             default -> {}
         }
+    }
+    
+    private void processFailedPayment(Payment payment) {
+        var orderInfo = orderService.getOrder(payment.getOrderId());
+        if (orderService.isAlreadyCompleted(orderInfo.orderUuid()) || 
+            orderService.isAlreadyCancelled(orderInfo.orderUuid())) {
+            return;
+        }
+        // 결제 실패 시 주문 취소
+        orderService.cancelOrderByUuid(orderInfo.orderUuid());
     }
     
     @Transactional
