@@ -55,6 +55,8 @@ subprojects {
         // Lombok
         implementation("org.projectlombok:lombok")
         annotationProcessor("org.projectlombok:lombok")
+        // Feign
+        implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
         // ULID
         implementation("com.github.f4b6a3:ulid-creator:5.2.3")
         // Test

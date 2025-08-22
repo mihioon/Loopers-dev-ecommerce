@@ -1,6 +1,7 @@
 package com.loopers.application.payment;
 
 import com.loopers.domain.payment.PaymentCommand;
+import com.loopers.infrastructure.external.payment.PaymentGatewayPayload;
 
 import java.math.BigDecimal;
 
@@ -20,6 +21,16 @@ public class PaymentCriteria {
                     orderId,
                     cardType,
                     cardNo
+            );
+        }
+
+        public PaymentGatewayPayload.Process toGatewayCommand(String orderUuid, String callbackUrl) {
+            return new PaymentGatewayPayload.Process(
+                    orderUuid,
+                    cardType,
+                    cardNo,
+                    amount.longValue(),
+                    callbackUrl
             );
         }
     }

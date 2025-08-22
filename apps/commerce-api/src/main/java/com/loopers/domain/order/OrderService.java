@@ -109,4 +109,11 @@ public class OrderService {
 
         return order.getOrderUuid();
     }
+
+    @Transactional(readOnly = true)
+    public boolean isAlreadyCompleted(String orderUuid) {
+        return orderRepository.findByOrderUuid(orderUuid)
+                .map(order -> order.getStatus() == Order.OrderStatus.COMPLETED)
+                .orElse(false);
+    }
 }

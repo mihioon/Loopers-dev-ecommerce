@@ -5,6 +5,8 @@ import com.loopers.domain.payment.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -21,5 +23,15 @@ public class PaymentRepositoryImpl implements PaymentRepository {
     @Override
     public Optional<Payment> findByOrderUuid(String orderUuid) {
         return paymentJpaRepository.findByOrderUuid(orderUuid);
+    }
+    
+    @Override
+    public Optional<Payment> findByPaymentUuid(String paymentUuid) {
+        return paymentJpaRepository.findByPaymentUuid(paymentUuid);
+    }
+    
+    @Override
+    public List<String> findPendingPaymentIds(LocalDateTime startTime, LocalDateTime endTime) {
+        return paymentJpaRepository.findPendingPaymentIds(startTime, endTime);
     }
 }

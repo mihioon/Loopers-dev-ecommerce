@@ -44,6 +44,10 @@ public class OrderFacade {
     public void completeOrder(OrderCriteria.Complete criteria) {
         // 주문 조회
         OrderInfo.Detail orderInfo = orderService.getOrder(criteria.orderId());
+        if (orderService.isAlreadyCompleted(orderInfo.orderUuid())) {
+            throw new RuntimeException("이미 완료된 주문입니다.");
+        }
+
         // 포인트 차감
         pointService.deduct(criteria.toPointDeductCommand(orderInfo.pointAmount()));
         // 쿠폰 사용
