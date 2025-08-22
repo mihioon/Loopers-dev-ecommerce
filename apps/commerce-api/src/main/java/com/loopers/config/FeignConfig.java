@@ -29,10 +29,6 @@ public class FeignConfig {
     
     @Bean
     public Retryer retryer() {
-        return new Retryer.Default(
-                100,  // period
-                200, // maxPeriod
-                3     // maxAttempts
-        );
+        return Retryer.NEVER_RETRY;
     }
 }
