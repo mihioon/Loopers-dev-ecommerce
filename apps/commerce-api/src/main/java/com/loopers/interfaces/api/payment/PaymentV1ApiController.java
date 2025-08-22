@@ -27,8 +27,12 @@ public class PaymentV1ApiController implements PaymentV1ApiSpec {
     public ApiResponse<PaymentCallback.V1.Response> handlePaymentCallback(
             @RequestBody PaymentCallback.V1.Request request
     ) {
-        paymentFacade.processCallback(request.toCriteria());
-        return ApiResponse.success(new PaymentCallback.V1.Response("콜백 수신 완료"));
+        try {
+            paymentFacade.processCallback(request.toCriteria());
+            return ApiResponse.success(new PaymentCallback.V1.Response("콜백 수신 완료"));
+        } catch (Exception e) {
+            return ApiResponse.success(new PaymentCallback.V1.Response("콜백 수신 완료"));
+        }
     }
 
 }

@@ -45,7 +45,7 @@ public class OrderFacade {
         // 주문 조회
         OrderInfo.Detail orderInfo = orderService.getOrder(criteria.orderId());
         if (orderService.isAlreadyCompleted(orderInfo.orderUuid())) {
-            throw new RuntimeException("이미 완료된 주문입니다.");
+            return;
         }
 
         // 포인트 차감

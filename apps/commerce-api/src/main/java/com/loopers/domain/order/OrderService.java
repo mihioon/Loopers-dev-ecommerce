@@ -116,4 +116,11 @@ public class OrderService {
                 .map(order -> order.getStatus() == Order.OrderStatus.COMPLETED)
                 .orElse(false);
     }
+    
+    @Transactional(readOnly = true)
+    public boolean isAlreadyCancelled(String orderUuid) {
+        return orderRepository.findByOrderUuid(orderUuid)
+                .map(order -> order.getStatus() == Order.OrderStatus.CANCELLED)
+                .orElse(false);
+    }
 }
