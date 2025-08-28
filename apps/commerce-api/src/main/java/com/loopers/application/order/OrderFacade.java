@@ -1,8 +1,11 @@
 package com.loopers.application.order;
 
+import com.loopers.domain.common.event.EventPublisher;
 import com.loopers.domain.coupon.CouponService;
 import com.loopers.domain.order.OrderInfo;
 import com.loopers.domain.order.OrderService;
+import com.loopers.domain.order.event.OrderCreatedEvent;
+import com.loopers.domain.order.event.OrderCompletedEvent;
 import com.loopers.domain.point.PointService;
 import com.loopers.domain.product.ProductService;
 import com.loopers.domain.product.ProductStockService;
@@ -13,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Component
@@ -22,6 +26,7 @@ public class OrderFacade {
     private final ProductService productService;
     private final ProductStockService stockService;
     private final CouponService couponService;
+    private final EventPublisher eventPublisher;
 
     @Transactional(rollbackFor = Exception.class)
     public OrderResult.Detail placeOrder(OrderCriteria.Create criteria) {
@@ -36,6 +41,9 @@ public class OrderFacade {
         BigDecimal orderAmount = couponService.discountAmount(criteria.userId(), criteria.couponIds(), totalAmount);
         // 주문 생성
         OrderInfo.Detail orderInfo = orderService.createOrder(criteria.toCommand(products, orderAmount));
+
+        // 주문 생성 이벤트 발행
+        publishOrderCreatedEvent(orderInfo);
 
         return OrderResult.Detail.from(orderInfo);
     }
@@ -56,6 +64,9 @@ public class OrderFacade {
         stockService.validateAndReduceStocks(criteria.toStockReduceCommands(orderInfo.items()));
         // 주문 상태 변경
         orderService.completeOrder(criteria.orderId());
+
+        // 주문 완료 이벤트 발행
+        publishOrderCompletedEvent(orderInfo);
     }
 
     public OrderResult.Detail getOrder(Long orderId) {
@@ -68,5 +79,45 @@ public class OrderFacade {
         return orderInfos.stream()
                 .map(OrderResult.Detail::from)
                 .toList();
+    }
+
+    private void publishOrderCreatedEvent(OrderInfo.Detail orderInfo) {
+        List<OrderCreatedEvent.OrderItemInfo> orderItemInfos = orderInfo.items().stream()
+                .map(item -> new OrderCreatedEvent.OrderItemInfo(
+                        item.productId(), 
+                        item.quantity(), 
+                        item.price()))
+                .collect(Collectors.toList());
+
+        OrderCreatedEvent orderCreatedEvent = new OrderCreatedEvent(
+                orderInfo.id(),
+                orderInfo.userId(),
+                orderInfo.totalAmount(),
+                orderItemInfos,
+                orderInfo.couponIds(),
+                orderInfo.pointAmount()
+        );
+        
+        eventPublisher.publish(orderCreatedEvent);
+    }
+
+    private void publishOrderCompletedEvent(OrderInfo.Detail orderInfo) {
+        List<OrderCompletedEvent.OrderItemInfo> orderItemInfos = orderInfo.items().stream()
+                .map(item -> new OrderCompletedEvent.OrderItemInfo(
+                        item.productId(), 
+                        item.quantity(), 
+                        item.price()))
+                .collect(Collectors.toList());
+
+        OrderCompletedEvent orderCompletedEvent = new OrderCompletedEvent(
+                orderInfo.id(),
+                orderInfo.userId(),
+                orderInfo.totalAmount(),
+                orderItemInfos,
+                orderInfo.couponIds(),
+                orderInfo.pointAmount()
+        );
+        
+        eventPublisher.publish(orderCompletedEvent);
     }
 }
