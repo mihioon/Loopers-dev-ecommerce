@@ -18,9 +18,7 @@ public class LikeCountEventListener {
     
     private final ProductService productService;
     
-    @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    @Transactional
     public void handleLikeAdded(LikeAddedEvent event) {
         log.info("Processing like added event: productId={}, userId={}", 
                 event.getProductId(), event.getUserId());
@@ -35,9 +33,7 @@ public class LikeCountEventListener {
         }
     }
     
-    @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    @Transactional
     public void handleLikeRemoved(LikeRemovedEvent event) {
         log.info("Processing like removed event: productId={}, userId={}", 
                 event.getProductId(), event.getUserId());

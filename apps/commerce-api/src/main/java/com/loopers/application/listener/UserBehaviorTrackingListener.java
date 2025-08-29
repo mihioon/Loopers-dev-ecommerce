@@ -14,21 +14,18 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Component
 public class UserBehaviorTrackingListener {
 
-    @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void trackLikeAdded(LikeAddedEvent event) {
         log.info("[USER_BEHAVIOR] Like Added - userId={}, productId={}, timestamp={}", 
                 event.getUserId(), event.getProductId(), event.getOccurredOn());
     }
 
-    @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void trackLikeRemoved(LikeRemovedEvent event) {
         log.info("[USER_BEHAVIOR] Like Removed - userId={}, productId={}, timestamp={}", 
                 event.getUserId(), event.getProductId(), event.getOccurredOn());
     }
 
-    @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void trackOrderCreated(OrderCreatedEvent event) {
         log.info("[USER_BEHAVIOR] Order Created - userId={}, orderId={}, totalAmount={}, itemCount={}, timestamp={}", 
@@ -36,7 +33,6 @@ public class UserBehaviorTrackingListener {
                 event.getOrderItems().size(), event.getOccurredOn());
     }
 
-    @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void trackOrderCompleted(OrderCompletedEvent event) {
         log.info("[USER_BEHAVIOR] Order Completed - userId={}, orderId={}, finalAmount={}, timestamp={}", 

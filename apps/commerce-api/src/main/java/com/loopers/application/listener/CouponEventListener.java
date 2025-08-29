@@ -17,7 +17,6 @@ public class CouponEventListener {
     private final CouponService couponService;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    @Async
     public void onOrderCompletedEventListener(OrderCompletedEvent event) {
         log.info("Processing order completed event for coupon usage: orderId={}, userId={}", 
                 event.getOrderId(), event.getUserId());

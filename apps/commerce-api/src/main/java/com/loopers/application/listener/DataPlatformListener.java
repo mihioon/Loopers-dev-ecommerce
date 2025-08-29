@@ -16,8 +16,8 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Component
 public class DataPlatformListener {
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onOrderCompletedEventListener(OrderCompletedEvent event) {
         log.info("Processing order completed event for data platform: orderId={}, userId={}", 
                 event.getOrderId(), event.getUserId());
@@ -33,8 +33,8 @@ public class DataPlatformListener {
         }
     }
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onOrderFailedEventListener(OrderFailedEvent event) {
         log.info("Processing order failed event for data platform: orderId={}, userId={}", 
                 event.getOrderId(), event.getUserId());
@@ -51,7 +51,6 @@ public class DataPlatformListener {
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    @Async
     public void onPaymentCompletedEventListener(PaymentCompletedEvent event) {
         log.info("Processing payment completed event for data platform: paymentId={}, orderId={}", 
                 event.getPaymentId(), event.getOrderId());
@@ -68,7 +67,6 @@ public class DataPlatformListener {
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    @Async
     public void onPaymentFailedEventListener(PaymentFailedEvent event) {
         log.info("Processing payment failed event for data platform: paymentId={}, orderId={}", 
                 event.getPaymentId(), event.getOrderId());
