@@ -25,7 +25,6 @@ public class LikeFacade {
 
         try {
             likeService.like(new LikeCommand.Like(productId, userId));
-            productService.updateStatusLikeCount(productId, true);
         } catch (DataIntegrityViolationException e) {
             return;
         }
@@ -35,9 +34,7 @@ public class LikeFacade {
     public void unlike(final Long productId, final String loginId) {
         Long userId = authService.requireUserId(loginId);
 
-        if (likeService.unlike(new LikeCommand.Unlike(productId, userId))) {
-            productService.updateStatusLikeCount(productId, false);
-        }
+        likeService.unlike(new LikeCommand.Unlike(productId, userId));
     }
 
     public Long getLikeCount(final Long productId) {
