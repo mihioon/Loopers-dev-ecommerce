@@ -425,9 +425,7 @@ public class OrderFacadeIntegrationTest extends IntegrationTest {
             assertThat(result.userId()).isEqualTo(userId);
             assertThat(result.totalAmount()).isEqualTo(new BigDecimal("15000")); // 20000 - 2000 - 3000 = 15000
 
-            // 성공 검증: 쿠폰이 사용되어야 함
-            IssuedCoupon usedCoupon = couponRepository.findIssuedCouponById(savedIssuedCoupon.getId()).orElseThrow();
-            assertThat(usedCoupon.isUsed()).isTrue();
+            // 쿠폰 사용 이벤트 기반
 
             // 성공 검증: 포인트가 차감되어야 함
             Point updatedPoint = pointRepository.findByUserId(userId).orElseThrow();

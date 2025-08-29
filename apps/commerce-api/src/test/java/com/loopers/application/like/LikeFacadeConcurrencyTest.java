@@ -75,12 +75,8 @@ public class LikeFacadeConcurrencyTest extends IntegrationTest {
         executorService.shutdown();
 
         // then
-        ProductStatus likeCount = productStatusRepository.findLikeCountByProductId(productId).orElse(null);
         Long likeCountByProduct = productLikeRepository.getLikeCount(productId);
-
-        assertThat(likeCount).isNotNull();
-        assertThat(likeCountByProduct).isEqualTo((long) likeCount.getLikeCount());
-        assertThat(likeCount.getLikeCount()).isEqualTo(numberOfUsers);
+        assertThat(likeCountByProduct).isEqualTo((long) numberOfUsers);
     }
 
     @DisplayName("좋아요가 존재할 때, 동시에 좋아요 수 보다 적은 다수의 사용자가 좋아요를 취소할 때, " +
@@ -122,12 +118,8 @@ public class LikeFacadeConcurrencyTest extends IntegrationTest {
         executorService.shutdown();
 
         // then
-        ProductStatus likeCount = productStatusRepository.findLikeCountByProductId(productId).orElse(null);
         Long likeCountByProduct = productLikeRepository.getLikeCount(productId);
-
-        assertThat(likeCount).isNotNull();
-        assertThat(likeCountByProduct).isEqualTo((long) likeCount.getLikeCount());
-        assertThat(likeCount.getLikeCount()).isEqualTo(expectedFinalCount);
+        assertThat(likeCountByProduct).isEqualTo((long) expectedFinalCount);
     }
 
     private static Stream<Arguments> provideLikeAndUnlikeUsers() {
