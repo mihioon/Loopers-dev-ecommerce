@@ -6,11 +6,16 @@ import com.loopers.domain.order.OrderInfo;
 import com.loopers.domain.order.OrderService;
 import com.loopers.domain.order.event.OrderCreatedEvent;
 import com.loopers.domain.order.event.OrderCompletedEvent;
+import com.loopers.domain.order.event.OrderFailedEvent;
+import com.loopers.domain.payment.event.PaymentFailedEvent;
+import com.loopers.domain.payment.event.PaymentCompletedEvent;
 import com.loopers.domain.point.PointService;
 import com.loopers.domain.product.ProductService;
 import com.loopers.domain.product.ProductStockService;
 import com.loopers.domain.product.dto.ProductInfo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +23,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class OrderFacade {
@@ -119,5 +125,73 @@ public class OrderFacade {
         );
         
         eventPublisher.publish(orderCompletedEvent);
+    }
+
+    @EventListener
+    @Transactional
+    public void onPaymentFailedEventListener(PaymentFailedEvent event) {
+        log.info("Processing payment failed event: paymentId={}, orderId={}", 
+                event.getPaymentId(), event.getOrderId());
+
+        try {
+            OrderInfo.Detail orderInfo = orderService.getOrder(event.getOrderId());
+            
+            if (orderService.isAlreadyCompleted(orderInfo.orderUuid()) || 
+                orderService.isAlreadyCancelled(orderInfo.orderUuid())) {
+                log.info("Order already processed: orderUuid={}, status={}", 
+                        orderInfo.orderUuid(), orderInfo.status());
+                return;
+            }
+
+            orderService.cancelOrderByUuid(orderInfo.orderUuid());
+            
+            OrderFailedEvent orderFailedEvent = new OrderFailedEvent(
+                    event.getOrderId(),
+                    orderInfo.userId(),
+                    event.getFailureReason(),
+                    event.getErrorCode()
+            );
+            
+            eventPublisher.publish(orderFailedEvent);
+            
+            log.info("Successfully processed payment failure: orderId={}", event.getOrderId());
+            
+        } catch (Exception e) {
+            log.error("Failed to process payment failure: paymentId={}, orderId={}, error={}", 
+                    event.getPaymentId(), event.getOrderId(), e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    @EventListener
+    @Transactional
+    public void onPaymentCompletedEventListener(PaymentCompletedEvent event) {
+        log.info("Processing payment completed event: paymentId={}, orderId={}", 
+                event.getPaymentId(), event.getOrderId());
+
+        try {
+            OrderInfo.Detail orderInfo = orderService.getOrder(event.getOrderId());
+            
+            if (orderService.isAlreadyCompleted(orderInfo.orderUuid())) {
+                log.info("Order already completed: orderUuid={}, status={}", 
+                        orderInfo.orderUuid(), orderInfo.status());
+                return;
+            }
+
+            OrderCriteria.Complete criteria = new OrderCriteria.Complete(
+                    orderInfo.id(),
+                    orderInfo.userId(),
+                    orderInfo.couponIds()
+            );
+            
+            completeOrder(criteria);
+            
+            log.info("Successfully processed payment completion: orderId={}", event.getOrderId());
+            
+        } catch (Exception e) {
+            log.error("Failed to process payment completion: paymentId={}, orderId={}, error={}", 
+                    event.getPaymentId(), event.getOrderId(), e.getMessage(), e);
+            throw e;
+        }
     }
 }

@@ -1,10 +1,10 @@
 package com.loopers.application.payment;
 
-import com.loopers.application.order.OrderCriteria;
-import com.loopers.application.order.OrderFacade;
-import com.loopers.domain.order.OrderService;
+import com.loopers.domain.common.event.EventPublisher;
 import com.loopers.domain.payment.Payment;
 import com.loopers.domain.payment.PaymentRepository;
+import com.loopers.domain.payment.event.PaymentFailedEvent;
+import com.loopers.domain.payment.event.PaymentCompletedEvent;
 import com.loopers.infrastructure.external.payment.PaymentGatewayAdapter;
 import com.loopers.infrastructure.external.payment.PaymentGatewayInfo;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +21,7 @@ public class PaymentSyncFacade {
     
     private final PaymentRepository paymentRepository;
     private final PaymentGatewayAdapter paymentGatewayAdapter;
-    private final OrderFacade orderFacade;
-    private final OrderService orderService;
+    private final EventPublisher eventPublisher;
     
     @Value("${custom-payments.user-id}")
     private String systemUserId;
@@ -52,10 +51,12 @@ public class PaymentSyncFacade {
     
     private void updatePaymentStatus(Payment payment, String pgStatus) {
         switch (pgStatus.toUpperCase()) {
-            case "SUCCESS" -> payment.complete();
+            case "SUCCESS" -> {
+                payment.complete();
+                processSuccessPayment(payment);
+            }
             case "FAILED" -> {
                 payment.fail();
-                // 결제 실패 시 주문도 실패 처리
                 processFailedPayment(payment);
             }
             case "PENDING" -> {}
@@ -64,33 +65,26 @@ public class PaymentSyncFacade {
     }
     
     private void processFailedPayment(Payment payment) {
-        var orderInfo = orderService.getOrder(payment.getOrderId());
-        if (orderService.isAlreadyCompleted(orderInfo.orderUuid()) || 
-            orderService.isAlreadyCancelled(orderInfo.orderUuid())) {
-            return;
-        }
-        // 결제 실패 시 주문 취소
-        orderService.cancelOrderByUuid(orderInfo.orderUuid());
+        PaymentFailedEvent paymentFailedEvent = new PaymentFailedEvent(
+                payment.getPaymentUuid(),
+                payment.getOrderId(),
+                payment.getAmount(),
+                "Payment processing failed",
+                "PAYMENT_FAILED"
+        );
+        
+        eventPublisher.publish(paymentFailedEvent);
     }
     
-    @Transactional
-    public void processCompletedPayment(String paymentId) {
-        Payment payment = paymentRepository.findByPaymentUuid(paymentId)
-                .orElseThrow(() -> new IllegalArgumentException("Payment not found: " + paymentId));
-        
-        if (payment.getStatus() != Payment.PaymentStatus.COMPLETED) {
-            return;
-        }
-        
-        var orderInfo = orderService.getOrder(payment.getOrderId());
-        if (orderService.isAlreadyCompleted(orderInfo.orderUuid())) {
-            return;
-        }
-        var criteria = new OrderCriteria.Complete(
-            payment.getOrderId(),
-            payment.getUserId(), 
-            orderInfo.couponIds()
+    private void processSuccessPayment(Payment payment) {
+        PaymentCompletedEvent paymentCompletedEvent = new PaymentCompletedEvent(
+                payment.getPaymentUuid(),
+                payment.getOrderId(),
+                payment.getAmount(),
+                payment.getTransactionKey(),
+                LocalDateTime.now()
         );
-        orderFacade.completeOrder(criteria);
+        
+        eventPublisher.publish(paymentCompletedEvent);
     }
 }
