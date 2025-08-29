@@ -1,5 +1,6 @@
 package com.loopers.domain.like;
 
+import com.loopers.domain.common.event.EventPublisher;
 import com.loopers.domain.product.ProductStatusRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,8 @@ class LikeServiceTest {
     @Mock
     private ProductStatusRepository productStatusRepository;
 
+    @Mock
+    private EventPublisher eventPublisher;
 
     @InjectMocks
     private LikeService likeService;

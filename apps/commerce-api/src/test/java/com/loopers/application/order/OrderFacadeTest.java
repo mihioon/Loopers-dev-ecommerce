@@ -1,6 +1,7 @@
 package com.loopers.application.order;
 
 import com.loopers.domain.product.dto.ProductInfo;
+import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderInfo;
 import com.loopers.domain.order.OrderService;
 import com.loopers.domain.payment.PaymentService;
@@ -76,7 +77,8 @@ class OrderFacadeTest {
                 new BigDecimal("20000"),
                 new BigDecimal("10000"),
                 List.of(new OrderInfo.ItemInfo(1L, productId, 2, price, new BigDecimal("20000"))),
-                List.of()
+                List.of(),
+                Order.OrderStatus.CREATED
         );
     }
 
