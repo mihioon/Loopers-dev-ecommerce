@@ -12,7 +12,8 @@ public class OrderInfo {
             BigDecimal pointAmount,
             BigDecimal totalAmount,
             List<ItemInfo> items,
-            List<Long> couponIds
+            List<Long> couponIds,
+            Order.OrderStatus status
     ) {
         public static Detail from(Order order) {
             return new Detail(
@@ -24,7 +25,8 @@ public class OrderInfo {
                     order.getOrderItems().stream()
                             .map(ItemInfo::from)
                             .toList(),
-                    order.getCouponIds()
+                    order.getCouponIds(),
+                    order.getStatus()
             );
         }
     }

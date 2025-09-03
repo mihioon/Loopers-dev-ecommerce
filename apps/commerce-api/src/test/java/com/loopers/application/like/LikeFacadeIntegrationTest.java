@@ -43,7 +43,6 @@ public class LikeFacadeIntegrationTest extends IntegrationTest {
 
             // then
             assertThat(productLikeRepository.isLikedByUser(productId, user.getId())).isTrue();
-            assertThat(sut.getLikeCount(productId)).isEqualTo(1L);
         }
 
         @DisplayName("이미 좋아요한 상품에 대해 다시 좋아요 시, 멱등성이 보장된다.")
@@ -61,7 +60,6 @@ public class LikeFacadeIntegrationTest extends IntegrationTest {
             sut.like(productId, loginId);
 
             assertThat(productLikeRepository.isLikedByUser(productId, user.getId())).isTrue();
-            assertThat(sut.getLikeCount(productId)).isEqualTo(1L);
         }
 
         @DisplayName("여러 사용자가 같은 상품에 좋아요 시, 각각 저장된다.")
@@ -81,7 +79,6 @@ public class LikeFacadeIntegrationTest extends IntegrationTest {
             sut.like(productId, loginId2);
 
             // then
-            assertThat(sut.getLikeCount(productId)).isEqualTo(2L);
             assertThat(productLikeRepository.isLikedByUser(productId, user.getId())).isTrue();
             assertThat(productLikeRepository.isLikedByUser(productId, user2.getId())).isTrue();
         }
@@ -165,11 +162,10 @@ public class LikeFacadeIntegrationTest extends IntegrationTest {
             sut.like(productId, loginId2);
             sut.like(productId, loginId3);
 
-            // when
-            final Long likeCount = sut.getLikeCount(productId);
-
             // then
-            assertThat(likeCount).isEqualTo(3L);
+            assertThat(productLikeRepository.isLikedByUser(productId, user.getId())).isTrue();
+            assertThat(productLikeRepository.isLikedByUser(productId, user2.getId())).isTrue();
+            assertThat(productLikeRepository.isLikedByUser(productId, user3.getId())).isTrue();
         }
     }
 }

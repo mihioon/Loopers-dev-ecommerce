@@ -25,10 +25,6 @@ public class PaymentPollingScheduler {
             try {
                 paymentSyncFacade.syncPaymentStatus(paymentId);
             } catch (Exception e) {}
-
-            try {
-                paymentSyncFacade.processCompletedPayment(paymentId);
-            } catch (Exception e) {}
         }
     }
     
