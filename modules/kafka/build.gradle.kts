@@ -9,5 +9,6 @@ dependencies {
     testImplementation("org.springframework.kafka:spring-kafka-test")
     testImplementation("org.testcontainers:kafka")
 
+    testFixturesImplementation("org.springframework.kafka:spring-kafka-test")
     testFixturesImplementation("org.testcontainers:kafka")
 }
