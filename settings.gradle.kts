@@ -3,8 +3,11 @@ rootProject.name = "mihi-commerce"
 include(
     ":apps:commerce-api",
     ":apps:pg-simulator",
+    ":apps:commerce-streamer",
     ":modules:jpa",
     ":modules:redis",
+    ":modules:kafka",
+    ":modules:events",
     ":supports:jackson",
     ":supports:logging",
     ":supports:monitoring",

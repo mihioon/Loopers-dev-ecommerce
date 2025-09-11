@@ -3,12 +3,14 @@ package com.loopers.application.product;
 import com.loopers.domain.auth.AuthService;
 import com.loopers.domain.brand.BrandInfo;
 import com.loopers.domain.brand.BrandService;
+import com.loopers.domain.common.event.EventPublisher;
 import com.loopers.domain.like.LikeInfo;
 import com.loopers.domain.product.ProductStockService;
 import com.loopers.domain.product.dto.ProductInfo;
 import com.loopers.domain.like.LikeService;
 import com.loopers.domain.product.dto.StockInfo;
 import com.loopers.domain.product.ProductService;
+import com.loopers.domain.product.event.ProductViewedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
@@ -23,6 +25,7 @@ public class ProductFacade {
     private final ProductStockService productStockService;
     private final BrandService brandService;
     private final LikeService likeService;
+    private final EventPublisher eventPublisher;
 
     public ProductResult.Summary getSummary(final ProductCriteria.Summary criteria) {
         final Long userId = authService.resolveUserId(criteria.loginId()).orElse(null);
@@ -43,6 +46,15 @@ public class ProductFacade {
         final Long likeCount = productService.getLikeCount(productId);
         final Boolean isLikedByUser = userId != null && likeService.isLikedByUser(productId, userId);
         
+        publishProductViewedEvent(productId, userId, loginId);
+        
         return ProductResult.Detail.from(productDetail, brandInfo, stockInfo, likeCount, isLikedByUser);
+    }
+    
+    private void publishProductViewedEvent(Long productId, Long userId, String loginId) {
+        String sessionId = loginId != null ? "session-" + loginId : "anonymous-" + System.currentTimeMillis();
+        
+        ProductViewedEvent event = new ProductViewedEvent(productId, userId, sessionId);
+        eventPublisher.publish(event);
     }
 }
