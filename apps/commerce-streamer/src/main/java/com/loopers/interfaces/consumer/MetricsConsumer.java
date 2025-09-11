@@ -1,12 +1,12 @@
 package com.loopers.interfaces.consumer;
 
-import com.loopers.domain.common.event.DomainEvent;
+import com.loopers.events.common.DomainEvent;
 import com.loopers.domain.common.messaging.IdempotencyService;
-import com.loopers.domain.like.event.LikeAddedEvent;
-import com.loopers.domain.like.event.LikeRemovedEvent;
+import com.loopers.events.like.LikeAddedEvent;
+import com.loopers.events.like.LikeRemovedEvent;
 import com.loopers.domain.metrics.ProductMetricsService;
-import com.loopers.domain.order.event.OrderCompletedEvent;
-import com.loopers.domain.product.event.ProductViewedEvent;
+import com.loopers.events.order.OrderCompletedEvent;
+import com.loopers.events.product.ProductViewedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

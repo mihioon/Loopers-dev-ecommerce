@@ -1,6 +1,6 @@
 package com.loopers.interfaces.consumer;
 
-import com.loopers.domain.common.event.DomainEvent;
+import com.loopers.events.common.DomainEvent;
 import com.loopers.domain.common.messaging.IdempotencyService;
 import com.loopers.domain.eventlog.EventLogService;
 import lombok.RequiredArgsConstructor;
