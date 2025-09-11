@@ -1,7 +1,7 @@
 package com.loopers.domain.eventlog;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.loopers.domain.common.event.DomainEvent;
+import com.loopers.events.common.DomainEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
