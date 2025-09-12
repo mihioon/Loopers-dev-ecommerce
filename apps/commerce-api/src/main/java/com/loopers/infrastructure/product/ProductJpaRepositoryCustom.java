@@ -4,6 +4,9 @@ import com.loopers.domain.product.dto.ProductWithLikeCountProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+import java.util.Set;
+
 public interface ProductJpaRepositoryCustom {
     
     Page<ProductWithLikeCountProjection> findProductsWithFilter(
@@ -19,4 +22,6 @@ public interface ProductJpaRepositoryCustom {
     );
     
     long countProductsWithFilter(String category, Long brandId);
+    
+    List<ProductWithLikeCountProjection> findProductsWithLikeCountByIds(Set<Long> productIds);
 }

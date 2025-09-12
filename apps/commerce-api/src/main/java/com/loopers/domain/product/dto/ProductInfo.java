@@ -62,7 +62,8 @@ public class ProductInfo {
             String category,
             Long brandId,
             List<ImageInfo> images,
-            DetailInfo detail
+            DetailInfo detail,
+            RankingInfo ranking
     ) {
         public static Detail from(Product product) {
             return new Detail(
@@ -75,7 +76,24 @@ public class ProductInfo {
                     product.getImages().stream()
                             .map(ImageInfo::from)
                             .toList(),
-                    product.getDetail() != null ? DetailInfo.from(product.getDetail()) : null
+                    product.getDetail() != null ? DetailInfo.from(product.getDetail()) : null,
+                    null
+            );
+        }
+        
+        public static Detail from(Product product, RankingInfo ranking) {
+            return new Detail(
+                    product.getId(),
+                    product.getName(),
+                    product.getDescription(),
+                    product.getPrice(),
+                    product.getCategory(),
+                    product.getBrandId(),
+                    product.getImages().stream()
+                            .map(ImageInfo::from)
+                            .toList(),
+                    product.getDetail() != null ? DetailInfo.from(product.getDetail()) : null,
+                    ranking
             );
         }
     }
@@ -106,6 +124,18 @@ public class ProductInfo {
                     productDetail.getId(),
                     null,
                     productDetail.getDetailContent()
+            );
+        }
+    }
+
+    public record RankingInfo(
+            int rank,
+            double score
+    ) {
+        public static RankingInfo from(com.loopers.domain.ranking.ProductRankingInfo rankingInfo) {
+            return new RankingInfo(
+                    rankingInfo.rank(),
+                    rankingInfo.score()
             );
         }
     }

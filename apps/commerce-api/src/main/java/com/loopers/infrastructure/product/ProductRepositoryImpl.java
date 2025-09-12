@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -46,6 +47,11 @@ public class ProductRepositoryImpl implements ProductRepository {
             return productJpaRepository.findProductsWithFilterByLikes(command.category(), command.brandId(), pageable);
         }
         return productJpaRepository.findProductsWithFilter(command.category(), command.brandId(), pageable);
+    }
+    
+    @Override
+    public List<ProductWithLikeCountProjection> findProductsWithLikeCountByIds(Set<Long> productIds) {
+        return productJpaRepository.findProductsWithLikeCountByIds(productIds);
     }
 
     @Override
