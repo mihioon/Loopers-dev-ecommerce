@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static com.loopers.domain.product.QProduct.product;
@@ -124,6 +125,30 @@ public class ProductJpaRepositoryImpl implements ProductJpaRepositoryCustom {
         .fetchOne();
 
         return count != null ? count : 0L;
+    }
+
+    @Override
+    public List<ProductWithLikeCountProjection> findProductsWithLikeCountByIds(Set<Long> productIds) {
+        return queryFactory
+                .select(product, productStatus.likeCount)
+                .from(product)
+                .innerJoin(productStatus).on(productStatus.productId.eq(product.id))
+                .where(product.id.in(productIds))
+                .fetch()
+                .stream()
+                .map(tuple -> new ProductWithLikeCountProjection() {
+                    @Override
+                    public Product getProduct() {
+                        return tuple.get(product);
+                    }
+
+                    @Override
+                    public Long getLikeCount() {
+                        Integer count = tuple.get(productStatus.likeCount);
+                        return count != null ? count.longValue() : 0L;
+                    }
+                })
+                .collect(java.util.stream.Collectors.toList());
     }
 
     private BooleanExpression categoryEq(String category) {
