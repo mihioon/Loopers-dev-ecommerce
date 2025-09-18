@@ -4,6 +4,8 @@ import com.loopers.domain.product.dto.ProductInfo;
 import com.loopers.domain.product.dto.ProductQuery;
 import com.loopers.domain.product.dto.ProductCommand;
 import com.loopers.domain.product.dto.ProductWithLikeCountProjection;
+import com.loopers.domain.ranking.ProductRankingInfo;
+import com.loopers.domain.ranking.RankingQueryService;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +14,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Component
@@ -21,6 +29,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductStatusRepository productStatusRepository;
     private final ProductCacheRepository productCacheRepository;
+    private final RankingQueryService rankingQueryService;
 
     @Transactional(readOnly = true)
     public Page<ProductInfo.Summary> getSummary(final ProductQuery.Summary command) {
@@ -119,13 +128,33 @@ public class ProductService {
                 .map(ProductInfo.Basic::from)
                 .toList();
     }
+    
+    @Transactional(readOnly = true)
+    public Map<Long, ProductInfo.Summary> getProductSummaries(final Set<Long> productIds) {
+        if (productIds.isEmpty()) {
+            return Map.of();
+        }
+        
+        List<ProductWithLikeCountProjection> productsWithLikes = 
+                productRepository.findProductsWithLikeCountByIds(productIds);
+        
+        return productsWithLikes.stream()
+                .map(projection -> ProductInfo.Summary.from(projection.getProduct(), projection.getLikeCount()))
+                .collect(Collectors.toMap(
+                        ProductInfo.Summary::id,
+                        Function.identity()
+                ));
+    }
 
     @Transactional(readOnly = true)
     public ProductInfo.Detail getDetail(final Long productId) {
         final Product product = productRepository.findByIdWithImagesAndDetail(productId)
                 .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "상품을 찾을 수 없습니다."));
 
-        return ProductInfo.Detail.from(product);
+        Optional<ProductRankingInfo> rankingInfo = rankingQueryService.getProductRanking(productId, LocalDate.now());
+        ProductInfo.RankingInfo ranking = rankingInfo.map(ProductInfo.RankingInfo::from).orElse(null);
+
+        return ProductInfo.Detail.from(product, ranking);
     }
 
     @Transactional

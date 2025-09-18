@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface ProductRepository {
     Product save(Product product);
@@ -18,6 +19,8 @@ public interface ProductRepository {
     List<Product> findByIds(List<Long> ids);
 
     Page<ProductWithLikeCountProjection> findProductsWithSort(ProductQuery.Summary command, Pageable pageable);
+    
+    List<ProductWithLikeCountProjection> findProductsWithLikeCountByIds(Set<Long> productIds);
 
     long countProductsWithFilter(String category, Long brandId);
     
